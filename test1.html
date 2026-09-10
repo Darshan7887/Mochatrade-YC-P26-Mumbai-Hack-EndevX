@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar with Video Previews</title>
+
+  <style>
+    /* === Your entire CSS stays here === */
+    body {
+      margin: 0;
+      font-family: "Fugaz one", sans-serif;
+      background: #f6f6f9;
+    }
+
+    /* Background video */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(60, 46, 248, 0.15);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+      color: #fff;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Logo */
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .navbar .logo img {
+      width: 80px;
+      height: 55px;
+      border-radius: 6px;
+    }
+    .navbar .logo span {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Menu */
+    .navbar .menu {
+      display: flex;
+      gap: 25px;
+      position: relative;
+    }
+    .navbar .menu a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 5px 8px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .navbar .menu a:hover {
+      color: #ffcc00;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      filter: none !important;
+    }
+    .navbar .menu:hover a:not(:hover) {
+      filter: blur(2px) brightness(70%);
+    }
+
+    /* Right side */
+    .navbar .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .reward {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+    }
+    .reward img {
+      width: 20px;
+      height: 20px;
+    }
+    .profile img {
+      width: 70px;
+      height: 55px;
+      border-radius: 100%;
+      border: 0px solid #fff;
+    }
+
+    /* Content */
+    .content {
+      padding: 40px;
+      position: relative;
+      z-index: 1;
+      color: #fff;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+      transition: filter 0.3s ease;
+    }
+    .menu:hover ~ .content {
+      filter: blur(5px);
+    }
+
+    /* Video preview */
+    .video-preview {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      width: 200px;
+      height: 120px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      background: #000;
+      z-index: 20;
+    }
+    .video-preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .navbar .menu a:hover .video-preview {
+      opacity: 1;
+    }
+
+    /* Glass boxes */
+    .boxes-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      z-index: 10;
+    }
+    .glass-box {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #000;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .box1 {
+      width: 350px;
+      height: 400px;
+      top: 20%;
+      left: 2%;
+    }
+    .character-stats {
+      margin-top: 10px;
+      color: white;
+      font-size: 14px;
+      text-align: center;
+    }
+    .exp-bar {
+      width: 90%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      margin: 6px auto;
+      overflow: hidden;
+    }
+    .exp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ffcc, #0077ff);
+      border-radius: 8px;
+      transition: width 0.5s ease;
+    }
+
+    .box2 {
+      width: 500px;
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      overflow-y: auto;
+      top: 20%;
+      left: 31%;
+    }
+    .box2 h2 {
+      font-family: "Funnel Display", sans-serif;
+    }
+
+    /* Box 3 To-Do List */
+    .box3 {
+      width: 350px;
+      height: 400px;
+      top: 20%;
+      right: 5%;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .todo-container {
+      width: 100%;
+      text-align: center;
+    }
+    #todo-input {
+      width: 70%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #6a5acd;
+      font-size: 16px;
+    }
+    .todo-container button {
+      padding: 8px 12px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #6a5acd;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .todo-container button:hover {
+      background: #483d8b;
+    }
+    #todo-list {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 15px;
+      text-align: left;
+    }
+    #todo-list li {
+      padding: 8px;
+      margin: 5px 0;
+      background: #e0e7ff;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+    }
+    #todo-list li.completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    /* Lesson boxes inside middle */
+    .lesson-box {
+      width: 90%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .lesson-box h2 {
+      font-family: "Funnel Display", sans-serif;
+    }
+    .lesson-box:hover {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 15px rgba(255, 200, 0, 0.8);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="assets/videos/pix.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+      <span>BrainBerry</span>
+    </div>
+
+    <div class="menu">
+      <a href="front.html">
+        Home
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="#">
+        Challenges
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix12.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="chal.html">
+        Games
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix3.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="Less.html">
+        Lessons
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix5.mov" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="rewards.html">
+        Rewards
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/reward.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="help.html">
+        Help
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/help.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+    </div>
+
+    <div class="right">
+      <div class="reward">
+        <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+        <span>0</span>
+      </div>
+      <div class="reward">
+        <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+        <span>0</span>
+      </div>
+      <div class="profile" onclick="toggleProfile()">
+        <img src="assets/images/dp-cactus-20.png" alt="User">
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Content -->
+  <div class="boxes-container">
+    <div class="glass-box box1">
+      <!-- Character Video -->
+      <video autoplay muted loop playsinline style="width: 100%; height: 60%; border-radius: 12px; object-fit: cover;">
+        <source src="assets/videos/fitgir.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Character Stats -->
+      <div class="character-stats">
+        <h3>Hero Kid</h3>
+        <p>Level: 3</p>
+        <p>EXP:</p>
+        
+        <!-- EXP Bar -->
+        <div class="exp-bar">
+          <div class="exp-fill" style="width: 45%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-box box2">
+      <h2>Lessons</h2>
+      <div class="lesson-box" onclick="location.href='alp.html'">1: Magic Of words</div>
+      <div class="lesson-box" onclick="location.href='NunInd.html'">2: Numbers</div>
+      <div class="lesson-box" onclick="location.href='gsa.html'">3: Golden Words and Sentences</div>
+      <div class="lesson-box">4: Advanced</div>
+      <div class="lesson-box">5: Final Project</div>
+    </div>
+
+    <div class="glass-box box3">
+      <h2>My To-Do List</h2>
+      <div class="todo-container">
+        <input type="text" id="todo-input" placeholder="Type your task..." />
+        <button onclick="addTask()">Add</button>
+        <ul id="todo-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
+  <script>
+    // ✅ Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyADRJMnuBGNzU_LAOx0bYSg0UvCEXEC7vs",
+      authDomain: "brainberry-96454.firebaseapp.com",
+      projectId: "brainberry-96454",
+      storageBucket: "brainberry-96454.firebasestorage.app",
+      messagingSenderId: "819230645241",
+      appId: "1:819230645241:web:698aa272865737ee103b28",
+      measurementId: "G-VVHB92VP3H"
+    };
+
+    // ✅ Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+
+
+    // ✅ Register
+    document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const age = document.getElementById("regAge").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value.trim();
+
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        await db.collection("users").doc(user.uid).set({ name, age, email });
+        alert("✅ Registered Successfully!");
+        e.target.reset();
+      } catch (err) {
+        console.error(err);
+        alert("❌ Error registering user: " + err.message);
+      }
+    });
+
+    // ✅ Login
+    document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        const doc = await db.collection("users").doc(user.uid).get();
+        const userData = doc.data();
+
+        if (userData) {
+          localStorage.setItem("userName", userData.name);
+          localStorage.setItem("userAge", userData.age);
+          localStorage.setItem("userEmail", userData.email);
+        }
+
+        alert("✅ Login Successful!");
+        window.location.href = "front.html";
+      } catch (err) {
+        console.error(err);
+        alert("❌ Error logging in: " + err.message);
+      }
+    });
+
+    // ✅ Populate sidebar
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (!email) return;
+
+      document.getElementById("profileName").textContent = localStorage.getItem("userName") || "";
+      document.getElementById("profileAge").textContent = localStorage.getItem("userAge") || "";
+      document.getElementById("profileEmail").textContent = email;
+    });
+  </script>
+</body>
+</html>

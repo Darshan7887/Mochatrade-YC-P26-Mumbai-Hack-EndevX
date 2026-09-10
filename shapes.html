@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+    <title>Shapes BrainBerry</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Fugaz One", sans-serif;
+            background: #f6f6f9;
+        }
+
+        /* Background video */
+        .bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: blur(6px) brightness(0.6) saturate(0.8);
+            transform: scale(1.05);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(75, 42, 173, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 20px;
+            color: #fff;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Logo */
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar .logo img {
+            width: 80px;
+            height: 55px;
+            border-radius: 6px;
+        }
+
+        .navbar .logo span {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Menu */
+        .navbar .menu {
+            display: flex;
+            gap: 25px;
+            position: relative;
+        }
+
+        .navbar .menu a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 5px 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .navbar .menu a:hover {
+            color: #ffcc00;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            filter: none !important;
+        }
+
+        /* Blur other options */
+        .navbar .menu:hover a:not(:hover) {
+            filter: blur(2px) brightness(70%);
+        }
+
+        /* Right side */
+        .navbar .right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reward {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .reward img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .profile img {
+            width: 70px;
+            height: 55px;
+            border-radius: 50%;
+            border: 0px solid #fff;
+        }
+
+        /* Video preview */
+        .video-preview {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 200px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            background: #000;
+            z-index: 20;
+        }
+
+        .video-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .navbar .menu a:hover .video-preview {
+            opacity: 1;
+        }
+
+        /* Lesson container mirrors gsa.html lesson-box */
+        .lesson-box {
+            margin: 20px auto;
+            width: 90%;
+            min-height: 300px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .lesson-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-header h2 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .progress-wrapper {
+            width: 80%;
+            max-width: 400px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            height: 24px;
+            position: relative;
+            overflow: hidden;
+            margin: 10px auto;
+            border: 2px solid rgba(255,255,255,0.5);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffcc00, #ff6b6b);
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            pointer-events: none;
+            font-family: "Fugaz One", sans-serif;
+        }
+
+        .pulsing-instruction {
+            font-size: 1.1rem;
+            color: #ffcc00;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            animation: pulse-text 2s infinite ease-in-out;
+            background: rgba(0,0,0,0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 10px #ffcc00; }
+        }
+
+        /* Theater Layout */
+        .theater-layout {
+            display: grid;
+            grid-template-columns: 140px 1fr 140px;
+            gap: 20px;
+            width: 100%;
+            align-items: start;
+            justify-items: center;
+        }
+
+        .wing-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+            background: rgba(0,0,0,0.15);
+            padding: 20px 0px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .center-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 480px;
+            background: radial-gradient(circle at center top, rgba(255,255,255,0.12) 0%, transparent 70%);
+            border-radius: 30px;
+            position: relative;
+        }
+
+        .pedestal-slot {
+            width: 200px;
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .pedestal-shadow {
+            position: absolute;
+            bottom: 10px;
+            width: 160px;
+            height: 35px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            filter: blur(8px);
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+            z-index: 0;
+        }
+
+        /* Each shape card */
+        .shape-card {
+            width: 120px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 6px 20px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            margin: 0 auto;
+        }
+
+        .wing-panel .shape-card {
+            transform: scale(0.85); /* shrink cards in wings */
+            margin: -8px 0;
+        }
+
+        .wing-panel .shape-card:hover {
+            transform: scale(0.95);
+            box-shadow: 0 12px 40px rgba(255, 255, 255, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255,255,255,0.8);
+            z-index: 10;
+        }
+
+        .center-stage .shape-card {
+            transform: scale(1.4);
+            z-index: 20;
+            pointer-events: none; /* card on stage cant be clicked again */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.9);
+            border: 2px solid #ffcc00;
+        }
+
+        /* View Transition Name Mapping */
+        #card-Circle { view-transition-name: card-Circle; }
+        #card-Square { view-transition-name: card-Square; }
+        #card-Triangle { view-transition-name: card-Triangle; }
+        #card-Rectangle { view-transition-name: card-Rectangle; }
+        #card-Oval { view-transition-name: card-Oval; }
+        #card-Star { view-transition-name: card-Star; }
+        #card-Heart { view-transition-name: card-Heart; }
+        #card-Diamond { view-transition-name: card-Diamond; }
+        #card-Pentagon { view-transition-name: card-Pentagon; }
+        #card-Hexagon { view-transition-name: card-Hexagon; }
+
+        ::view-transition-group(*) {
+            animation-duration: 0.8s;
+            animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .shape-card:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* SVG canvas area */
+        .shape-svg {
+            width: 100%;
+            height: 95px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%);
+            box-shadow: inset 0 -4px 10px rgba(0,0,0,0.15), inset 0 4px 10px rgba(255,255,255,0.2);
+        }
+
+        .shape-svg svg {
+            width: 66px;
+            height: 66px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+            transition: transform 0.3s ease;
+        }
+
+        .shape-card:hover .shape-svg svg {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        /* Shape label */
+        .shape-label {
+            padding: 8px 4px 12px;
+            font-size: 1.1rem;
+            font-family: "Fugaz One", sans-serif;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Restart Button */
+        #restart-btn {
+            display: none;
+            margin: 10px auto;
+            padding: 10px 24px;
+            font-size: 1.1rem;
+            font-family: "Fugaz One", sans-serif;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(0, 184, 148, 0.4);
+            transition: transform 0.3s ease;
+            animation: pulse-text 2s infinite ease-in-out;
+        }
+        #restart-btn:hover {
+            transform: scale(1.08);
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #ffcc00;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        /* Voice-flow additions (no layout change) */
+        .voice-panel {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .voice-panel button {
+            margin: 6px;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #4b2aad;
+            color: white;
+            transition: 0.3s;
+            font-family: "Fugaz One", sans-serif;
+        }
+
+        .voice-panel button:hover:not(:disabled) {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .voice-panel button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        #feedback-msg {
+            font-size: 1rem;
+            min-height: 1.4em;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Card selected highlight */
+        .shape-card.active-card {
+            /* Now handled by .center-stage logic */
+        }
+
+        /* Shake keyframe */
+        @keyframes bb-shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-6px);
+            }
+
+            40% {
+                transform: translateX(6px);
+            }
+
+            60% {
+                transform: translateX(-4px);
+            }
+
+            80% {
+                transform: translateX(4px);
+            }
+        }
+
+        .bb-shake {
+            animation: bb-shake 0.35s ease;
+        }
+
+        /* Error overlay */
+        #error-overlay {
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(220, 30, 30, 0);
+            transition: background 0.15s ease;
+        }
+
+        #error-overlay.flash {
+            background: rgba(220, 30, 30, 0.38);
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background video -->
+    <video autoplay muted loop playsinline class="bg-video">
+        <source src="assets/videos/Colour_Background.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+        <div class="logo">
+            <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+            <span>BrainBerry</span>
+        </div>
+        </a>
+
+        <div class="menu">
+            <a href="front.html">
+                Home
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="challen.html">
+                Challenges
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix12.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="chal.html">
+                Games
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix3.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="Less.html">
+                Lessons
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix5.mov" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="rewards.html">
+                Rewards
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/reward.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="help.html">
+                Help
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/help.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="reward">
+                <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+                <span>0</span>
+            </div>
+            <div class="reward">
+                <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+                <span>0</span>
+            </div>
+            <div class="profile">
+                <img src="assets/images/dp-cactus-20.png" alt="User">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Lesson content -->
+    <div class="lesson-box">
+        <div class="lesson-header">
+            <h2>🎯 Let's Explore Shapes!</h2>
+            <div class="progress-wrapper">
+                <div class="progress-fill" id="progress-fill"></div>
+                <span id="progress-text" class="progress-text">0/10</span>
+            </div>
+            <div class="pulsing-instruction">✨ Choose a shape to begin ✨</div>
+        </div>
+
+        <div class="theater-layout">
+
+            <!-- LEFT WING -->
+            <div class="wing-panel left-wing">
+                <!-- Circle -->
+                <div class="shape-card" id="card-Circle">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <circle cx="36" cy="36" r="30" fill="rgba(100,180,255,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Circle</div>
+                </div>
+
+                <!-- Square -->
+                <div class="shape-card" id="card-Square">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <rect x="8" y="8" width="56" height="56" rx="4" fill="rgba(255,160,80,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Square</div>
+                </div>
+
+                <!-- Triangle -->
+                <div class="shape-card" id="card-Triangle">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <polygon points="36,6 66,66 6,66" fill="rgba(120,220,150,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Triangle</div>
+                </div>
+
+                <!-- Rectangle -->
+                <div class="shape-card" id="card-Rectangle">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <rect x="4" y="18" width="64" height="36" rx="4" fill="rgba(200,100,220,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Rectangle</div>
+                </div>
+
+                <!-- Oval -->
+                <div class="shape-card" id="card-Oval">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <ellipse cx="36" cy="36" rx="32" ry="20" fill="rgba(255,210,60,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Oval</div>
+                </div>
+            </div>
+
+            <!-- CENTER STAGE -->
+            <div class="center-stage">
+                <div class="pedestal-slot">
+                    <div class="pedestal-shadow"></div>
+                    <!-- Active shape card flies here -->
+                </div>
+                
+                <div class="stage-controls" style="margin-top: 30px;">
+                    <div id="feedback-msg" style="font-size: 1.1rem; color: #ffcc00; min-height: 24px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); margin-bottom: 20px;">✨ Click a shape to stage it</div>
+                    <div style="display: flex; gap: 15px; justify-content: center; align-items: center;">
+                        <button id="mic-btn" disabled style="background: linear-gradient(135deg, #ff6b6b, #ff4757); padding: 12px 28px; font-size: 1.2rem; border-radius: 50px; color: white; cursor: pointer; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 15px rgba(255,107,107,0.5); font-family: 'Fugaz One'; transition: transform 0.2s;">🎤 Speak Now</button>
+                        <button id="next-btn" disabled style="background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); padding: 12px 24px; font-size: 1.1rem; border-radius: 50px; color: white; cursor: pointer; border: 1px solid rgba(255,255,255,0.4); font-family: 'Fugaz One'; transition: transform 0.2s;">Next ⏭️</button>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 25px; gap: 15px;">
+                        <button id="restart-btn" onclick="restartLesson()" style="display: none;">🔄 Restart Lesson</button>
+                        <button id="magic-rainbow-btn" class="magic-btn" style="padding: 10px 20px; font-size: 1rem; border-radius: 30px; background: linear-gradient(90deg, #ff6b6b, #ffcc00, #4ecdc4, #6c5ce7); border: 2px solid white; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4); color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.8); animation: pulse-text 2s infinite ease-in-out; cursor: pointer;">✨ Magic Rainbow</button>
+                        <a href="color-shape.html" class="back-link" style="font-family: 'Fugaz One', sans-serif; margin-top: 5px;">⬅ Back to Hub</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT WING -->
+            <div class="wing-panel right-wing">
+                <!-- Star -->
+                <div class="shape-card" id="card-Star">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <polygon points="36,4 43,26 68,26 48,42 55,64 36,50 17,64 24,42 4,26 29,26" fill="rgba(255,200,0,0.9)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Star</div>
+                </div>
+
+                <!-- Heart -->
+                <div class="shape-card" id="card-Heart">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <path d="M36 62 C36 62 8 44 8 24 C8 14 16 6 26 8 C30 9 34 12 36 16 C38 12 42 9 46 8 C56 6 64 14 64 24 C64 44 36 62 36 62 Z" fill="rgba(240,80,100,0.9)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Heart</div>
+                </div>
+
+                <!-- Diamond -->
+                <div class="shape-card" id="card-Diamond">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <polygon points="36,4 66,36 36,68 6,36" fill="rgba(80,200,210,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Diamond</div>
+                </div>
+
+                <!-- Pentagon -->
+                <div class="shape-card" id="card-Pentagon">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <polygon points="36,6 64,27 53,62 19,62 8,27" fill="rgba(160,100,220,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Pentagon</div>
+                </div>
+
+                <!-- Hexagon -->
+                <div class="shape-card" id="card-Hexagon">
+                    <div class="shape-svg">
+                        <svg viewBox="0 0 72 72">
+                            <polygon points="36,6 62,21 62,51 36,66 10,51 10,21" fill="rgba(80,180,120,0.85)" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="shape-label">Hexagon</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Fullscreen overlays -->
+    <div id="error-overlay"></div>
+    <canvas id="confetti-canvas"></canvas>
+    <script src="assets/js/profile-panel.js"></script>
+    <script src="assets/js/parental-control.js"></script>
+</body>
+<script>
+
+
+    // Phonetic aliases (child-friendly sound-alike map) 
+    const PHONETIC_MAP = {
+        circle: ["circle", "sircle", "circul", "sirkle", "cercle", "sircul", "cirkel"],
+        square: ["square", "squar", "skwear", "sqwer", "squaer", "squere"],
+        triangle: ["triangle", "trianle", "triange", "tirangle", "triangel", "tringle"],
+        rectangle: ["rectangle", "rectange", "recktangle", "rectangel", "rectanle", "rectangl"],
+        oval: ["oval", "ovul", "avol", "ooval", "ovale", "ovall"],
+        star: ["star", "ster", "staar", "stare", "sstar"],
+        heart: ["heart", "hart", "haert", "hert", "hrt", "haart"],
+        diamond: ["diamond", "diamand", "dimond", "diomand", "dyamond", "diamound"],
+        pentagon: ["pentagon", "pentegon", "pentagan", "pentgon", "pentacon", "pentegon"],
+        hexagon: ["hexagon", "heksagon", "hexegon", "hexgon", "haxagon", "hexagon"]
+    };
+
+    // State 
+    let currentTarget = null; // canonical word to match
+    let micReady = false; // true only after audio finishes
+    let answeredOk = false; // true once card is correctly spoken
+    let isListening = false; // guard: prevents duplicate recognition sessions
+    let retryTimer = null; // silence auto-retry handle
+
+    const micBtn = document.getElementById("mic-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const feedbackMsg = document.getElementById("feedback-msg");
+    const errorOvl = document.getElementById("error-overlay");
+
+    let currentAudio = null;
+    let audioSessionId = 0;
+
+    function playAudio(name, onDone) {
+        console.log("Playing:", name);
+        audioSessionId++;
+        const session = audioSessionId;
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.onended = null;
+        }
+
+        const audio = new Audio(`assets/audio/${name.toLowerCase()}.mp3`);
+        audio.preload = "auto";
+        currentAudio = audio;
+
+        audio.play()
+            .then(() => {
+                audio.onended = () => {
+                    if (session === audioSessionId && onDone) onDone();
+                };
+            })
+            .catch((err) => {
+                console.log("Audio error:", err);
+                if (session === audioSessionId && onDone) onDone();
+            });
+    }
+
+    // Flight Animation Logic
+    function flyCardToStage(cardElement) {
+        if (!document.startViewTransition) {
+            executeFlight(cardElement);
+        } else {
+            document.startViewTransition(() => executeFlight(cardElement));
+        }
+    }
+    
+    function executeFlight(card) {
+        const stageSlot = document.querySelector(".pedestal-slot");
+        const currentStaged = stageSlot.querySelector(".shape-card");
+        
+        // Return currently staged card to its specific wing
+        if (currentStaged && currentStaged !== card) {
+            const originalParent = currentStaged.originalParent;
+            if (originalParent) {
+                originalParent.appendChild(currentStaged);
+            }
+        }
+        
+        // Stash original parent so we can return it later if it doesn't have one
+        if (!card.originalParent) {
+            card.originalParent = card.parentElement;
+        }
+        
+        // Move new card to center
+        stageSlot.appendChild(card);
+    }
+
+    // Recognition session management 
+    function stopRecognition() {
+        if (recognition && isListening) {
+            try { recognition.stop(); } catch (_) { }
+        }
+        isListening = false;
+        clearTimeout(retryTimer);
+    }
+
+    function startRecognition() {
+        if (!recognition || isListening || answeredOk) return;
+        isListening = true;
+        micBtn.disabled = true;
+        feedbackMsg.textContent = "Listening...";
+        try {
+            recognition.start();
+        } catch (err) {
+            // Already started abort and retry in 400ms
+            isListening = false;
+            retryTimer = setTimeout(startRecognition, 400);
+        }
+    }
+
+    // Card click 
+    document.querySelectorAll(".shape-card").forEach(card => {
+        card.addEventListener("click", () => {
+            // Prevent clicking the card if it's already in the center stage
+            if (card.parentElement.classList.contains("pedestal-slot")) return;
+
+            stopRecognition();
+
+            const name = card.querySelector(".shape-label").textContent.trim();
+
+            // Trigger flight animation to physically move it to Center Stage
+            flyCardToStage(card);
+
+            // Reset state
+            currentTarget = name;
+            micReady = false;
+            answeredOk = false;
+            micBtn.disabled = true;
+            nextBtn.disabled = true;
+            feedbackMsg.textContent = " Listen carefully...";
+
+            // Play audio FIRST mic unlocks only in the callback
+            playAudio(name, () => {
+                micReady = true;
+                micBtn.disabled = false;
+                feedbackMsg.textContent = " Now say: " + name;
+            });
+        });
+    });
+
+    // Speech Recognition setup 
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+
+    if (SR) {
+        recognition = new SR();
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 5; // more candidates = better child-speech handling
+        recognition.continuous = false;
+
+        recognition.onresult = (e) => {
+            isListening = false;
+            clearTimeout(retryTimer);
+
+            // Collect ALL alternatives across all results maximise match surface
+            const candidates = [];
+            for (let i = 0; i < e.results.length; i++) {
+                for (let j = 0; j < e.results[i].length; j++) {
+                    candidates.push(e.results[i][j].transcript.toLowerCase().trim());
+                }
+            }
+            validate(candidates);
+        };
+
+        recognition.onerror = (e) => {
+            isListening = false;
+            clearTimeout(retryTimer);
+
+            if (e.error === "no-speech") {
+                feedbackMsg.textContent = " Nothing heard! Try again...";
+                if (!answeredOk && micReady) {
+                    retryTimer = setTimeout(startRecognition, 1200);
+                }
+            } else if (e.error === "aborted") {
+                // Intentionally stopped do nothing
+            } else {
+                feedbackMsg.textContent = " Mic problem tap Speak to retry";
+                if (!answeredOk && micReady) micBtn.disabled = false;
+            }
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            if (!answeredOk && micReady) {
+                micBtn.disabled = false;
+            }
+        };
+    }
+
+    // Mic button click 
+    micBtn.addEventListener("click", () => {
+        if (!micReady) {
+            feedbackMsg.textContent = "Please listen before speaking!";
+            shakeMicBtn();
+            return;
+        }
+        if (!recognition) {
+            feedbackMsg.textContent = " Speech recognition not supported in this browser.";
+            return;
+        }
+        startRecognition();
+    });
+
+    function shakeMicBtn() {
+        micBtn.classList.remove("bb-shake");
+        void micBtn.offsetWidth;
+        micBtn.classList.add("bb-shake");
+        micBtn.addEventListener("animationend", () => micBtn.classList.remove("bb-shake"), { once: true });
+    }
+
+    // Validation (child-friendly, multi-layer) 
+    function validate(candidates) {
+        const key = currentTarget.toLowerCase();
+        const aliases = PHONETIC_MAP[key] || [key];
+
+        // Layer 1: phonetic alias match (any candidate against any alias)
+        const phoneticOk = candidates.some(c =>
+            aliases.some(a => c === a || c.includes(a) || a.includes(c))
+        );
+
+        // Layer 2: fuzzy Levenshtein threshold scales with word length
+        // short words (4 chars): allow 1 edit
+        // medium words (56 chars): allow 2 edits
+        // long words (7+ chars): allow 3 edits
+        const maxEdits = key.length <= 4 ? 1 : key.length <= 6 ? 2 : 3;
+        const fuzzyOk = candidates.some(c => {
+            const words = c.split(/\s+/);
+            return words.some(w => levenshtein(w, key) <= maxEdits);
+        });
+
+        const ok = phoneticOk || fuzzyOk;
+
+        if (ok) {
+            answeredOk = true;
+            micReady = false;
+            stopRecognition();
+            micBtn.disabled = true;
+            nextBtn.disabled = false;
+            feedbackMsg.textContent = " Amazing! You said: " + currentTarget + " ";
+            launchConfetti();
+
+            let learned = JSON.parse(localStorage.getItem("learnedShapes") || "[]");
+            if (!learned.includes(currentTarget)) {
+                learned.push(currentTarget);
+                localStorage.setItem("learnedShapes", JSON.stringify(learned));
+            }
+            const activeLabel = document.querySelector(".pedestal-slot .shape-card .shape-label");
+            if(activeLabel && !activeLabel.innerHTML.includes("⭐")) {
+                activeLabel.innerHTML += " ⭐";
+            }
+            updateProgressUI();
+            
+            setTimeout(() => {
+                if (learned.length < 10) nextBtn.click();
+            }, 1500);
+        } else {
+            const heard = candidates[0] || "";
+            feedbackMsg.textContent = heard
+                ? ` Try again! I heard "${heard}" say "${currentTarget}"`
+                : ` Try again! Say "${currentTarget}" clearly`;
+            flashError();
+            setTimeout(() => {
+                if (!answeredOk && micReady) micBtn.disabled = false;
+            }, 900);
+        }
+    }
+
+    // Levenshtein distance 
+    function levenshtein(a, b) {
+        if (!a) return b.length;
+        if (!b) return a.length;
+        const dp = Array.from({ length: a.length + 1 }, (_, i) =>
+            Array.from({ length: b.length + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+        );
+        for (let i = 1; i <= a.length; i++)
+            for (let j = 1; j <= b.length; j++)
+                dp[i][j] = a[i - 1] === b[j - 1]
+                    ? dp[i - 1][j - 1]
+                    : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        return dp[a.length][b.length];
+    }
+
+    // Next button 
+    nextBtn.addEventListener("click", () => {
+        stopRecognition();
+        const stagedCard = document.querySelector(".pedestal-slot .shape-card");
+        if (stagedCard) {
+            const orderedIds = ["card-Circle", "card-Square", "card-Triangle", "card-Rectangle", "card-Oval", "card-Star", "card-Heart", "card-Diamond", "card-Pentagon", "card-Hexagon"];
+            const activeIdx = orderedIds.indexOf(stagedCard.id);
+            const nextIdx = (activeIdx + 1) % orderedIds.length;
+            document.getElementById(orderedIds[nextIdx]).click();
+        } else {
+            document.getElementById("card-Circle").click();
+        }
+    });
+
+    // Error glow overlay 
+    function flashError() {
+        errorOvl.classList.add("flash");
+        setTimeout(() => errorOvl.classList.remove("flash"), 750);
+    }
+
+    // Confetti 
+    function launchConfetti() {
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const PALETTE = [
+            "#ffcc00", "#ff6b6b", "#4ecdc4", "#45b7d1",
+            "#96ceb4", "#ffeaa7", "#fd79a8", "#a29bfe", "#6c5ce7", "#00b894"
+        ];
+        const particles = Array.from({ length: 180 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height * 0.6,
+            w: 5 + Math.random() * 10,
+            h: 3 + Math.random() * 6,
+            color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+            angle: Math.random() * Math.PI * 2,
+            spin: (Math.random() - 0.5) * 0.2,
+            vx: (Math.random() - 0.5) * 5,
+            vy: 2 + Math.random() * 4,
+            alpha: 1
+        }));
+
+        let frame = 0;
+        const TOTAL = 120;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.angle += p.spin;
+                p.vy += 0.08;
+                p.vx *= 0.995;
+                if (frame > TOTAL * 0.55) p.alpha = Math.max(0, p.alpha - 0.022);
+
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.angle);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+            });
+            frame++;
+            if (frame < TOTAL) requestAnimationFrame(draw);
+            else ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        draw();
+    }
+
+    function launchMassiveConfetti() {
+        launchConfetti();
+        setTimeout(launchConfetti, 400);
+        setTimeout(launchConfetti, 800);
+        setTimeout(launchConfetti, 1200);
+        setTimeout(launchConfetti, 1600);
+        setTimeout(launchConfetti, 2000);
+    }
+
+    function updateProgressUI() {
+        let learned = JSON.parse(localStorage.getItem("learnedShapes") || "[]");
+        const fill = document.getElementById("progress-fill");
+        const textSpan = document.getElementById("progress-text");
+        const restartBtn = document.getElementById("restart-btn");
+        const instruction = document.querySelector(".pulsing-instruction");
+
+        if(fill) {
+            const percentage = Math.min((learned.length / 10) * 100, 100);
+            fill.style.width = percentage + "%";
+            if (textSpan) textSpan.innerHTML = `${learned.length}/10`;
+            
+            if(learned.length >= 10 && restartBtn) {
+                restartBtn.style.display = "block";
+                if(instruction) instruction.innerHTML = "🎉 Lesson Complete! Amazing Job! 🎉";
+                if(!window.hasCelebrated) {
+                    launchMassiveConfetti();
+                    window.hasCelebrated = true;
+                }
+            } else if (restartBtn) {
+                restartBtn.style.display = "none";
+                if(instruction) instruction.innerHTML = "✨ Choose a shape to begin ✨";
+                window.hasCelebrated = false;
+            }
+        }
+    }
+
+    function restartLesson() {
+        localStorage.removeItem("learnedShapes");
+        document.querySelectorAll(".shape-card").forEach(card => {
+            let label = card.querySelector(".shape-label");
+            label.innerHTML = label.textContent.replace("⭐", "").trim();
+        });
+        updateProgressUI();
+        launchConfetti();
+    }
+
+    // Boot 
+    document.addEventListener("DOMContentLoaded", () => {
+        updateProgressUI();
+        
+        let learned = JSON.parse(localStorage.getItem("learnedShapes") || "[]");
+        document.querySelectorAll(".shape-card").forEach(card => {
+            let labelTag = card.querySelector(".shape-label");
+            let text = labelTag.textContent.trim();
+            if (learned.includes(text) && !text.includes("⭐")) {
+                labelTag.textContent = "⭐ " + text;
+            }
+        });
+
+        loadUserProfile();
+        if ("speechSynthesis" in window) {
+            speechSynthesis.getVoices();
+            speechSynthesis.addEventListener("voiceschanged", () => speechSynthesis.getVoices());
+        }
+
+        // Attach magic rainbow click
+        document.getElementById("magic-rainbow-btn")?.addEventListener("click", () => {
+            const cards = Array.from(document.querySelectorAll(".shape-card"));
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            randomCard.click();
+        });
+    });
+</script>
+
+</html>

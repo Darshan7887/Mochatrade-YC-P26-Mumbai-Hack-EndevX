@@ -1,0 +1,73 @@
+# BrainBerry – Docker Ignore
+# Excludes non-servable files from the Docker build context
+# ─────────────────────────────────────────────────────────────────
+
+# Version control
+.git
+.gitignore
+
+# Dev tooling
+.vscode
+.idea
+.gemini
+*.py
+*.cpp
+
+# Node / package management
+node_modules
+package-lock.json
+
+# Installers and binaries
+*.msi
+*.exe
+
+# Documentation / config (not served)
+*.pdf
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# CI/CD (not needed in container)
+.github
+
+# Docker meta (prevent recursive copy)
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Deployment configs (not served)
+netlify.toml
+render.yaml
+
+# Documentation (not served)
+docs/
+demo/
+CONTRIBUTING.md
+SECURITY.md
+LICENSE
+.env.example
+
+# Temporary / test files
+temp.html
+temp1.html
+templet.html
+test.html
+test1.html
+test3.html
+testsp.html
+testsp
+alphalb.html
+ok.cpp
+voce.py
+final_audit.py
+cleanup_ternary.py
+fix_user_data.py
+generate_audio.py
+node-v22.19.0-x64.msi
+
+# Scratch files
+scratch/
+*.tmp
+*.bak

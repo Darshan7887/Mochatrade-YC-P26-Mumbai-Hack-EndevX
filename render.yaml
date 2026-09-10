@@ -1,0 +1,13 @@
+# ─────────────────────────────────────────────────────────────────
+# BrainBerry – Render Deployment Blueprint
+# Deploy as a Docker-based web service
+# ─────────────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: brainberry
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars: []

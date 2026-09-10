@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+ <title>Story Time</title>
+ <style>
+ body {
+ margin: 0;
+ font-family: "Fugaz one", sans-serif;
+ background: #f6f6f9;
+ }
+
+ /* Background video */
+ .bg-video {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ z-index: -1;
+ }
+
+ /* Navbar */
+ .navbar {
+ background: rgba(75, 42, 173, 0.9);
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 8px 20px;
+ color: #fff;
+ position: relative;
+ z-index: 10;
+ }
+
+ /* Logo */
+ .navbar .logo {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+ .navbar .logo img {
+ width: 80px;
+ height: 55px;
+ border-radius: 6px;
+ }
+ .navbar .logo span {
+ font-size: 1.2rem;
+ font-weight: bold;
+ }
+
+ /* Menu */
+ .navbar .menu {
+ display: flex;
+ gap: 25px;
+ position: relative;
+ }
+ .navbar .menu a {
+ text-decoration: none;
+ color: #fff;
+ font-weight: 500;
+ font-size: 0.95rem;
+ padding: 5px 8px;
+ position: relative;
+ transition: all 0.3s ease;
+ }
+
+ .navbar .menu a:hover {
+ color: #ffcc00;
+ background: rgba(255, 255, 255, 0.15);
+ border-radius: 6px;
+ filter: none !important;
+ }
+
+ /* Blur other options */
+ .navbar .menu:hover a:not(:hover) {
+ filter: blur(2px) brightness(70%);
+ }
+
+ /* Right side */
+ .navbar .right {
+ display: flex;
+ align-items: center;
+ gap: 15px;
+ }
+ .reward {
+ display: flex;
+ align-items: center;
+ gap: 5px;
+ font-size: 0.9rem;
+ }
+ .reward img {
+ width: 20px;
+ height: 20px;
+ }
+ .profile img {
+ width: 70px;
+ height: 55px;
+ border-radius: 50%;
+ border: 0px solid #fff;
+ }
+ 
+ /* Profile Sidebar */
+ .profile-sidebar {
+ position: fixed;
+ top: 0;
+ right: -320px;
+ width: 300px;
+ height: 100%;
+ background: rgba(255, 255, 255, 0.15);
+ backdrop-filter: blur(10px);
+ -webkit-backdrop-filter: blur(10px);
+ border-left: 1px solid rgba(255, 255, 255, 0.3);
+ box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+ padding: 20px;
+ transition: right 0.3s ease;
+ z-index: 200;
+ color: #fff;
+ }
+ .profile-sidebar.active {
+ right: 0;
+ }
+ .profile-sidebar h2 {
+ margin-top: 0;
+ font-family: "Fugaz One", sans-serif;
+ }
+ .profile-sidebar p {
+ margin: 10px 0;
+ font-size: 1rem;
+ }
+ .profile-sidebar .close-btn {
+ position: absolute;
+ top: 10px;
+ left: 10px;
+ font-size: 20px;
+ cursor: pointer;
+ }
+
+ /* Content */
+ .content {
+ padding: 40px;
+ position: relative;
+ z-index: 1;
+ color: #fff;
+ text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+ transition: filter 0.3s ease;
+ }
+ .menu:hover ~ .content {
+ filter: blur(5px);
+ }
+
+ /* Video preview */
+ .video-preview {
+ position: absolute;
+ top: 40px;
+ left: 0;
+ width: 200px;
+ height: 120px;
+ border-radius: 8px;
+ overflow: hidden;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ background: #000;
+ z-index: 20;
+ }
+ .video-preview video {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ }
+ .navbar .menu a:hover .video-preview {
+ opacity: 1;
+ }
+
+ /* Lessons Container */
+ .lessons-section {
+ position: relative;
+ z-index: 5;
+ margin-top: 65px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 15px;
+ }
+
+ .lessons-header {
+ text-align: center;
+ color: #fff;
+ text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+ }
+ .lessons-header h1 {
+ font-size: 2.2rem;
+ margin: 0 0 5px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 10px;
+ }
+ .lessons-header p {
+ font-size: 1rem;
+ color: rgba(255, 255, 255, 0.85);
+ margin: 0;
+ font-family: sans-serif;
+ }
+
+ .lessons-grid {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 15px;
+ padding: 10px;
+ max-width: 1100px;
+ }
+
+ /* Story Card Base */
+ .story-card {
+ background: rgba(255, 255, 255, 0.15); /* light frosted glass */
+ backdrop-filter: blur(12px);
+ -webkit-backdrop-filter: blur(12px);
+ width: 320px;
+ border-radius: 18px;
+ padding: 25px 20px;
+ display: flex;
+ flex-direction: column;
+ align-items: flex-start;
+ text-align: left;
+ transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+ border: 1px solid rgba(255, 255, 255, 0.3);
+ color: #fff;
+ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+ }
+ .story-card:hover {
+ transform: translateY(-8px);
+ background: rgba(255, 255, 255, 0.25);
+ }
+
+ /* Story Icon */
+ .story-icon {
+ font-size: 3rem;
+ margin: 0 auto 15px auto;
+ line-height: 1;
+ filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+ }
+
+ /* Tags Container */
+ .story-tags {
+ display: flex;
+ gap: 8px;
+ margin-bottom: 12px;
+ }
+ .story-tag {
+ padding: 4px 10px;
+ border-radius: 50px;
+ font-size: 0.75rem;
+ font-weight: bold;
+ text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+ background: rgba(255, 255, 255, 0.2);
+ border: 1px solid rgba(255, 255, 255, 0.4);
+ }
+ .tag-class { color: #93c5fd; }
+ .tag-easy { color: #86efac; }
+ .tag-medium { color: #fcd34d; }
+
+ /* Titles */
+ .story-title {
+ font-size: 1.3rem;
+ margin-bottom: 15px;
+ font-family: "Fugaz One", sans-serif;
+ text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+ width: 100%;
+ }
+
+ /* Button */
+ .story-btn {
+ width: 100%;
+ padding: 12px 0;
+ background: rgba(59, 130, 246, 0.5);
+ backdrop-filter: blur(8px);
+ border: 1px solid rgba(147, 197, 253, 0.5);
+ border-radius: 10px;
+ font-family: "Fugaz One", sans-serif;
+ font-size: 1rem;
+ color: #fff;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+ box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+ }
+ .story-btn:hover {
+ background: rgba(59, 130, 246, 0.7);
+ transform: scale(1.04);
+ box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+ }
+
+ /* Theme Colors for Buttons */
+ .btn-blue { background: rgba(37, 99, 235, 0.6); border-color: rgba(96, 165, 250, 0.5); }
+ .btn-orange { background: rgba(234, 88, 12, 0.6); border-color: rgba(251, 146, 60, 0.5); }
+ .btn-cyan { background: rgba(8, 145, 178, 0.6); border-color: rgba(34, 211, 238, 0.5); }
+ </style>
+ 
+</head>
+<body>
+
+ <!-- Background video -->
+ <video autoplay muted loop playsinline class="bg-video">
+ <source src="assets/videos/strory_background.mp4" type="video/mp4" />
+ </video>
+
+ <!-- Navbar -->
+ <div class="navbar">
+ <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+ <div class="logo">
+ <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+ <span>BrainBerry</span>
+ </div>
+ </a>
+
+ <div class="menu">
+ <a href="front.html">
+ Home
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="challen.html">
+ Challenges
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix12.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="chal.html">
+ Games
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix3.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="Less.html">
+ Lessons
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix5.mov" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="rewards.html">
+ Rewards
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/reward.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="help.html">
+ Help
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/help.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ </div>
+
+ <div class="right">
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+ <span>0</span>
+ </div>
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+ <span>0</span>
+ </div>
+ <div class="profile">
+ <img src="assets/images/dp-cactus-20.png" alt="User">
+ </div>
+ </div>
+ </div>
+
+ <!-- Profile panel injected by assets/js/profile-panel.js -->
+
+ </div>
+ </div>
+
+ <!-- Story Content Container -->
+ <div class="lessons-section">
+ <div class="lessons-header">
+ <h1>📚 Choose Your Story!</h1>
+ <p>Listen and follow along with magical tales! ✨</p>
+ </div>
+
+ <div class="lessons-grid">
+ <!-- The Clever Crow Card -->
+ <div class="story-card">
+ <div class="story-icon">🐦</div>
+ <div class="story-tags">
+ <span class="story-tag tag-class">Class 3</span>
+ <span class="story-tag tag-easy">Easy</span>
+ </div>
+ <div class="story-title">The Clever Crow</div>
+ <button class="story-btn btn-blue" onclick="location.href='clever-crow.html'">📖 Start Reading • +25 XP</button>
+ </div>
+ 
+ <!-- The Lion and the Mouse Card -->
+ <div class="story-card">
+ <div class="story-icon">🦁</div>
+ <div class="story-tags">
+ <span class="story-tag tag-class">Class 3-4</span>
+ <span class="story-tag tag-easy">Easy</span>
+ </div>
+ <div class="story-title">The Lion & the Mouse</div>
+ <button class="story-btn btn-orange" onclick="location.href='lion-mouse.html'">📖 Start Reading • +30 XP</button>
+ </div>
+
+ </div>
+ </div>
+
+</body>
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/parental-control.js"></script>
+</html>

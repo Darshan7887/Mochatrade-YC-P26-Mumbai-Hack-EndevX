@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join BrainBerry – Create Your Account</title>
+    <meta name="description"
+        content="Register for BrainBerry – the fun voice-driven learning platform for kids. Create your free account today!" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* ── Reset ── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ── Body & BG Video ── */
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: #0d0b1e;
+        }
+
+        .bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.55;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(13, 11, 30, 0.72) 0%, rgba(30, 15, 80, 0.65) 100%);
+            z-index: 1;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 32px;
+            background: rgba(75, 42, 173, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .navbar .logo img {
+            width: 50px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .navbar .logo span {
+            font-family: 'Fugaz One', sans-serif;
+            font-size: 1.3rem;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .navbar .nav-actions a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.9rem;
+            margin-left: 20px;
+            transition: color 0.2s;
+        }
+
+        .navbar .nav-actions a:hover {
+            color: #ffcc00;
+        }
+
+        .navbar .nav-actions .back-btn {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            color: #fff;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .navbar .nav-actions .back-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* ── Page wrapper ── */
+        .page-wrapper {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            padding: 100px 20px 60px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        /* ── Registration Card ── */
+        .reg-card {
+            width: 100%;
+            max-width: 780px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            box-shadow: 0 16px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            overflow: hidden;
+            animation: slideUp 0.55s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Card Header ── */
+        .reg-header {
+            background: linear-gradient(135deg, rgba(75, 42, 173, 0.9), rgba(124, 58, 237, 0.85));
+            padding: 32px 40px 28px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .reg-header .star-emoji {
+            font-size: 2.8rem;
+            animation: bounce 1.6s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .reg-header h1 {
+            font-family: 'Fugaz One', sans-serif;
+            font-size: 2rem;
+            color: #fff;
+            margin: 10px 0 6px;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .reg-header p {
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 0.93rem;
+        }
+
+        /* ── Steps Indicator ── */
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: 22px 40px 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            flex: 1;
+        }
+
+        .step-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active .step-dot {
+            background: linear-gradient(135deg, #7c3aed, #4b2aad);
+            border-color: #a78bfa;
+            color: #fff;
+            box-shadow: 0 0 16px rgba(124, 58, 237, 0.7);
+        }
+
+        .step.done .step-dot {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-color: #4ade80;
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.45);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+        }
+
+        .step.active .step-label {
+            color: #c4b5fd;
+        }
+
+        .step.done .step-label {
+            color: #86efac;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.12);
+            margin-top: -22px;
+        }
+
+        .step-line.done {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+
+        /* ── Form Body ── */
+        .reg-body {
+            padding: 32px 40px 36px;
+        }
+
+        /* ── Section titles ── */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Fugaz One', sans-serif;
+            font-size: 1rem;
+            color: #c4b5fd;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(124, 58, 237, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* ── Form steps (panels) ── */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.35s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ── Input grid ── */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .input-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.65);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+            width: 100%;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #a78bfa;
+            background: rgba(167, 139, 250, 0.1);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.18);
+        }
+
+        .input-group select option {
+            background: #1e0f50;
+            color: #fff;
+        }
+
+        /* ── Password wrapper ── */
+        .pw-wrapper {
+            position: relative;
+        }
+
+        .pw-wrapper input {
+            padding-right: 46px;
+        }
+
+        .pw-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .pw-toggle:hover {
+            color: #c4b5fd;
+        }
+
+        /* ── Password Strength ── */
+        .strength-bar-wrap {
+            margin-top: 8px;
+        }
+
+        .strength-track {
+            width: 100%;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+
+        .strength-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .strength-text {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .strength-tips {
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ──────────────────────────────────────────────
+       AVATAR PICKER
+    ────────────────────────────────────────────── */
+        .avatar-section {
+            margin-bottom: 22px;
+        }
+
+        .avatar-grid {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 14px;
+        }
+
+        .avatar-option {
+            position: relative;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .avatar-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .avatar-option .av-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            object-fit: cover;
+            display: block;
+            background: rgba(255, 255, 255, 0.06);
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+
+        .avatar-option:hover .av-img {
+            transform: scale(1.08);
+            border-color: rgba(167, 139, 250, 0.6);
+        }
+
+        .avatar-option input[type="radio"]:checked~.av-img {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.45), 0 0 22px rgba(167, 139, 250, 0.6);
+            transform: scale(1.12);
+        }
+
+        .avatar-option .av-check {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #7c3aed;
+            color: #fff;
+            font-size: 0.7rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .avatar-option input[type="radio"]:checked~.av-check {
+            display: flex;
+        }
+
+        .avatar-option .av-name {
+            text-align: center;
+            margin-top: 7px;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .avatar-option input[type="radio"]:checked~.av-name {
+            color: #c4b5fd;
+            font-weight: 600;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 26px 0;
+        }
+
+        /* ── Navigation buttons ── */
+        .step-nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-prev {
+            flex: 0 0 auto;
+            padding: 13px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.16);
+            transform: translateX(-2px);
+        }
+
+        .btn-next,
+        .btn-register {
+            flex: 1;
+            padding: 14px;
+            background: linear-gradient(135deg, #7c3aed, #4b2aad);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Fugaz One', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            box-shadow: 0 6px 22px rgba(124, 58, 237, 0.5);
+            transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-next::after,
+        .btn-register::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn-next:hover,
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.7);
+            filter: brightness(1.08);
+        }
+
+        .btn-next:hover::after,
+        .btn-register:hover::after {
+            opacity: 1;
+        }
+
+        .btn-next:active,
+        .btn-register:active {
+            transform: scale(0.97);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 6px 22px rgba(34, 197, 94, 0.5);
+        }
+
+        .btn-register:hover {
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.7);
+        }
+
+        /* ── Login link ── */
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 0.87rem;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .login-link a {
+            color: #c4b5fd;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .login-link a:hover {
+            color: #a78bfa;
+            text-decoration: underline;
+        }
+
+        /* ── Error message ── */
+        .err-msg {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #fca5a5;
+            font-size: 0.83rem;
+            margin-bottom: 14px;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        /* ── Success screen ── */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 40px;
+            animation: popIn 0.5s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .success-screen .success-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid #4ade80;
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.55);
+            margin: 0 auto 20px;
+            object-fit: cover;
+        }
+
+        .success-screen h2 {
+            font-family: 'Fugaz One', sans-serif;
+            font-size: 1.8rem;
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+
+        .success-screen p {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+
+        .btn-go {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #7c3aed, #4b2aad);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Fugaz One', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 6px 22px rgba(124, 58, 237, 0.5);
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+
+        .btn-go:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.7);
+        }
+
+        /* ── Loading spinner on button ── */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .reg-header {
+                padding: 24px 20px 20px;
+            }
+
+            .reg-body {
+                padding: 24px 18px 28px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                padding: 18px 18px 0;
+                gap: 0;
+            }
+
+            .avatar-grid {
+                gap: 10px;
+            }
+
+            .av-img {
+                width: 72px !important;
+                height: 72px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background Video -->
+    <video autoplay muted loop playsinline class="bg-video">
+        <source src="assets/videos/f1.mp4" type="video/mp4" />
+    </video>
+    <div class="bg-overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="BrainBerry Logo" />
+            <span>BrainBerry</span>
+        </a>
+        <div class="nav-actions">
+            <a href="index.html">Already have an account? <strong>Log In</strong></a>
+        </div>
+    </nav>
+
+    <!-- Page -->
+    <div class="page-wrapper">
+        <div class="reg-card">
+
+            <!-- Header -->
+            <div class="reg-header">
+                <div class="star-emoji">🌟</div>
+                <h1>Create Your BrainBerry Account</h1>
+                <p>A fun, safe learning adventure starts here!</p>
+            </div>
+
+            <!-- Steps -->
+            <div class="steps" id="stepsIndicator">
+                <div class="step active" id="step-ind-1">
+                    <div class="step-dot">1</div>
+                    <div class="step-label">Choose Avatar</div>
+                </div>
+                <div class="step-line" id="line-1-2"></div>
+                <div class="step" id="step-ind-2">
+                    <div class="step-dot">2</div>
+                    <div class="step-label">Child Info</div>
+                </div>
+                <div class="step-line" id="line-2-3"></div>
+                <div class="step" id="step-ind-3">
+                    <div class="step-dot">3</div>
+                    <div class="step-label">Parent Info</div>
+                </div>
+                <div class="step-line" id="line-3-4"></div>
+                <div class="step" id="step-ind-4">
+                    <div class="step-dot">4</div>
+                    <div class="step-label">Account</div>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="reg-body">
+
+                <!-- Error -->
+                <div class="err-msg" id="errMsg"></div>
+
+                <!-- ═══════════════════════════════════
+             STEP 1 – Choose Avatar
+        ════════════════════════════════════ -->
+                <div class="form-step active" id="formStep1">
+                    <div class="section-title">
+                        <div class="icon">🎭</div>
+                        Pick Your Character
+                    </div>
+
+                    <p style="color:rgba(255,255,255,0.55);font-size:0.84rem;margin-bottom:8px;">
+                        Choose a cartoon buddy — this face will appear on your profile across BrainBerry!
+                    </p>
+
+                    <div class="avatar-section">
+                        <div class="avatar-grid" id="avatarGrid">
+
+                            <!-- Avatar 1 – Dino Buddy -->
+                            <label class="avatar-option" for="av1">
+                                <input type="radio" name="avatarChoice" id="av1" value="avatar_fox" />
+                                <img class="av-img" id="av1-img" src="assets/images/pic5.jpg.jpeg" alt="Fox" />
+                                <div class="av-check">✓</div>
+                                <div class="av-name">fox</div>
+                            </label>
+
+                            <!-- Avatar 2 – Cool Cat -->
+                            <label class="avatar-option" for="av2">
+                                <input type="radio" name="avatarChoice" id="av2" value="avatar_rabbit" />
+                                <img class="av-img" id="av2-img" src="assets/images/pic4.jpg.jpeg" alt="Rabbit" />
+                                <div class="av-check">✓</div>
+                                <div class="av-name">rabit</div>
+                            </label>
+
+                            <!-- Avatar 3 – Happy Dog -->
+                            <label class="avatar-option" for="av3">
+                                <input type="radio" name="avatarChoice" id="av3" value="avatar_dog" />
+                                <img class="av-img" id="av3-img" src="assets/images/pic3.jpg.jpeg" alt="Dog" />
+                                <div class="av-check">✓</div>
+                                <div class="av-name">Dog</div>
+                            </label>
+
+                            <!-- Avatar 4 – Robo Pal -->
+                            <label class="avatar-option" for="av4">
+                                <input type="radio" name="avatarChoice" id="av4" value="avatar_bear" />
+                                <img class="av-img" id="av4-img" src="assets/images/pic1.jpg.jpeg" alt="Bear" />
+                                <div class="av-check">✓</div>
+                                <div class="av-name">bear</div>
+                            </label>
+
+                            <!-- Avatar 5 – Dragon Fire -->
+                            <label class="avatar-option" for="av5">
+                                <input type="radio" name="avatarChoice" id="av5" value="avatar_cat" />
+                                <img class="av-img" id="av5-img" src="assets/images/pic2.jpg.jpeg" alt="Cat" />
+                                <div class="av-check">✓</div>
+                                <div class="av-name">cat</div>
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <div class="step-nav">
+                        <button class="btn-next" onclick="goStep(2)" id="btnStep1Next">
+                            Continue &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════
+             STEP 2 – Child Details
+        ════════════════════════════════════ -->
+                <div class="form-step" id="formStep2">
+                    <div class="section-title">
+                        <div class="icon">🧒</div>
+                        Child's Details
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="childName">Full Name *</label>
+                            <input type="text" id="childName" placeholder="e.g. Aarav Patil" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="childAge">Age *</label>
+                            <input type="number" id="childAge" placeholder="e.g. 8" min="3" max="18" required />
+                        </div>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="childGender">Gender</label>
+                            <select id="childGender">
+                                <option value="">Prefer not to say</option>
+                                <option value="boy">Boy</option>
+                                <option value="girl">Girl</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="childGrade">Grade / Class</label>
+                            <select id="childGrade">
+                                <option value="">Select Grade</option>
+                                <option value="nursery">Nursery / KG</option>
+                                <option value="1">Grade 1</option>
+                                <option value="2">Grade 2</option>
+                                <option value="3">Grade 3</option>
+                                <option value="4">Grade 4</option>
+                                <option value="5">Grade 5</option>
+                                <option value="6">Grade 6</option>
+                                <option value="7">Grade 7</option>
+                                <option value="8">Grade 8</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-grid full">
+                        <div class="input-group">
+                            <label for="childSchool">School Name (optional)</label>
+                            <input type="text" id="childSchool" placeholder="e.g. Sunshine Public School" />
+                        </div>
+                    </div>
+
+                    <div class="step-nav">
+                        <button class="btn-prev" onclick="goStep(1)">&larr; Back</button>
+                        <button class="btn-next" onclick="goStep(3)">Continue &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════
+             STEP 3 – Parent Details
+        ════════════════════════════════════ -->
+                <div class="form-step" id="formStep3">
+                    <div class="section-title">
+                        <div class="icon">👨‍👩‍👦</div>
+                        Parent / Guardian Details
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="parentName">Parent Name *</label>
+                            <input type="text" id="parentName" placeholder="e.g. Saurav Patil" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="parentRelation">Relation</label>
+                            <select id="parentRelation">
+                                <option value="father">Father</option>
+                                <option value="mother">Mother</option>
+                                <option value="guardian">Guardian</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="parentPhone">Phone Number *</label>
+                            <input type="tel" id="parentPhone" placeholder="e.g. +91 98765 43210" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="parentAltPhone">Alternate Phone (optional)</label>
+                            <input type="tel" id="parentAltPhone" placeholder="e.g. +91 91234 56789" />
+                        </div>
+                    </div>
+
+                    <div class="step-nav">
+                        <button class="btn-prev" onclick="goStep(2)">&larr; Back</button>
+                        <button class="btn-next" onclick="goStep(4)">Continue &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════
+             STEP 4 – Account (Email + Password)
+        ════════════════════════════════════ -->
+                <div class="form-step" id="formStep4">
+                    <div class="section-title">
+                        <div class="icon">🔐</div>
+                        Account Credentials
+                    </div>
+
+                    <div class="input-grid full">
+                        <div class="input-group">
+                            <label for="regEmail">Email Address *</label>
+                            <input type="email" id="regEmail" placeholder="e.g. saurav@example.com" required />
+                        </div>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="regPassword">Password *</label>
+                            <div class="pw-wrapper">
+                                <input type="password" id="regPassword" placeholder="Create a strong password"
+                                    required />
+                                <button type="button" class="pw-toggle" onclick="togglePw('regPassword', this)"
+                                    aria-label="Toggle password">👁</button>
+                            </div>
+                            <!-- Password strength bar -->
+                            <div class="strength-bar-wrap" id="strengthWrap" style="display:none;">
+                                <div class="strength-track">
+                                    <div class="strength-fill" id="strengthFill"></div>
+                                </div>
+                                <div class="strength-label">
+                                    <span class="strength-text" id="strengthText">Weak</span>
+                                    <span class="strength-tips" id="strengthTips">Add numbers &amp; symbols</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="regConfirmPw">Confirm Password *</label>
+                            <div class="pw-wrapper">
+                                <input type="password" id="regConfirmPw" placeholder="Re-enter your password"
+                                    required />
+                                <button type="button" class="pw-toggle" onclick="togglePw('regConfirmPw', this)"
+                                    aria-label="Toggle confirm password">👁</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary preview -->
+                    <div class="divider"></div>
+                    <div class="section-title"
+                        style="font-size:0.88rem;color:rgba(255,255,255,0.55);margin-bottom:12px;">
+                        <div class="icon">📋</div>
+                        Registration Summary
+                    </div>
+                    <div id="summaryBox" style="
+            background:rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.12);
+            border-radius:12px;
+            padding:14px 18px;
+            font-size:0.83rem;
+            color:rgba(255,255,255,0.65);
+            line-height:1.9;
+          "></div>
+
+                    <div class="step-nav">
+                        <button class="btn-prev" onclick="goStep(3)">&larr; Back</button>
+                        <button class="btn-register" id="btnRegister" onclick="submitRegistration()">
+                            🚀 Create My Account
+                        </button>
+                    </div>
+
+                    <p class="login-link">Already have an account? <a href="index.html">Log In here</a></p>
+                </div>
+
+                <!-- ═══════════════════════════════════
+             SUCCESS SCREEN
+        ════════════════════════════════════ -->
+                <div class="success-screen" id="successScreen">
+                    <img class="success-avatar" id="successAvatar" src="" alt="Your Avatar" />
+                    <h2>🎉 Welcome to BrainBerry!</h2>
+                    <p id="successMsg">Your account has been created. Let the adventure begin!</p>
+                    <button class="btn-go" onclick="window.location.href='front.html'">
+                        🏠 Go to Login &amp; Start Learning!
+                    </button>
+                </div>
+
+            </div><!-- /.reg-body -->
+        </div><!-- /.reg-card -->
+    </div><!-- /.page-wrapper -->
+
+
+    <!-- ════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═════════════════════════════════════════════════════ -->
+    <script>
+
+        /* ─────────────────────────────────────────
+           Avatar URL map (key = radio value → local image path)
+           pic1=bear, pic2=cat, pic3=dog, pic4=rabbit, pic5=fox
+        ───────────────────────────────────────── */
+        const AVATAR_URLS = {
+            avatar_fox:    'assets/images/pic5.jpg.jpeg',
+            avatar_rabbit: 'assets/images/pic4.jpg.jpeg',
+            avatar_dog:    'assets/images/pic3.jpg.jpeg',
+            avatar_bear:   'assets/images/pic1.jpg.jpeg',
+            avatar_cat:    'assets/images/pic2.jpg.jpeg',
+        };
+
+        /* ─────────────────────────────────────────
+           Step navigation
+        ───────────────────────────────────────── */
+        let currentStep = 1;
+        const TOTAL_STEPS = 4;
+
+        function goStep(target) {
+            // Validate before moving forward
+            if (target > currentStep && !validateStep(currentStep)) return;
+
+            // Hide current step panel
+            document.getElementById('formStep' + currentStep).classList.remove('active');
+
+            // Update indicators for the step we're leaving
+            updateIndicator(currentStep, target > currentStep ? 'done' : 'none');
+
+            currentStep = target;
+
+            // Show target step panel
+            document.getElementById('formStep' + currentStep).classList.add('active');
+
+            // Update indicator for new current step
+            updateIndicator(currentStep, 'active');
+
+            // Build summary on Step 4
+            if (currentStep === 4) buildSummary();
+
+            // Scroll card into view
+            document.querySelector('.reg-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateIndicator(step, state) {
+            const el = document.getElementById('step-ind-' + step);
+            el.classList.remove('active', 'done');
+            if (state === 'active') el.classList.add('active');
+            if (state === 'done') el.classList.add('done');
+
+            // Update connecting line before this step
+            if (step > 1) {
+                const line = document.getElementById('line-' + (step - 1) + '-' + step);
+                if (line) line.classList.toggle('done', state === 'done' || state === 'active');
+            }
+        }
+
+        /* ─────────────────────────────────────────
+           Validation per step
+        ───────────────────────────────────────── */
+        function showErr(msg) {
+            const el = document.getElementById('errMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        function validateStep(step) {
+            clearErr();
+            switch (step) {
+                case 1: {
+                    const chosen = document.querySelector('input[name="avatarChoice"]:checked');
+                    if (!chosen) { showErr('🎭 Please choose your cartoon character first!'); return false; }
+                    return true;
+                }
+                case 2: {
+                    const name = document.getElementById('childName').value.trim();
+                    const age = document.getElementById('childAge').value.trim();
+                    if (!name) { showErr('🧒 Please enter the child\'s name.'); return false; }
+                    if (!age || age < 3 || age > 18) { showErr('🎂 Please enter a valid age (3–18).'); return false; }
+                    return true;
+                }
+                case 3: {
+                    const pname = document.getElementById('parentName').value.trim();
+                    const phone = document.getElementById('parentPhone').value.trim();
+                    if (!pname) { showErr('👨‍👩‍👦 Please enter the parent\'s name.'); return false; }
+                    if (!phone) { showErr('📞 Please enter the parent\'s phone number.'); return false; }
+                    return true;
+                }
+                case 4: {
+                    const email = document.getElementById('regEmail').value.trim();
+                    const pw = document.getElementById('regPassword').value;
+                    const cpw = document.getElementById('regConfirmPw').value;
+                    if (!email || !email.includes('@')) { showErr('✉️ Please enter a valid email address.'); return false; }
+                    if (pw.length < 6) { showErr('🔒 Password must be at least 6 characters.'); return false; }
+                    if (pw !== cpw) { showErr('🔒 Passwords do not match.'); return false; }
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        function clearErr() {
+            document.getElementById('errMsg').style.display = 'none';
+        }
+
+        /* ─────────────────────────────────────────
+           Password strength meter
+        ───────────────────────────────────────── */
+        document.getElementById('regPassword').addEventListener('input', function () {
+            const val = this.value;
+            const wrap = document.getElementById('strengthWrap');
+            if (!val) { wrap.style.display = 'none'; return; }
+            wrap.style.display = 'block';
+
+            let score = 0;
+            if (val.length >= 6) score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            const tips = document.getElementById('strengthTips');
+
+            const pct = [0, 20, 40, 62, 82, 100][score];
+            const colors = [
+                '#ef4444',   // score 0 – red
+                '#f97316',   // score 1 – orange
+                '#eab308',   // score 2 – yellow
+                '#84cc16',   // score 3 – lime
+                '#22c55e',   // score 4 – green
+                '#10b981',   // score 5 – emerald
+            ];
+            const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+            const tipsArr = [
+                'At least 6 characters needed',
+                'Try adding uppercase letters',
+                'Add numbers for more strength',
+                'Add symbols like @, #, !',
+                'Great! A strong password',
+                '🔒 Excellent! Very secure password'
+            ];
+
+            fill.style.width = pct + '%';
+            fill.style.background = `linear-gradient(90deg, #ef4444, ${colors[score]})`;
+            text.textContent = labels[score];
+            text.style.color = colors[score];
+            tips.textContent = tipsArr[score];
+        });
+
+        /* ─────────────────────────────────────────
+           Toggle password visibility
+        ───────────────────────────────────────── */
+        function togglePw(inputId, btn) {
+            const el = document.getElementById(inputId);
+            if (el.type === 'password') {
+                el.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                el.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+
+        /* ─────────────────────────────────────────
+           Build summary (Step 4 preview)
+        ───────────────────────────────────────── */
+        function buildSummary() {
+            const chosen = document.querySelector('input[name="avatarChoice"]:checked');
+            const avName = chosen ? chosen.closest('label').querySelector('.av-name').textContent : '—';
+            const childName = document.getElementById('childName').value.trim();
+            const childAge = document.getElementById('childAge').value.trim();
+            const childSchool = document.getElementById('childSchool').value.trim();
+            const parentName = document.getElementById('parentName').value.trim();
+            const parentPhone = document.getElementById('parentPhone').value.trim();
+
+            document.getElementById('summaryBox').innerHTML = `
+        🎭 <strong style="color:#c4b5fd;">Avatar:</strong> ${avName} &nbsp;|&nbsp;
+        👤 <strong style="color:#c4b5fd;">Child:</strong> ${childName}, Age ${childAge}
+        ${childSchool ? `<br>🏫 <strong style="color:#c4b5fd;">School:</strong> ${childSchool}` : ''}
+        <br>👨‍👩‍👦 <strong style="color:#c4b5fd;">Parent:</strong> ${parentName} &nbsp;|&nbsp;
+        📞 <strong style="color:#c4b5fd;">Phone:</strong> ${parentPhone}
+      `;
+        }
+
+        /* ─────────────────────────────────────────
+           Submit Registration → Firebase
+        ───────────────────────────────────────── */
+        async function submitRegistration() {
+            clearErr();
+            if (!validateStep(4)) return;
+
+            const btn = document.getElementById('btnRegister');
+            btn.innerHTML = '<span class="spinner"></span> Creating Account…';
+            btn.disabled = true;
+
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            // Collect all data
+            const chosen = document.querySelector('input[name="avatarChoice"]:checked');
+            const avatarKey = chosen ? chosen.value : 'avatar_fox';
+            const avatarUrl = AVATAR_URLS[avatarKey] || 'pic5.jpg';
+
+            const userData = {
+                // Child
+                name: document.getElementById('childName').value.trim(),
+                age: document.getElementById('childAge').value.trim(),
+                gender: document.getElementById('childGender').value,
+                grade: document.getElementById('childGrade').value,
+                school: document.getElementById('childSchool').value.trim(),
+                // Parent
+                parentName: document.getElementById('parentName').value.trim(),
+                parentRel: document.getElementById('parentRelation').value,
+                parentPhone: document.getElementById('parentPhone').value.trim(),
+                parentAltPhone: document.getElementById('parentAltPhone').value.trim(),
+                // Account
+                email,
+                // Avatar
+                avatarKey,
+                avatarUrl,
+                // Meta
+                registeredAt: new Date().toISOString(),
+            };
+
+            try {
+                // Dynamic Firebase import (matches pattern in index.html)
+                const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js');
+                const { getAuth, createUserWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js');
+                const { getFirestore, doc, setDoc } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js');
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyADRJMnuBGNzU_LAOx0bYSg0UvCEXEC7vs",
+                    authDomain: "brainberry-96454.firebaseapp.com",
+                    projectId: "brainberry-96454",
+                    storageBucket: "brainberry-96454.appspot.com",
+                    messagingSenderId: "819230645241",
+                    appId: "1:819230645241:web:698aa272865737ee103b28",
+                    measurementId: "G-VVHB92VP3H"
+                };
+
+                const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                // Create auth account
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const uid = userCredential.user.uid;
+
+                // Save full profile to Firestore
+                await setDoc(doc(db, 'users', uid), userData);
+
+                // Save to localStorage so front.html picks it up immediately
+                localStorage.setItem('userName',  userData.name);
+                localStorage.setItem('userAge',   userData.age);
+                localStorage.setItem('userEmail', userData.email);
+                localStorage.setItem('userUid', uid);
+                localStorage.setItem('userAvatar', avatarUrl);
+                localStorage.setItem('userAvatarKey', avatarKey);
+                localStorage.setItem('bb_active_user', userData.email);
+                localStorage.setItem('brainberry_current_user', userData.email);
+                sessionStorage.setItem('bb_session', 'active');
+
+                // ── Save per-user record into brainberry_users ──────────────
+                let bbUsers = {};
+                try { bbUsers = JSON.parse(localStorage.getItem('brainberry_users') || '{}'); } catch(e) {}
+                bbUsers[userData.email] = {
+                    username: userData.name,
+                    fullName: userData.name,
+                    avatar:   avatarUrl,
+                    avatarKey: avatarKey,
+                    age:      userData.age,
+                    level:    1,
+                    exp:      0
+                };
+                localStorage.setItem('brainberry_users', JSON.stringify(bbUsers));
+                // ── End per-user record ──────────────────────────────────────
+
+                // Show success
+                showSuccessScreen(userData.name, avatarUrl);
+
+            } catch (err) {
+                console.error('Registration error:', err);
+                let msg = err.message;
+                if (err.code === 'auth/email-already-in-use')
+                    msg = '✉️ This email is already registered. Please log in instead.';
+                if (err.code === 'auth/weak-password')
+                    msg = '🔒 Password is too weak. Please choose a stronger one.';
+                showErr('❌ ' + msg);
+                btn.innerHTML = '🚀 Create My Account';
+                btn.disabled = false;
+            }
+        }
+
+        /* ─────────────────────────────────────────
+           Show success screen
+        ───────────────────────────────────────── */
+        function showSuccessScreen(name, avatarUrl) {
+            // Hide all steps & steps indicator
+            for (let i = 1; i <= TOTAL_STEPS; i++) {
+                document.getElementById('formStep' + i).classList.remove('active');
+            }
+            document.getElementById('stepsIndicator').style.display = 'none';
+
+            const sc = document.getElementById('successScreen');
+            sc.style.display = 'block';
+            document.getElementById('successAvatar').src = avatarUrl;
+            document.getElementById('successMsg').textContent =
+                `Welcome, ${name}! 🎉 Your BrainBerry account is ready. Log in to start your learning adventure!`;
+        }
+
+    </script>
+
+    <script>
+        /* Apply the saved avatar to any profile image on this page immediately */
+        (function applyStoredAvatar() {
+            const email = localStorage.getItem('brainberry_current_user') || localStorage.getItem('userEmail');
+            let url = localStorage.getItem('userAvatar');
+            // Also try to pull from per-user record (survives logout/login cycles)
+            if (email) {
+                try {
+                    const bbUsers = JSON.parse(localStorage.getItem('brainberry_users') || '{}');
+                    if (bbUsers[email] && bbUsers[email].avatar) url = bbUsers[email].avatar;
+                } catch(e) {}
+            }
+            if (!url) return;
+            document.querySelectorAll('.profile img, #bb-profile-img').forEach(function(img) {
+                img.src = url;
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

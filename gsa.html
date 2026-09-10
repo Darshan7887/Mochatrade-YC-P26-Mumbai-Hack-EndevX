@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <title>Mission Hub: Golden Words</title>
+  <style>
+    :root {
+      --primary: #8a2be2;
+      --primary-glow: rgba(138, 43, 226, 0.6);
+      --secondary: #00e5ff;
+      --bg-dark: rgba(15, 10, 30, 0.85);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: #0f0a1e;
+    }
+
+    h1, h2, h3, .fugaz {
+      font-family: "Fugaz One", sans-serif;
+    }
+
+    /* Background Setup */
+    .bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .bg-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: linear-gradient(to bottom, rgba(20,10,40,0.5), rgba(10,5,30,0.85));
+      z-index: 1;
+    }
+
+    .main-wrapper {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .view.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* Navigation (Shared) */
+    .nav-bar {
+      position: absolute;
+      top: 20px; left: 20px;
+      z-index: 100;
+    }
+    .back-btn {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.1rem;
+      background: var(--glass-bg);
+      padding: 10px 20px;
+      border-radius: 30px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+    /* =========================================
+       MISSION HUB (View 1)
+       ========================================= */
+       
+    .mission-header {
+      text-align: center;
+      margin-bottom: 25px;
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    .mission-subtitle {
+      color: #ffcc00;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 1rem;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(255,204,0,0.5);
+    }
+    
+    .mission-title {
+      font-size: 2.8rem;
+      margin: 0;
+      background: linear-gradient(to right, #fff, #a3d8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 30px;
+      background: rgba(0,0,0,0.4);
+      padding: 12px 30px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    .stat-val { color: #fff; }
+
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(255,255,255,0.1);
+      height: 12px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00e5ff, #0077ff);
+      box-shadow: 0 0 10px #00e5ff;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Main Hub Card */
+    .hub-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-top: 1px solid rgba(255,255,255,0.4);
+      border-radius: 24px;
+      padding: 40px;
+      width: 400px;
+      max-width: 90vw;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    /* Example Box */
+    .example-box {
+      background: rgba(0,0,0,0.3);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .example-text {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+    .audio-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .audio-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Objectives */
+    .objectives {
+      margin-bottom: 25px;
+    }
+    .objectives h3 {
+      font-size: 1.1rem;
+      margin: 0 0 10px 0;
+      color: #a3d8ff;
+    }
+    .objectives ul {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .objectives li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1rem; color: #ddd;
+    }
+
+    /* Rewards */
+    .rewards {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 30px;
+    }
+    .reward-item {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      font-weight: bold; font-size: 0.9rem; color: #ffcc00;
+    }
+
+    /* Big Start Button */
+    .start-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #a144ff, #4a00e0);
+      color: #fff;
+      border: none;
+      padding: 18px;
+      border-radius: 16px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(138,43,226,0.5);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: pulse 2s infinite;
+    }
+    .start-btn:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(138,43,226,0.7);
+    }
+    
+    .practice-row {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .practice-btn {
+      background: none; border: none; color: #aaa; text-decoration: underline;
+      cursor: pointer; font-size: 0.9rem; transition: 0.3s;
+    }
+    .practice-btn:hover { color: #fff; }
+
+    /* =========================================
+       ACTIVE MISSION (View 2)
+       ========================================= */
+       
+    .lesson-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+    }
+    
+    .sentence-card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(25px);
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.2);
+      width: 100%;
+      padding: 40px 30px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      transition: transform 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .active-sentence {
+      font-size: 3.2rem;
+      margin: 0;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      color: #fff;
+    }
+
+    /* Meaning Reveal UI */
+    .reveal-prompt {
+      margin-top: 25px;
+      font-size: 1.1rem;
+      color: #ffcc00;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 12px 20px;
+      border: 2px dashed rgba(255,204,0,0.6);
+      border-radius: 12px;
+      transition: 0.3s;
+      animation: pulseReveal 2s infinite;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .reveal-prompt:hover { background: rgba(255,204,0,0.15); transform: scale(1.05); }
+    @keyframes pulseReveal { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.02); } }
+
+    .meaning-box {
+      width: 100%;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(6px);
+      padding: 20px;
+      border-radius: 16px;
+      margin-top: 25px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 1;
+      transform: translateY(0);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .meaning-box.hidden {
+      display: none;
+    }
+    
+    .meaning-box.reveal-anim {
+      animation: floatUpFade 0.5s ease forwards;
+    }
+    @keyframes floatUpFade {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hindi-meaning {
+      color: #ffcc00;
+      font-size: 2rem;
+      margin: 0 0 5px 0;
+      text-shadow: 0 2px 10px rgba(255, 204, 0, 0.4);
+    }
+    .context-tag {
+      display: inline-block;
+      color: #00e5ff;
+      font-size: 0.95rem;
+      font-weight: bold;
+      padding: 4px 12px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(0,229,255,0.3);
+    }
+    .example-box-inner {
+      background: rgba(0,0,0,0.4);
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      border-left: 4px solid #a144ff;
+    }
+    .bulb { font-size: 1.8rem; }
+    .example-sentence { color: #f0f0f0; font-size: 1.1rem; font-style: italic; font-family: 'Nunito', sans-serif;}
+
+    /* Controls */
+    .lesson-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .speak-btn {
+      background: linear-gradient(135deg, #FF6B6B, #FF3366);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 1.4rem;
+      border-radius: 50px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255, 51, 102, 0.4);
+      transition: 0.3s;
+      width: 100%;
+      max-width: 400px;
+    }
+    .speak-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(255,51,102,0.6); }
+    .speak-btn.listening {
+      background: linear-gradient(135deg, #00E676, #00C853);
+      animation: pulseListening 1.5s infinite;
+      box-shadow: 0 0 30px rgba(0,230,118,0.6);
+    }
+    
+    .mission-feedback {
+      font-size: 1.2rem;
+      font-weight: bold;
+      min-height: 30px;
+    }
+    .feedback-perfect { color: #00E676; text-shadow: 0 0 10px rgba(0,230,118,0.5); }
+    .feedback-wrong { color: #FF3366; }
+
+    /* Animations */
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--primary-glow); } 70% { box-shadow: 0 0 0 20px rgba(138,43,226,0); } 100% { box-shadow: 0 0 0 0 rgba(138,43,226,0); } }
+    @keyframes pulseListening { 0% { box-shadow: 0 0 0 0 rgba(0,230,118,0.6); } 70% { box-shadow: 0 0 0 25px rgba(0,230,118,0); } 100% { box-shadow: 0 0 0 0 rgba(0,230,118,0); } }
+    .jump { animation: jump 0.4s ease; }
+    @keyframes jump { 0% { transform: translateY(0); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0); } }
+    .shake { animation: shake 0.5s; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+    
+    /* Error Effect */
+    #error-overlay { position: fixed; inset: 0; background: rgba(255,0,0,0.6); pointer-events: none; z-index: 9998; opacity: 0; }
+    #error-overlay.flash { animation: aggressiveBlink 0.8s ease-in-out; }
+    @keyframes aggressiveBlink { 0% { opacity:1; background:rgba(255,0,0,0.8); } 20% { opacity:0; } 40% { opacity:1; background:rgba(255,0,0,0.8); } 60% { opacity:0; } 80% { opacity:1; background:rgba(255,0,0,0.8); } 100% { opacity:0; } }
+
+    /* Celebration effect */
+    .celebrate-glow { animation: celebrateGlow 1s ease-out forwards; }
+    @keyframes celebrateGlow { 0% { box-shadow: inset 0 0 0 0 rgba(0,230,118,0); } 50% { box-shadow: inset 0 0 80px 20px rgba(0,230,118,0.6); } 100% { box-shadow: inset 0 0 0 0 rgba(0,230,118,0); } }
+    
+    .firecracker-emoji { position: absolute; font-size: 2.5rem; pointer-events: none; animation: explodeOut 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; z-index: 9999; }
+    @keyframes explodeOut { 0% { transform: translate(0, 0) scale(0.1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; } }
+
+  </style>
+</head>
+<body>
+
+  <!-- Epic Background -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="assets/videos/skt_less.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+  <div id="error-overlay"></div>
+  <div id="confetti-overlay" style="position:fixed;inset:0;pointer-events:none;z-index:9997;"></div>
+
+  <!-- Everything is layered inside a wrapper to override Z-indexes -->
+  <div class="main-wrapper">
+    <div class="nav-bar">
+      <a href="Less.html" class="back-btn">← Back</a>
+    </div>
+
+    <!-- ===============================
+         VIEW 1: MISSION HUB
+         =============================== -->
+    <div id="mission-hub" class="view active">
+      
+      <div class="mission-header">
+        <div class="mission-subtitle">✨ Lesson 2</div>
+        <h1 class="mission-title fugaz">Golden Words</h1>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat"><span class="stat-icon">🔥</span> <span class="stat-val" id="hub-streak">x0</span></div>
+        <div class="stat"><span class="stat-icon">⭐</span> <span class="stat-val" id="hub-xp">0 XP</span></div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-fill" id="hub-progress-fill"></div>
+      </div>
+
+      <div class="hub-card">
+        <div class="example-box">
+          <div class="example-text fugaz">"Good Morning"</div>
+          <button class="audio-btn" id="preview-audio-btn">🔊 Hear Example</button>
+        </div>
+
+        <div class="objectives">
+          <h3>🎯 You'll learn:</h3>
+          <ul>
+            <li><span>👋</span> Greetings</li>
+            <li><span>🙏</span> Politeness</li>
+            <li><span>🗣️</span> Daily phrases</li>
+          </ul>
+        </div>
+
+        <div class="rewards">
+          <div class="reward-item"><span>⭐</span> +50 XP</div>
+          <div class="reward-item"><span>🔥</span> Streak</div>
+          <div class="reward-item"><span>🎖️</span> Badge</div>
+        </div>
+
+        <button class="start-btn fugaz" id="start-mission-btn">🚀 Start Mission</button>
+        
+        <div class="practice-row">
+          <button class="practice-btn" id="practice-btn">🎙️ Practice Preview</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===============================
+         VIEW 2: ACTIVE MISSION
+         =============================== -->
+    <div id="active-mission" class="view">
+      
+      <!-- In-game Hub -->
+      <div class="stats-bar" style="margin-bottom: 20px;">
+        <div class="stat"><span class="stat-icon">🔥</span> <span class="stat-val" id="game-streak">x0</span></div>
+        <div class="stat"><span class="stat-icon">✅</span> <span class="stat-val"><span id="game-index">1</span> / 20</span></div>
+      </div>
+
+      <div class="lesson-container">
+        <div class="sentence-card" id="active-card">
+          <h2 class="active-sentence fugaz" id="lesson-text">Loading...</h2>
+          
+          <!-- Semantic Reveal UI -->
+          <div id="reveal-prompt" class="reveal-prompt">
+            👀 Tap to reveal meaning
+          </div>
+
+          <div id="meaning-box" class="meaning-box hidden">
+            <h3 class="hindi-meaning fugaz" id="hindi-text">👋 अलविदा</h3>
+            <span class="context-tag" id="context-text">(Formal farewell)</span>
+            
+            <div class="example-box-inner">
+               <span class="bulb">💡</span>
+               <span class="example-sentence" id="example-text">"She said goodbye before leaving."</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lesson-controls">
+          <button class="audio-btn" id="listen-sentence-btn" style="padding: 10px 25px; font-size:1.1rem; border-radius:30px;">🔊 Listen Again</button>
+          <button class="speak-btn fugaz" id="speakBtn">🎤 बोलें (Tap to Speak)</button>
+          <div class="mission-feedback" id="feedback"></div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    /* ==================================
+       DATA & STATE (3-Level Semantic)
+       ================================== */
+    const sentencesData = [
+      { english: "Hello", hindi: "नमस्ते", context: "Greeting", example: "Hello! It is nice to meet you.", emoji: "👋" },
+      { english: "Good morning", hindi: "सुप्रभात", context: "Morning greeting", example: "He said good morning to his teacher.", emoji: "🌅" },
+      { english: "Good night", hindi: "शुभ रात्रि", context: "Evening farewell", example: "Good night, sleep tight!", emoji: "🌙" },
+      { english: "How are you", hindi: "आप कैसे हैं?", context: "Checking in", example: "Hi Rahul, how are you today?", emoji: "🤔" },
+      { english: "I am fine", hindi: "मैं ठीक हूँ", context: "Positive response", example: "Thank you for asking, I am fine.", emoji: "😊" },
+      { english: "Thank you", hindi: "धन्यवाद", context: "Showing gratitude", example: "Thank you for the wonderful gift.", emoji: "🙏" },
+      { english: "Sorry", hindi: "माफ़ करना", context: "Apologizing", example: "I am sorry for being late.", emoji: "😔" },
+      { english: "Please", hindi: "कृपया", context: "Making a request", example: "Please pass the water bottle.", emoji: "🥺" },
+      { english: "Excuse me", hindi: "क्षमा करें", context: "Getting attention", example: "Excuse me, where is the library?", emoji: "🙋" },
+      { english: "Goodbye", hindi: "अलविदा", context: "Formal farewell", example: "She said goodbye before leaving.", emoji: "👋" },
+      { english: "May I come in", hindi: "क्या मैं अंदर आ सकता हूँ?", context: "Asking permission", example: "May I come in, sir?", emoji: "🚪" },
+      { english: "Sit down", hindi: "बैठ जाओ", context: "Giving an instruction", example: "Please sit down on the chair.", emoji: "🪑" },
+      { english: "Stand up", hindi: "खड़े हो जाओ", context: "Giving an instruction", example: "Stand up when the principal enters.", emoji: "🧍" },
+      { english: "Let's go", hindi: "चलो चलें", context: "Starting action", example: "Let's go to the park!", emoji: "🚶" },
+      { english: "I want water", hindi: "मुझे पानी चाहिए", context: "Expressing need", example: "I am very thirsty, I want water.", emoji: "💧" },
+      { english: "I want food", hindi: "मुझे खाना चाहिए", context: "Expressing need", example: "I am hungry, I want food.", emoji: "🍽️" },
+      { english: "I am happy", hindi: "मैं खुश हूँ", context: "Expressing emotion", example: "I am happy because I won the game.", emoji: "😁" },
+      { english: "I am sad", hindi: "मैं उदास हूँ", context: "Expressing emotion", example: "I am sad that the holiday is over.", emoji: "😢" },
+      { english: "I want to play", hindi: "मुझे खेलना है", context: "Expressing desire", example: "After school, I want to play cricket.", emoji: "🏏" },
+      { english: "See you soon", hindi: "जल्द मिलते हैं", context: "Friendly farewell", example: "I have to leave now, see you soon!", emoji: "⏱️" }
+    ];
+
+    let currentIndex = parseInt(localStorage.getItem('bb_goldenwords_idx')) || 0;
+    if (currentIndex >= sentencesData.length) currentIndex = 0; // reset if finished
+    
+    let xp = parseInt(localStorage.getItem('bb_goldenwords_xp')) || 0;
+    let streak = parseInt(localStorage.getItem('bb_goldenwords_streak')) || 0;
+    
+    // UI Elements
+    const hubView = document.getElementById('mission-hub');
+    const activeView = document.getElementById('active-mission');
+    
+    const hubStreak = document.getElementById('hub-streak');
+    const hubXp = document.getElementById('hub-xp');
+    const hubProgressFill = document.getElementById('hub-progress-fill');
+    
+    const gameStreak = document.getElementById('game-streak');
+    const gameIndex = document.getElementById('game-index');
+    
+    const startMissionBtn = document.getElementById('start-mission-btn');
+    const previewAudioBtn = document.getElementById('preview-audio-btn');
+    const practiceBtn = document.getElementById('practice-btn');
+    
+    const lessonText = document.getElementById('lesson-text');
+    const speakBtn = document.getElementById('speakBtn');
+    const listenSentenceBtn = document.getElementById('listen-sentence-btn');
+    const feedbackBox = document.getElementById('feedback');
+    const activeCard = document.getElementById('active-card');
+    
+    const revealPrompt = document.getElementById('reveal-prompt');
+    const meaningBox = document.getElementById('meaning-box');
+
+    function updateHubUI() {
+      hubStreak.textContent = 'x' + streak;
+      hubXp.textContent = xp + ' XP';
+      hubProgressFill.style.width = ((currentIndex / sentencesData.length) * 100) + '%';
+    }
+
+    updateHubUI();
+
+    /* ==================================
+       AUDIO SYSTEM (Zero Latency Local)
+       ================================== */
+    let localVoice = null;
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        // Find English local voice
+        const engVoices = voices.filter(v => /en/i.test(v.lang));
+        localVoice = engVoices.find(v => v.localService) || engVoices[0] || voices[0];
+      }
+    }
+    if (window.speechSynthesis) {
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speakText(text, onEnd) {
+      if (!window.speechSynthesis) { if(onEnd) onEnd(); return; }
+      window.speechSynthesis.cancel();
+      if (!localVoice) loadVoices();
+      
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = 0.85; // Slightly slower for clarity
+      if (localVoice) u.voice = localVoice;
+      if (onEnd) u.onend = onEnd;
+      
+      window.speechSynthesis.speak(u);
+    }
+
+    /* ==================================
+       HUB LOGIC
+       ================================== */
+    previewAudioBtn.addEventListener('click', () => {
+      speakText("Good morning");
+    });
+    practiceBtn.addEventListener('click', () => {
+      speakText("Welcome to Practice Preview. You will learn the Golden Words!");
+    });
+
+    startMissionBtn.addEventListener('click', () => {
+      hubView.classList.remove('active');
+      setTimeout(() => {
+        activeView.classList.add('active');
+        loadSentence(currentIndex);
+      }, 500);
+    });
+
+    /* ==================================
+       ACTIVE MISSION LOGIC & REVEAL
+       ================================== */
+    function loadSentence(idx) {
+      if (idx >= sentencesData.length) {
+        showCompletionScreen();
+        return;
+      }
+      
+      currentIndex = idx;
+      localStorage.setItem('bb_goldenwords_idx', currentIndex);
+      const data = sentencesData[currentIndex];
+      
+      gameIndex.textContent = (currentIndex + 1);
+      gameStreak.textContent = 'x' + streak;
+      lessonText.textContent = data.english;
+      
+      // Populate Reveal UI
+      document.getElementById('hindi-text').textContent = `${data.emoji} ${data.hindi}`;
+      document.getElementById('context-text').textContent = `(${data.context})`;
+      document.getElementById('example-text').textContent = `"${data.example}"`;
+      
+      // Reset Reveal State
+      revealPrompt.style.display = 'block';
+      meaningBox.classList.add('hidden');
+      meaningBox.classList.remove('reveal-anim');
+      
+      feedbackBox.className = 'mission-feedback';
+      feedbackBox.textContent = '🔊 Listen...';
+      speakBtn.disabled = true;
+      speakBtn.textContent = '...';
+      
+      activeCard.classList.add('jump');
+      setTimeout(() => activeCard.classList.remove('jump'), 400);
+
+      speakText(data.english, () => {
+         speakBtn.disabled = false;
+         speakBtn.textContent = '🎤 Hold to Speak';
+         feedbackBox.textContent = 'Tap to reveal meaning!';
+      });
+    }
+
+    revealPrompt.addEventListener('click', function() {
+       this.style.display = 'none';
+       meaningBox.classList.remove('hidden');
+       meaningBox.classList.add('reveal-anim');
+       speakText(sentencesData[currentIndex].english); // speak once more after reveal
+    });
+
+    listenSentenceBtn.addEventListener('click', () => {
+       speakText(sentencesData[currentIndex].english);
+       // Optional: visually pulse the example text
+    });
+
+    function showCompletionScreen() {
+      lessonText.textContent = "🏆 MISSION COMPLETE!";
+      revealPrompt.style.display = 'none';
+      meaningBox.classList.add('hidden');
+      
+      speakBtn.style.display = 'none';
+      listenSentenceBtn.style.display = 'none';
+      feedbackBox.textContent = "You earned +50 XP and a Badge!";
+      feedbackBox.className = 'mission-feedback feedback-perfect';
+      showConfetti();
+      
+      setTimeout(() => {
+        currentIndex = 0; // reset for replay
+        localStorage.setItem('bb_goldenwords_idx', 0);
+        xp += 50;
+        localStorage.setItem('bb_goldenwords_xp', xp);
+        updateHubUI();
+        activeView.classList.remove('active');
+        setTimeout(() => {
+          speakBtn.style.display = 'block';
+          listenSentenceBtn.style.display = 'block';
+          hubView.classList.add('active');
+        }, 500);
+      }, 4000);
+    }
+
+    /* ==================================
+       CELEBRATION / FX
+       ================================== */
+    function showConfetti() {
+      const overlay = document.getElementById('confetti-overlay');
+      overlay.innerHTML = '';
+      const emojis = ['⭐', '🌟', '✨', '🔥', '🏆'];
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      for (let i = 0; i < 40; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'firecracker-emoji';
+        piece.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        piece.style.left = cx + 'px';
+        piece.style.top = cy + 'px';
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = 200 + Math.random() * 400; 
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity + 100;
+        piece.style.setProperty('--tx', `${tx}px`);
+        piece.style.setProperty('--ty', `${ty}px`);
+        piece.style.transform += ` rotate(${Math.random() * 360}deg)`;
+        overlay.appendChild(piece);
+      }
+    }
+
+    function showErrorFlash() {
+      const overlay = document.getElementById('error-overlay');
+      overlay.classList.add('flash');
+      setTimeout(() => overlay.classList.remove('flash'), 800);
+    }
+    
+    function shakeUI() {
+      activeCard.classList.add('shake');
+      setTimeout(() => activeCard.classList.remove('shake'), 500);
+    }
+
+    /* ==================================
+       VOICE ENGINE (Real-Time)
+       ================================== */
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let recognitionActive = false;
+
+    if (SpeechRec) {
+      recognition = new SpeechRec();
+      recognition.lang = 'en-US';
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 5;
+
+      speakBtn.addEventListener('mousedown', startListening);
+      speakBtn.addEventListener('touchstart', startListening);
+      
+      // Let it automatically stop when words match, but user can also release
+      // We will actually just use Tap to Speak to be safe, instead of Hold, 
+      // since Hold to match is tricky on mobile without pointer capture
+      function startListening(e) {
+        if(e) e.preventDefault();
+        if (recognitionActive) return;
+        try { recognition.start(); } catch(e) {}
+        recognitionActive = true;
+        speakBtn.classList.add('listening');
+        speakBtn.textContent = '🔴 Listening...';
+        feedbackBox.className = 'mission-feedback';
+        feedbackBox.textContent = 'Speak clearly...';
+      }
+
+      recognition.onresult = (evt) => {
+        const expected = sentencesData[currentIndex].english.toLowerCase();
+        
+        let spoken = '';
+        let isFinalBatch = false;
+
+        for (let r = 0; r < evt.results.length; r++) {
+          if (evt.results[r].isFinal) isFinalBatch = true;
+          for (let a = 0; a < evt.results[r].length; a++) {
+            spoken += ' ' + evt.results[r][a].transcript.trim().toLowerCase();
+          }
+        }
+        
+        // Output realtime logs visually
+        if(spoken.length > 0) feedbackBox.textContent = 'You: ' + spoken.substring(0, 30) + '...';
+
+        // Remove punctuation for easier matching
+        spoken = spoken.replace(/[.,!?]/g, "");
+        const expectedClean = expected.replace(/[.,!?]/g, "");
+
+        if (spoken.includes(expectedClean)) {
+           // If they didn't reveal meaning, force reveal it so they see it
+           if(revealPrompt.style.display !== 'none') {
+               revealPrompt.click();
+           }
+
+          // Instant success
+          try { recognition.abort(); } catch(e) {}
+          recognitionActive = false;
+          speakBtn.classList.remove('listening');
+          speakBtn.textContent = '🎤 Next!';
+          
+          streak++;
+          xp += 10;
+          localStorage.setItem('bb_goldenwords_streak', streak);
+          localStorage.setItem('bb_goldenwords_xp', xp);
+          gameStreak.textContent = 'x' + streak;
+
+          activeCard.classList.add('celebrate-glow');
+          setTimeout(() => activeCard.classList.remove('celebrate-glow'), 1000);
+          feedbackBox.className = 'mission-feedback feedback-perfect';
+          feedbackBox.textContent = '✨ Perfect! +10 XP';
+          showConfetti();
+          speakText("Excellent!");
+          
+          // Next sentence
+          setTimeout(() => loadSentence(currentIndex + 1), 2200);
+          return;
+        }
+
+        if (isFinalBatch) {
+          recognitionActive = false;
+          speakBtn.classList.remove('listening');
+          speakBtn.textContent = '🎤 Try Again';
+          streak = 0;
+          localStorage.setItem('bb_goldenwords_streak', streak);
+          gameStreak.textContent = 'x' + streak;
+          
+          shakeUI();
+          showErrorFlash();
+          feedbackBox.className = 'mission-feedback feedback-wrong';
+          feedbackBox.textContent = 'Almost! Listen again and try!';
+        }
+      };
+
+      recognition.onerror = (evt) => {
+        recognitionActive = false;
+        speakBtn.classList.remove('listening');
+        speakBtn.textContent = '🎤 Start Speaking';
+        if (evt.error === 'not-allowed') alert("Microphone blocked!");
+      };
+      recognition.onend = () => {
+         if (recognitionActive && speakBtn.classList.contains('listening')) {
+            // It timed out without catching anything final
+            recognitionActive = false;
+            speakBtn.classList.remove('listening');
+            speakBtn.textContent = '🎤 Speak Again';
+         }
+      }
+    } else {
+      speakBtn.addEventListener('click', () => alert("Use Chrome/Edge for voice features."));
+    }
+  </script>
+  <script src="assets/js/bb-user-data.js"></script>
+  <script src="assets/js/profile-panel.js"></script>
+  <script src="assets/js/parental-control.js"></script>
+</body>
+</html>

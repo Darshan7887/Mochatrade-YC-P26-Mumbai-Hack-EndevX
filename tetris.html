@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris — BrainBerry</title>
+    <meta name="description"
+        content="Classic Tetris on BrainBerry. Drop tetrominoes, clear lines and top the leaderboard!">
+    <link rel="stylesheet" href="assets/css/tetris.css">
+    <style>
+        /* ── Navbar styles matching chal.html exactly ── */
+        .navbar {
+            background-color: rgba(75, 42, 173, 0.9);
+            -webkit-backdrop-filter: blur(2px);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.823);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 30px;
+            color: #fff;
+            position: relative;
+            z-index: 10;
+            font-family: "Fugaz One", sans-serif;
+        }
+        .navbar .logo { display: flex; align-items: center; gap: 8px; }
+        .navbar .logo img { width: 80px; height: 55px; border-radius: 6px; }
+        .navbar .logo span { font-size: 1.2rem; font-weight: bold; }
+        .navbar .menu { display: flex; gap: 25px; position: relative; }
+        .navbar .menu a {
+            text-decoration: none; color: #fff; font-weight: 500;
+            font-size: 0.95rem; padding: 5px 8px; position: relative;
+            transition: all 0.3s ease;
+        }
+        .navbar .menu a:hover {
+            color: #ffcc00; background: rgba(255,255,255,0.15);
+            border-radius: 6px; filter: none !important;
+        }
+        .navbar .menu:hover a:not(:hover) { filter: blur(2px) brightness(70%); }
+        .navbar .right { display: flex; align-items: center; gap: 15px; }
+        .reward { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+        .reward img { width: 20px; height: 20px; }
+        .profile img { width: 70px; height: 55px; border-radius: 50%; border: 0px solid #fff; }
+        .video-preview {
+            position: absolute; top: 40px; left: 0;
+            width: 200px; height: 120px; border-radius: 8px;
+            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease; background: #000; z-index: 20;
+        }
+        .video-preview video { width: 100%; height: 100%; object-fit: cover; }
+        .navbar .menu a:hover .video-preview { opacity: 1; }
+    </style>
+</head>
+
+<body id="tetris-page">
+
+    <!-- Background video (pixel-art aesthetic, already in project) -->
+    <video autoplay muted loop playsinline class="tt-bg-video">
+        <source src="assets/videos/sky-island-pixel-moewalls-com.mp4" type="video/mp4" />
+    </video>
+    <!-- Dark overlay for game focus -->
+    <div class="tt-dark-overlay"></div>
+
+    <!-- ── Navbar (exact same structure as chal.html / home page) ── -->
+    <div class="navbar">
+        <div class="logo">
+            <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+            <span>BrainBerry</span>
+        </div>
+
+        <div class="menu">
+            <a href="front.html">
+                Home
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="challen.html">
+                Challenges
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix12.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="chal.html">
+                Games
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix3.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="Less.html">
+                Lessons
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix5.mov" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="rewards.html">
+                Rewards
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/reward.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="help.html">
+                Help
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/help.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="reward">
+                <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+                <span>0</span>
+            </div>
+            <div class="reward">
+                <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+                <span>0</span>
+            </div>
+            <div class="profile">
+                <img src="assets/images/dp-cactus-20.png" alt="User">
+            </div>
+        </div>
+    </div>
+    <!-- ── End Navbar ─────────────────────────────────────────────── -->
+
+    <!-- ── Game area ────────────────────────────────────────────────── -->
+    <main class="tt-main">
+        <div class="tt-card">
+
+            <!-- ── Board (left) ── -->
+            <div class="tt-board-wrap">
+                <div class="tt-board-label">🟦 TETRIS</div>
+
+                <!-- Canvas + overlay sibling wrapper -->
+                <div style="position:relative; display:inline-block;">
+                    <canvas id="tt-canvas"></canvas>
+                    <!-- Retro scanlines overlay -->
+                    <div class="tt-scanlines"></div>
+                    <!-- Game-over / pause overlay (sits on top of canvas) -->
+                    <div class="tt-overlay tt-show" id="tt-overlay">
+                        <h2 id="tt-overlay-title">TETRIS</h2>
+                        <p id="tt-overlay-msg">Stack tetrominoes &amp; clear lines!</p>
+                        <p id="tt-overlay-score" class="tt-overlay-score"></p>
+                        <button class="tt-btn tt-btn-start" id="tt-btn-resume"
+                            style="width:auto; padding:10px 24px; display:none;">
+                            ▶ Resume
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Sidebar (right) ── -->
+            <div class="tt-sidebar">
+
+                <!-- Score -->
+                <div class="tt-side-panel">
+                    <h3>Score</h3>
+                    <div class="tt-value" id="tt-score">0</div>
+                </div>
+
+                <!-- Lines -->
+                <div class="tt-side-panel">
+                    <h3>Lines</h3>
+                    <div class="tt-value" id="tt-lines">0</div>
+                </div>
+
+                <!-- Level -->
+                <div class="tt-side-panel">
+                    <h3>Level</h3>
+                    <div class="tt-value" id="tt-level">1</div>
+                    <div class="tt-level-bar-bg">
+                        <div class="tt-level-bar-fill" id="tt-level-fill" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- Next piece -->
+                <div class="tt-side-panel">
+                    <h3>Next</h3>
+                    <canvas id="tt-next-canvas"></canvas>
+                </div>
+
+                <!-- Action buttons -->
+                <button class="tt-btn tt-btn-start" id="tt-btn-start">▶ Start</button>
+                <button class="tt-btn tt-btn-restart" id="tt-btn-restart" style="display:none;">🔄 Restart</button>
+                <button class="tt-btn tt-btn-back" onclick="location.href='chal.html'">
+                    ← Games
+                </button>
+
+                <!-- Controls legend -->
+                <div class="tt-side-panel">
+                    <h3>Controls</h3>
+                    <div class="tt-controls">
+                        <kbd>←</kbd><kbd>→</kbd> Move<br>
+                        <kbd>↑</kbd> / <kbd>Z</kbd> Rotate<br>
+                        <kbd>↓</kbd> Soft drop<br>
+                        <kbd>Space</kbd> Hard drop<br>
+                        <kbd>P</kbd> / <kbd>Esc</kbd> Pause
+                    </div>
+                </div>
+
+            </div>
+            <!-- ── End sidebar ── -->
+
+        </div>
+    </main>
+    <!-- ── End game area ────────────────────────────────────────────── -->
+
+    <script src="assets/js/teetris.js"></script>
+</body>
+
+</html>

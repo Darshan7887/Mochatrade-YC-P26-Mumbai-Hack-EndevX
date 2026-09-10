@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrainBerry - Learn. Speak. Play.</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .navbar {
+      background-color: #4169e1;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    .navbar .logo { display: flex; align-items: center; gap: 8px; }
+    .navbar .logo img { width: 60px; height: 30px; border-radius: 6px; }
+    .navbar .nav-buttons button {
+      margin-left: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .navbar .login-btn { background: #f0f0f0; }
+    .navbar .join-btn { background: #1e90ff; color: white; }
+    body { margin: 0; font-family: Arial, sans-serif; }
+  </style>
+</head>
+<body>
+
+  <!-- Background Video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="assets/videos/f1.mp4" type="video/mp4" />
+    Your browser does not support HTML5 video.
+  </video>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+      <span>BrainBerry</span>
+    </div>
+    <div class="nav-buttons">
+      <button class="login-btn" onclick="showLogin()">Log In</button>
+      <button class="join-btn" onclick="showRegister()">Join Free</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-left">
+      <h1>Learn Smarter with BrainBerry</h1>
+      <p class="subtitle">A voice-driven learning platform for kids with special learning needs.</p>
+      <!-- Login Form -->
+      <form id="loginForm" class="login-form">
+        <input type="email" id="loginEmail" placeholder="Enter your Email Address" required />
+        <input type="password" id="loginPassword" placeholder="Enter your Password" required />
+        <button type="submit">Login</button>
+      </form>
+
+      <!-- Registration link for better discoverability -->
+      <p style="margin-top: 15px; font-size: 0.95rem;">
+        Don't have an account? <a href="register.html" style="color: #1e90ff; font-weight: bold; text-decoration: none;">Create an account here</a>
+      </p>
+<!-- Social Login Buttons (Centered under Login) -->
+<div style="
+  margin-top: 15px; 
+  display: flex; 
+  justify-content: left;  /* 👈 Centers horizontally */
+  gap: 15px;
+">
+  <!-- Google -->
+  <button type="button" id="googleLoginBtn" style="
+    background: white; 
+    border: none; 
+    border-radius: 50%; 
+    cursor: pointer;
+    width: 45px; height: 45px; 
+    display: flex; align-items: center; justify-content: center;">
+    <img src="https://developers.google.com/identity/images/g-logo.png" 
+         alt="Google Logo" style="width:22px;height:22px;" />
+  </button>
+
+  <!-- Facebook -->
+  <button type="button" id="facebookLoginBtn" style="
+    background: #1877f2; 
+    border: none; 
+    border-radius: 50%; 
+    cursor: pointer;
+    width: 45px; height: 45px; 
+    display: flex; align-items: center; justify-content: center;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" 
+         alt="Facebook Logo" style="width:20px;height:20px;" />
+  </button>
+
+  <!-- Twitter -->
+  <button type="button" id="twitterLoginBtn" style="
+    background: #000000; 
+    border: none; 
+    border-radius: 50%; 
+    cursor: pointer;
+    width: 45px; height: 45px; 
+    display: flex; align-items: center; justify-content: center;">
+    <img src="assets/images/twit.png" 
+         alt="Twitter Logo" style="width:40px;height:35px;" />
+  </button>
+</div>
+
+
+      <p class="small-text">Learn through fun, interactive, and voice-enabled lessons 🎧</p>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about">
+    <h2>About BrainBerry</h2>
+    <p>
+      BrainBerry is a playful and interactive voice-based learning platform.
+      Designed for children with special learning needs, it makes education fun and inclusive for everyone.
+    </p>
+  </section>
+
+  <!-- Categories -->
+  <section class="categories">
+    <div class="card">
+      <img src="assets/images/space.jpg" alt="Space Adventures" />
+      <h3>Space Adventures</h3>
+    </div>
+    <div class="card">
+      <img src="assets/images/math.jpg" alt="Math Magic" />
+      <h3>Math Magic</h3>
+    </div>
+    <div class="card">
+      <img src="assets/images/words.jpg" alt="Word Wonders" />
+      <h3>Word Wonders</h3>
+    </div>
+  </section>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    // ✅ Import Firebase v9 Modular
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      GoogleAuthProvider,
+      FacebookAuthProvider,
+      TwitterAuthProvider,
+      signInWithPopup,
+      linkWithCredential,
+      EmailAuthProvider
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // ✅ Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyADRJMnuBGNzU_LAOx0bYSg0UvCEXEC7vs",
+      authDomain: "brainberry-96454.firebaseapp.com",
+      projectId: "brainberry-96454",
+      storageBucket: "brainberry-96454.appspot.com",
+      messagingSenderId: "819230645241",
+      appId: "1:819230645241:web:698aa272865737ee103b28",
+      measurementId: "G-VVHB92VP3H"
+    };
+
+    // ✅ Initialize Firebase FIRST before any listeners
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ------- Toggle Forms -------
+    window.showLogin = function() {
+      document.getElementById("loginForm").style.display = "block";
+    }
+    window.showRegister = function() {
+      window.location.href = "register.html";
+    }
+
+    // ------- Helper: show password-set modal for new social users -------
+    function promptPasswordForNewUser(user) {
+      return new Promise((resolve, reject) => {
+        // Create modal overlay
+        const overlay = document.createElement("div");
+        overlay.style.cssText = `
+          position:fixed;inset:0;background:rgba(0,0,0,.6);
+          display:flex;align-items:center;justify-content:center;z-index:9999;`;
+
+        overlay.innerHTML = `
+          <div style="background:#1a1a2e;border-radius:16px;padding:36px 32px;width:340px;
+                      box-shadow:0 8px 40px rgba(0,0,0,.5);text-align:center;color:#fff;font-family:Arial,sans-serif;">
+            <h2 style="margin:0 0 8px;font-size:1.3rem;">🔐 Set Your Password</h2>
+            <p style="font-size:.9rem;color:#aaa;margin-bottom:20px;">
+              Welcome, <strong>${user.displayName || user.email}</strong>!<br/>
+              Create a password so you can also log in with email next time.
+            </p>
+            <input type="password" id="socialPwd1" placeholder="New Password"
+              style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid #444;
+                     background:#0f0f1a;color:#fff;margin-bottom:10px;box-sizing:border-box;font-size:.95rem;" />
+            <input type="password" id="socialPwd2" placeholder="Confirm Password"
+              style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid #444;
+                     background:#0f0f1a;color:#fff;margin-bottom:16px;box-sizing:border-box;font-size:.95rem;" />
+            <p id="socialPwdErr" style="color:#ff6b6b;font-size:.85rem;min-height:18px;margin-bottom:10px;"></p>
+            <button id="socialPwdBtn"
+              style="width:100%;padding:11px;border-radius:8px;border:none;
+                     background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+                     font-size:1rem;font-weight:600;cursor:pointer;">Set Password & Continue</button>
+            <p id="socialPwdSkip" style="margin-top:12px;font-size:.82rem;color:#888;cursor:pointer;text-decoration:underline;">
+              Skip for now (continue without email password)
+            </p>
+          </div>`;
+
+        document.body.appendChild(overlay);
+
+        document.getElementById("socialPwdBtn").addEventListener("click", async () => {
+          const p1 = document.getElementById("socialPwd1").value;
+          const p2 = document.getElementById("socialPwd2").value;
+          const errEl = document.getElementById("socialPwdErr");
+          if (p1.length < 6) { errEl.textContent = "Password must be at least 6 characters."; return; }
+          if (p1 !== p2) { errEl.textContent = "Passwords do not match."; return; }
+          try {
+            const credential = EmailAuthProvider.credential(user.email, p1);
+            await linkWithCredential(user, credential);
+            document.body.removeChild(overlay);
+            resolve();
+          } catch (err) {
+            // If already linked, just skip
+            if (err.code === "auth/provider-already-linked" || err.code === "auth/email-already-in-use") {
+              document.body.removeChild(overlay);
+              resolve();
+            } else {
+              errEl.textContent = err.message;
+            }
+          }
+        });
+
+        document.getElementById("socialPwdSkip").addEventListener("click", () => {
+          document.body.removeChild(overlay);
+          resolve();
+        });
+      });
+    }
+
+    // ------- Helper: save social user to Firestore + localStorage -------
+    async function saveSocialUser(user, isNew) {
+      const userRef = doc(db, "users", user.uid);
+      if (isNew) {
+        await setDoc(userRef, {
+          name: user.displayName || "User",
+          email: user.email,
+          age: "N/A"
+        });
+      }
+      localStorage.setItem("userName", user.displayName || "User");
+      localStorage.setItem("userEmail", user.email);
+      localStorage.setItem("userUid", user.uid);
+      localStorage.setItem("bb_active_user", user.email);
+      localStorage.setItem("brainberry_current_user", user.email);
+      sessionStorage.setItem("bb_session", "active");
+    }
+
+    // ✅ Google Login
+    document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      provider.addScope("profile");
+      provider.addScope("email");
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        const isNew = !userDoc.exists();
+
+        await saveSocialUser(user, isNew);
+
+        // If new user, ask them to set a password
+        if (isNew) {
+          await promptPasswordForNewUser(user);
+        }
+
+        window.location.href = "front.html";
+      } catch (err) {
+        console.error("Google login error:", err);
+        if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
+          alert("❌ Google login failed: " + err.message);
+        }
+      }
+    });
+
+    // 🔹 Facebook Login
+    document.getElementById("facebookLoginBtn").addEventListener("click", async () => {
+      const provider = new FacebookAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        const isNew = !userDoc.exists();
+
+        await saveSocialUser(user, isNew);
+
+        if (isNew) {
+          await promptPasswordForNewUser(user);
+        }
+
+        window.location.href = "front.html";
+      } catch (err) {
+        console.error("Facebook login error:", err);
+        if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
+          alert("❌ Facebook login failed: " + err.message);
+        }
+      }
+    });
+
+    // 🔹 Twitter Login
+    document.getElementById("twitterLoginBtn").addEventListener("click", async () => {
+      const provider = new TwitterAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        const isNew = !userDoc.exists();
+
+        await saveSocialUser(user, isNew);
+
+        if (isNew) {
+          await promptPasswordForNewUser(user);
+        }
+
+        window.location.href = "front.html";
+      } catch (err) {
+        console.error("Twitter login error:", err);
+        if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
+          alert("❌ Twitter login failed: " + err.message);
+        }
+      }
+    });
+
+    // ✅ Register now handled by register.html
+
+    // ✅ Login User
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          localStorage.setItem("userName", userData.name);
+          localStorage.setItem("userAge", userData.age);
+          localStorage.setItem("userEmail", userData.email);
+          if (userData.avatarUrl) localStorage.setItem("userAvatar", userData.avatarUrl);
+          if (userData.avatarKey) localStorage.setItem("userAvatarKey", userData.avatarKey);
+        } else {
+          localStorage.setItem("userEmail", user.email);
+        }
+        localStorage.setItem("userUid", user.uid);
+        localStorage.setItem("bb_active_user", user.email);
+        localStorage.setItem("brainberry_current_user", user.email);
+        sessionStorage.setItem("bb_session", "active");
+
+        alert("✅ Login Successful!");
+        window.location.href = "front.html";
+      } catch (err) {
+        console.error(err);
+        alert("❌ Error logging in: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

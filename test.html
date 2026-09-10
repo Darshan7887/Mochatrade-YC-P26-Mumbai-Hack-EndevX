@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .show-pass {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Register</h2>
+    <form id="registrationForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" required>
+
+      <div class="show-pass">
+        <input type="checkbox" id="showPassword"> Show Password
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+    <div class="message" id="message"></div>
+  </div>
+
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxoHuZvdnI5GpM0mSbS8Bzi-uWjQuMIAwlfTJrvyOOTDStqg6wv7JxqTkSijwrgUu67bw/exec";
+  const form = document.getElementById("registrationForm");
+  const message = document.getElementById("message");
+
+  // Show/Hide password toggle
+  document.getElementById("showPassword").addEventListener("change", function() {
+    const pwd = document.getElementById("password");
+    const confirmPwd = document.getElementById("confirmPassword");
+    if (this.checked) {
+      pwd.type = "text";
+      confirmPwd.type = "text";
+    } else {
+      pwd.type = "password";
+      confirmPwd.type = "password";
+    }
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+    if (password !== confirmPassword) {
+      message.textContent = "Passwords do not match!";
+      message.style.color = "red";
+      return;
+    }
+
+    // ✅ Send as form data
+    fetch(scriptURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+    })
+    .then(res => res.text())
+    .then(data => {
+      console.log("Response:", data);
+      message.textContent = "✅ Registered successfully!";
+      message.style.color = "green";
+      form.reset();
+    })
+    .catch(error => {
+      console.error("Error!", error);
+      message.textContent = "❌ Error! Please try again.";
+      message.style.color = "red";
+    });
+  });
+</script>
+
+</body>
+</html>

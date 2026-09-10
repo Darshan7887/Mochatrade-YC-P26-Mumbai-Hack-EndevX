@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>River Crossing — BrainBerry</title>
+    <meta name="description"
+        content="Classic River Crossing puzzle on BrainBerry. Move the Farmer, Sheep, Fox and Cabbage safely across the river!">
+    <link rel="stylesheet" href="assets/css/river.css">
+    <style>
+        /* ── Navbar styles matching chal.html exactly ── */
+        .navbar {
+            background-color: rgba(75, 42, 173, 0.9);
+            -webkit-backdrop-filter: blur(2px);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.823);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 30px;
+            color: #fff;
+            position: relative;
+            z-index: 10;
+            font-family: "Fugaz One", sans-serif;
+        }
+        .navbar .logo { display: flex; align-items: center; gap: 8px; }
+        .navbar .logo img { width: 80px; height: 55px; border-radius: 6px; }
+        .navbar .logo span { font-size: 1.2rem; font-weight: bold; }
+        .navbar .menu { display: flex; gap: 25px; position: relative; }
+        .navbar .menu a {
+            text-decoration: none; color: #fff; font-weight: 500;
+            font-size: 0.95rem; padding: 5px 8px; position: relative;
+            transition: all 0.3s ease;
+        }
+        .navbar .menu a:hover {
+            color: #ffcc00; background: rgba(255,255,255,0.15);
+            border-radius: 6px; filter: none !important;
+        }
+        .navbar .menu:hover a:not(:hover) { filter: blur(2px) brightness(70%); }
+        .navbar .right { display: flex; align-items: center; gap: 15px; }
+        .reward { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+        .reward img { width: 20px; height: 20px; }
+        .profile img { width: 70px; height: 55px; border-radius: 50%; border: 0px solid #fff; }
+        .video-preview {
+            position: absolute; top: 40px; left: 0;
+            width: 200px; height: 120px; border-radius: 8px;
+            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease; background: #000; z-index: 20;
+        }
+        .video-preview video { width: 100%; height: 100%; object-fit: cover; }
+        .navbar .menu a:hover .video-preview { opacity: 1; }
+    </style>
+</head>
+
+<body id="river-page">
+
+    <!-- Background video (matches BrainBerry pixel aesthetic) -->
+    <video autoplay muted loop playsinline class="rc-bg-video">
+        <source src="assets/videos/autumn-river-pixel-moewalls-com.mp4" type="video/mp4" />
+    </video>
+
+    <!-- ── Navbar (exact same structure as chal.html / home page) ── -->
+    <div class="navbar">
+        <div class="logo">
+            <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+            <span>BrainBerry</span>
+        </div>
+
+        <div class="menu">
+            <a href="front.html">
+                Home
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="challen.html">
+                Challenges
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix12.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="chal.html">
+                Games
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix3.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="Less.html">
+                Lessons
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/pix5.mov" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="rewards.html">
+                Rewards
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/reward.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+            <a href="help.html">
+                Help
+                <div class="video-preview">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/videos/help.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="reward">
+                <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+                <span>0</span>
+            </div>
+            <div class="reward">
+                <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+                <span>0</span>
+            </div>
+            <div class="profile">
+                <img src="assets/images/dp-cactus-20.png" alt="User">
+            </div>
+        </div>
+    </div>
+    <!-- ── End Navbar ───────────────────────────────────────────── -->
+
+    <!-- ── Game container ──────────────────────────────────────────── -->
+    <div class="rc-container">
+        <div class="rc-panel">
+
+            <h1>🚣 River Crossing</h1>
+            <p class="rc-subtitle">
+                Move everyone safely across — Farmer + 1 passenger per trip
+            </p>
+
+            <!-- Move counter -->
+            <div class="rc-moves-badge">
+                Moves: <strong id="rc-moves-count">0</strong>
+            </div>
+
+            <!-- ── River scene ── -->
+            <div class="rc-scene">
+
+                <!-- Left bank -->
+                <div class="rc-bank" id="rc-left-bank">
+                    <!-- entities injected by JS -->
+                </div>
+
+                <!-- River + boat -->
+                <div class="rc-river">
+                    <div class="rc-boat" id="rc-boat" title="Click ⛵ Row Across to sail">⛵</div>
+                    <div class="rc-boat-label" id="rc-boat-label">👨‍🌾 alone</div>
+                </div>
+
+                <!-- Right bank -->
+                <div class="rc-bank" id="rc-right-bank">
+                    <!-- entities injected by JS -->
+                </div>
+
+            </div>
+            <!-- End river scene -->
+
+            <!-- Status message -->
+            <div class="rc-message" id="rc-msg">Loading…</div>
+
+            <!-- Action buttons -->
+            <div class="rc-btn-row">
+                <button class="rc-btn rc-btn-sail" id="rc-btn-sail">⛵ Row → Right</button>
+                <button class="rc-btn rc-btn-reset" id="rc-btn-reset">🔄 Reset</button>
+            </div>
+
+            <!-- Collapsible rules -->
+            <button class="rc-rules-toggle" id="rc-rules-toggle">▼ Show Rules</button>
+            <div class="rc-rules-box" id="rc-rules-box">
+                <ul>
+                    <li>👨‍🌾 The <strong>Farmer</strong> must always be in the boat.</li>
+                    <li>⛵ The boat fits the Farmer + <strong>1 passenger</strong> at most.</li>
+                    <li>🐑🥬 If <strong>Sheep</strong> and <strong>Cabbage</strong> are left alone, the sheep eats the
+                        cabbage!</li>
+                    <li>🦊🐑 If <strong>Fox</strong> and <strong>Sheep</strong> are left alone, the fox eats the sheep!
+                    </li>
+                    <li>✅ <strong>Goal:</strong> Move all four to the right bank safely.</li>
+                </ul>
+                <p style="margin:6px 0 0; font-style:italic; opacity:0.7; font-size:0.8rem;">
+                    Tip: There are multiple valid solutions — can you find them all?
+                </p>
+            </div>
+
+        </div>
+    </div>
+    <!-- ── End game container ─────────────────────────────────────── -->
+
+    <!-- ── Win overlay ─────────────────────────────────────────────── -->
+    <div class="rc-win-overlay" id="rc-win-overlay">
+        <div class="rc-win-card">
+            <div class="rc-trophy">🏆</div>
+            <h2>You Did It!</h2>
+            <p>
+                Everyone crossed safely in<br>
+                <strong id="rc-win-moves">0</strong> moves!
+            </p>
+            <div class="rc-btn-row">
+                <button class="rc-btn rc-btn-sail" id="rc-win-play-again">🔄 Play Again</button>
+                <button class="rc-btn rc-btn-back" onclick="location.href='chal.html'">← Back to Games</button>
+            </div>
+        </div>
+    </div>
+    <!-- ── End win overlay ────────────────────────────────────────── -->
+
+    <script src="assets/js/river.js"></script>
+</body>
+
+</html>

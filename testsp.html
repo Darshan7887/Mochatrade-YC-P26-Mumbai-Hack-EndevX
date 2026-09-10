@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar System Mission</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #0a1a44, #000);
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 2.5em;
+    }
+    .planet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      max-width: 400px;
+      margin: 40px auto;
+    }
+    .planet-btn {
+      background: #222;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .planet-btn:hover {
+      background: #444;
+    }
+    .info-box {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      border-radius: 12px;
+    }
+    .spaceship {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      transition: all 1.2s ease-in-out;
+      z-index: 10;
+    }
+    .sparkle {
+      position: absolute;
+      font-size: 24px;
+      color: gold;
+      animation: ping 1.5s infinite;
+    }
+    @keyframes ping {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .badge {
+      margin-top: 20px;
+      background: green;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: bold;
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Solar System Mission</h1>
+
+  <!-- Spaceship -->
+  <img src="https://cdn-icons-png.flaticon.com/512/3212/3212608.png" 
+       alt="spaceship" 
+       id="spaceship" 
+       class="spaceship" 
+       style="top: 80%; left: 10%;" />
+
+  <!-- Planet Buttons -->
+  <div class="planet-grid">
+    <button class="planet-btn" id="Mercury">Mercury</button>
+    <button class="planet-btn" id="Venus">Venus</button>
+    <button class="planet-btn" id="Earth">Earth</button>
+    <button class="planet-btn" id="Mars">Mars</button>
+    <button class="planet-btn" id="Jupiter">Jupiter</button>
+    <button class="planet-btn" id="Saturn">Saturn</button>
+    <button class="planet-btn" id="Uranus">Uranus</button>
+    <button class="planet-btn" id="Neptune">Neptune</button>
+  </div>
+
+  <!-- Info Box -->
+  <div id="info" class="info-box">Click a planet to learn!</div>
+
+  <!-- Score -->
+  <div id="scoreBox" style="margin-top:15px; font-size:20px; color:yellow;">
+    ⭐ Stars Collected: 0
+  </div>
+
+  <!-- Badge -->
+  <div id="badge"></div>
+
+  <script>
+    const planets = {
+      Mercury: "Mercury is the closest planet to the Sun.",
+      Venus: "Venus is the hottest planet in our Solar System.",
+      Earth: "Earth is our home planet with life and water.",
+      Mars: "Mars is called the Red Planet.",
+      Jupiter: "Jupiter is the largest planet.",
+      Saturn: "Saturn has beautiful rings.",
+      Uranus: "Uranus spins on its side!",
+      Neptune: "Neptune is the farthest planet from the Sun."
+    };
+
+    let score = 0;
+    const spaceship = document.getElementById("spaceship");
+    const infoBox = document.getElementById("info");
+    const scoreBox = document.getElementById("scoreBox");
+    const badgeBox = document.getElementById("badge");
+
+    // Narration
+    function narrate(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 0.9;
+      utter.pitch = 1.2;
+      speechSynthesis.speak(utter);
+    }
+
+    // Fly spaceship
+    function flyToPlanet(planet) {
+      const btn = document.getElementById(planet);
+      const rect = btn.getBoundingClientRect();
+      spaceship.style.left = rect.left + rect.width / 2 - 30 + "px";
+      spaceship.style.top = rect.top - 70 + "px";
+
+      infoBox.innerHTML = `<strong>${planet}</strong>: ${planets[planet]}`;
+      narrate(`We have landed on ${planet}. ${planets[planet]}`);
+
+      // Sparkle
+      const sparkle = document.createElement("div");
+      sparkle.innerHTML = "✨";
+      sparkle.className = "sparkle";
+      sparkle.style.left = rect.left + rect.width / 2 + "px";
+      sparkle.style.top = rect.top - 20 + "px";
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 1500);
+
+      // Increase score
+      score++;
+      scoreBox.innerText = `⭐ Stars Collected: ${score}`;
+      if (score >= 8) {
+        badgeBox.innerHTML = `<div class='badge'>🎖️ Mission Complete! You are a Junior Space Explorer!</div>`;
+        narrate("Mission complete! You are a Junior Space Explorer!");
+      }
+    }
+
+    // Button clicks
+    Object.keys(planets).forEach(planet => {
+      document.getElementById(planet).addEventListener("click", () => flyToPlanet(planet));
+    });
+
+    // Voice recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        Object.keys(planets).forEach(p => {
+          if (transcript.includes(p.toLowerCase())) {
+            flyToPlanet(p);
+          }
+        });
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>

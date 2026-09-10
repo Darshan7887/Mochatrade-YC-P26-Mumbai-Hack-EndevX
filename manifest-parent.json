@@ -1,0 +1,36 @@
+{
+  "name": "BrainBerry Parent",
+  "short_name": "BB Parent",
+  "description": "BrainBerry Parent Control Dashboard — manage your child's screen time and track learning progress.",
+  "start_url": "./parent-mobile.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a021e",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "categories": ["education", "kids"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Set Screen Time",
+      "short_name": "Screen Time",
+      "description": "Quickly set your child's screen time limit",
+      "url": "./parent-mobile.html#screentime",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

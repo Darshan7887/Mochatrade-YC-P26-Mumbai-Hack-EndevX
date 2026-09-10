@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+  <title>Navbar with Video Previews</title>
+
+  <style>
+    /* === Your entire CSS stays here === */
+    body {
+      margin: 0;
+      font-family: "Fugaz one", sans-serif;
+      background: #f6f6f9;
+    }
+
+    /* Background video */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(75, 42, 173, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+      color: #fff;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Logo */
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar .logo img {
+      width: 80px;
+      height: 55px;
+      border-radius: 6px;
+    }
+
+    .navbar .logo span {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Menu */
+    .navbar .menu {
+      display: flex;
+      gap: 25px;
+      position: relative;
+    }
+
+    .navbar .menu a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 5px 8px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .navbar .menu a:hover {
+      color: #ffcc00;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      filter: none !important;
+    }
+
+    .navbar .menu:hover a:not(:hover) {
+      filter: blur(2px) brightness(70%);
+    }
+
+    /* Right side */
+    .navbar .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .reward {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+    }
+
+    .reward img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .profile img {
+      width: 70px;
+      height: 55px;
+      border-radius: 100%;
+      border: 0px solid #fff;
+    }
+
+    /* Profile Sidebar */
+    .profile-sidebar {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 300px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-left: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 200;
+      color: #fff;
+    }
+
+    .profile-sidebar.active {
+      right: 0;
+    }
+
+    .profile-sidebar h2 {
+      margin-top: 0;
+      font-family: "Fugaz One", sans-serif;
+    }
+
+    .profile-sidebar p {
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+
+    .profile-sidebar .close-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Content */
+    .content {
+      padding: 40px;
+      position: relative;
+      z-index: 1;
+      color: #fff;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+      transition: filter 0.3s ease;
+    }
+
+    .menu:hover~.content {
+      filter: blur(5px);
+    }
+
+    /* Video preview */
+    .video-preview {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      width: 200px;
+      height: 120px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      background: #000;
+      z-index: 20;
+    }
+
+    .video-preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .navbar .menu a:hover .video-preview {
+      opacity: 1;
+    }
+
+    /* Glass boxes */
+    .boxes-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      z-index: 10;
+    }
+
+    .glass-box {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #000;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .box1 {
+      width: 350px;
+      height: 400px;
+      top: 20%;
+      left: 2%;
+    }
+
+    .character-stats {
+      margin-top: 10px;
+      color: white;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .exp-bar {
+      width: 90%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      margin: 6px auto;
+      overflow: hidden;
+    }
+
+    .exp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ffcc, #0077ff);
+      border-radius: 8px;
+      transition: width 0.5s ease;
+    }
+
+    .box2 {
+      width: 500px;
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      overflow-y: auto;
+      top: 20%;
+      left: 31%;
+    }
+
+    .box2 h2 {
+      font-family: "Funnel Display", sans-serif;
+    }
+
+    /* Box 3 To-Do List */
+    .box3 {
+      width: 350px;
+      height: 400px;
+      top: 20%;
+      right: 5%;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .todo-container {
+      width: 100%;
+      text-align: center;
+    }
+
+    #todo-input {
+      width: 70%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #6a5acd;
+      font-size: 16px;
+    }
+
+    .todo-container button {
+      padding: 8px 12px;
+      margin-left: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #6a5acd;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .todo-container button:hover {
+      background: #483d8b;
+    }
+
+    #todo-list {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 15px;
+      text-align: left;
+      width: 100%;
+    }
+
+    #todo-list li {
+      padding: 8px;
+      margin: 5px 0;
+      background: #e0e7ff;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      transition: opacity 0.3s ease;
+    }
+
+    #todo-list li.completed {
+      opacity: 0.65;
+    }
+
+    #todo-list li.completed .task-text {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .todo-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #6a5acd;
+      border-radius: 3px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-right: 8px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .todo-checkbox.checked {
+      background: #6a5acd;
+    }
+
+    .todo-checkbox.checked::after {
+      content: "✓";
+      color: white;
+      font-size: 11px;
+    }
+
+    .task-text {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    /* Lesson boxes inside middle */
+    .lesson-box {
+      width: 90%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .lesson-box h2 {
+      font-family: "Funnel Display", sans-serif;
+    }
+
+    .lesson-box:hover {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 15px rgba(255, 200, 0, 0.8);
+      transform: scale(1.05);
+    }
+
+    /* Locked lesson style */
+    .lesson-box.bb-lesson-locked {
+      position: relative;
+      cursor: default;
+      opacity: 0.6;
+    }
+    .lesson-box.bb-lesson-locked:hover {
+      transform: none;
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .lesson-lock-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: rgba(14,6,38,0.78);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: #c4b5fd;
+      font-family: "Fugaz One", sans-serif;
+      pointer-events: all;
+      cursor: default;
+      z-index: 2;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="assets/videos/home.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;"
+      title="Go Home">
+      <div class="logo">
+        <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+        <span>BrainBerry</span>
+      </div>
+    </a>
+
+    <div class="menu">
+      <a href="front.html">
+        Home
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="challen.html">
+        Challenges
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix12.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="chal.html">
+        Games
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix3.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="Less.html">
+        Lessons
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pix5.mov" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="rewards.html">
+        Rewards
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/reward.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+      <a href="help.html">
+        Help
+        <div class="video-preview">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/help.mp4" type="video/mp4">
+          </video>
+        </div>
+      </a>
+    </div>
+
+    <div class="right">
+      <div class="reward">
+        <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+        <span>0</span>
+      </div>
+      <div class="reward">
+        <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+        <span>0</span>
+      </div>
+      <div class="profile">
+        <img src="assets/images/dp-cactus-20.png" alt="User">
+      </div>
+    </div>
+  </div>
+  <!-- Profile panel is injected by assets/js/profile-panel.js -->
+  <!-- Content -->
+
+  <div class="boxes-container">
+    <div class="glass-box box1" onclick="location.href='emotion.html'">
+      <!-- Character Video -->
+      <video autoplay muted loop playsinline style="width: 100%; height: 60%; border-radius: 12px; object-fit: cover;">
+        <source src="assets/videos/fitgir.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Character Stats -->
+      <div class="character-stats">
+        <h3>Hero Kid</h3>
+        <p>Level: 3</p>
+        <p>EXP:</p>
+
+        <!-- EXP Bar -->
+        <div class="exp-bar">
+          <div class="exp-fill" style="width: 45%;"></div> <!-- adjust width for exp % -->
+        </div>
+      </div>
+    </div>
+    <div class="glass-box box2">
+      <h2>Lessons</h2>
+
+      <div class="lesson-box" data-lesson-id="alp" onclick="location.href='alp.html'">1: Magic Of words</div>
+      <div class="lesson-box" data-lesson-id="NunInd" onclick="location.href='NunInd.html'">2: Numbers</div>
+      <div class="lesson-box" data-lesson-id="gsa" onclick="location.href='gsa.html'">3: Golden Words and Sentences</div>
+      <div class="lesson-box" data-lesson-id="civicsense" onclick="location.href='civicsense.html'">4: Civic Sense</div>
+      <div class="lesson-box" data-lesson-id="color-shape" onclick="location.href='color-shape.html'">5: Colour &amp; Shapes</div>
+      <div class="lesson-box" data-lesson-id="hindi" onclick="location.href='hindi.html'">6: Hindi</div>
+      <div class="lesson-box" data-lesson-id="animals" onclick="location.href='animals.html'">7: Animals</div>
+    </div>
+    <div class="glass-box box3">
+      <h2>My To-Do List</h2>
+      <div class="todo-container">
+        <input type="text" id="todo-input" placeholder="Type your task..." />
+        <button onclick="addTask()">Add</button>
+        <ul id="todo-list" style="width:100%;"></ul>
+      </div>
+    </div>
+  </div>
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="assets/videos/home.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Box 1 with a video inside -->
+
+
+
+
+
+</body>
+<!-- ✅ Firebase To-Do Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc
+  } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+  // ✅ Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyADRJMnuBGNzU_LAOx0bYSg0UvCEXEC7vs",
+    authDomain: "brainberry-96454.firebaseapp.com",
+    projectId: "brainberry-96454",
+    storageBucket: "brainberry-96454.appspot.com",
+    messagingSenderId: "819230645241",
+    appId: "1:819230645241:web:698aa272865737ee103b28",
+    measurementId: "G-VVHB92VP3H"
+  };
+
+  // ✅ Init
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  window.db = db; // expose globally
+  window.firestoreDoc = doc;
+  window.firestoreSetDoc = setDoc;
+
+  function getUserDocId() {
+    const uid = (auth.currentUser && auth.currentUser.uid) || localStorage.getItem("userUid");
+    return uid || null;
+  }
+
+  // ─── Helper: collect current tasks from the DOM ───────────────────────────
+  function collectTasks() {
+    const todos = [];
+    document.querySelectorAll("#todo-list li").forEach(li => {
+      const text = li.querySelector(".task-text").textContent.trim();
+      const completed = li.classList.contains("completed");
+      todos.push({ text, completed });
+    });
+    return todos;
+  }
+
+  // ─── Save to localStorage (always) + Firestore (when logged in) ───────────
+  async function saveTodos() {
+    const todos = collectTasks();
+
+    // 1️⃣ Always save to localStorage so refresh ALWAYS works
+    localStorage.setItem("bb_todos", JSON.stringify(todos));
+    console.log("💾 Saved to localStorage:", todos);
+
+    // 2️⃣ Also sync to Firestore if user is logged in
+    const userDocId = getUserDocId();
+    if (userDocId) {
+      try {
+        await setDoc(doc(db, "todos", userDocId), { tasks: todos });
+        console.log("☁️ Synced to Firestore:", todos);
+      } catch (err) {
+        console.error("❌ Firestore sync error:", err);
+      }
+    }
+  }
+
+  // ─── Render a list of task objects into the DOM ───────────────────────────
+  function renderTasks(tasks) {
+    const list = document.getElementById("todo-list");
+    list.innerHTML = "";
+    tasks.forEach(task => {
+      if (typeof task === "string") {
+        createTodoItem(task, false);
+      } else {
+        createTodoItem(task.text, task.completed || false);
+      }
+    });
+  }
+
+  // ─── Sort list: active tasks on top, completed at bottom ─────────────────
+  function sortTodoList() {
+    const list = document.getElementById("todo-list");
+    const items = Array.from(list.children);
+    items.sort((a, b) => {
+      const aComp = a.classList.contains("completed") ? 1 : 0;
+      const bComp = b.classList.contains("completed") ? 1 : 0;
+      return aComp - bComp;
+    });
+    items.forEach(item => list.appendChild(item));
+  }
+
+  // ─── Load: localStorage first (instant), then Firestore (cloud sync) ─────
+  async function loadTodos() {
+    // 1️⃣ Load from localStorage immediately — always available after refresh
+    const cached = localStorage.getItem("bb_todos");
+    if (cached) {
+      try {
+        const tasks = JSON.parse(cached);
+        renderTasks(tasks);
+        console.log("📦 Loaded from localStorage:", tasks);
+      } catch (e) {
+        console.warn("⚠️ Could not parse localStorage tasks", e);
+      }
+    }
+
+    // 2️⃣ If logged in, try Firestore for the freshest cloud data
+    const userDocId = getUserDocId();
+    if (!userDocId) return;
+
+    try {
+      const docRef = doc(db, "todos", userDocId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const { tasks } = docSnap.data();
+        // Firestore data is the truth — overwrite local render & cache
+        renderTasks(tasks);
+        localStorage.setItem("bb_todos", JSON.stringify(tasks));
+        console.log("☁️ Loaded from Firestore:", tasks);
+      }
+    } catch (err) {
+      console.error("❌ Firestore load error:", err);
+    }
+  }
+
+  // ─── Create one task row ──────────────────────────────────────────────────
+  function createTodoItem(taskText, isCompleted = false) {
+    const li = document.createElement("li");
+    if (isCompleted) li.classList.add("completed");
+
+    // Checkbox square
+    const checkbox = document.createElement("div");
+    checkbox.classList.add("todo-checkbox");
+    if (isCompleted) checkbox.classList.add("checked");
+
+    checkbox.addEventListener("click", async () => {
+      li.classList.toggle("completed");
+      checkbox.classList.toggle("checked");
+      sortTodoList();
+      await saveTodos();
+    });
+
+    // Task text
+    const span = document.createElement("span");
+    span.classList.add("task-text");
+    span.textContent = taskText;
+
+    // Delete button
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "X";
+    delBtn.style.marginLeft = "10px";
+    delBtn.style.background = "transparent";
+    delBtn.style.border = "none";
+    delBtn.style.color = "red";
+    delBtn.style.fontWeight = "bold";
+    delBtn.style.cursor = "pointer";
+    delBtn.style.flexShrink = "0";
+
+    delBtn.addEventListener("click", async () => {
+      li.remove();
+      await saveTodos();
+    });
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+    li.appendChild(delBtn);
+    document.getElementById("todo-list").appendChild(li);
+  }
+
+  // ─── Add task (button + Enter key) ───────────────────────────────────────
+  window.addTask = async function () {
+    const input = document.getElementById("todo-input");
+    const taskText = input.value.trim();
+    if (!taskText) return;
+
+    createTodoItem(taskText, false);
+    input.value = "";
+    await saveTodos();
+  };
+
+  // ─── Boot ─────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    // Enter key support
+    const input = document.getElementById('todo-input');
+    input.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') await window.addTask();
+    });
+
+    // Load tasks on page open
+    loadTodos();
+
+    // Apply parent-assigned lesson locks + sync to-do list
+    applyLessonAssignments();
+
+    // ─── Real-time Parental Sync (Instant lock/unlock) ───
+    if (window.BB_Sync) {
+      BB_Sync.pullSettings().then(() => {
+        applyLessonAssignments();
+      });
+      BB_Sync.startRealtimeSync((data) => {
+        applyLessonAssignments();
+      });
+    }
+  });
+
+  // ─── Lesson Assignment (reads bb_assigned_lessons set by parent.html) ───
+  const LESSON_META = [
+    { id: 'alp',         label: '🔤 Magic Of Words' },
+    { id: 'NunInd',      label: '🔢 Numbers' },
+    { id: 'gsa',         label: '📝 Golden Words and Sentences' },
+    { id: 'civicsense',  label: '🏫 Civic Sense' },
+    { id: 'color-shape', label: '🎨 Colour & Shapes' },
+    { id: 'hindi',       label: '🇮🇳 Hindi' },
+    { id: 'animals',     label: '🐾 Animals' }
+  ];
+
+  function applyLessonAssignments() {
+    const raw = window.BB_UserData ? window.BB_UserData.getItem('bb_assigned_lessons') : localStorage.getItem('bb_assigned_lessons');
+    if (!raw) return; // not configured by parent – all lessons open
+
+    let assigned;
+    try { assigned = JSON.parse(raw); } catch(e) { return; }
+
+    // ─ Lock / unlock each lesson box based on assignment ─
+    document.querySelectorAll('.lesson-box[data-lesson-id]').forEach(box => {
+      const id = box.dataset.lessonId;
+      const isAssigned = assigned.includes(id);
+
+      if (isAssigned) {
+        // Ensure it's unlocked (remove any leftover lock)
+        box.classList.remove('bb-lesson-locked');
+        const old = box.querySelector('.lesson-lock-overlay');
+        if (old) old.remove();
+        // Restore onclick if it was stripped
+        const meta = LESSON_META.find(m => m.id === id);
+        if (meta && !box.getAttribute('onclick')) {
+          box.setAttribute('onclick', `location.href='${id}.html'`);
+        }
+      } else {
+        // Lock this lesson
+        box.classList.add('bb-lesson-locked');
+        box.removeAttribute('onclick');
+        if (!box.querySelector('.lesson-lock-overlay')) {
+          const overlay = document.createElement('div');
+          overlay.className = 'lesson-lock-overlay';
+          overlay.innerHTML = '🔒 Locked by Parent';
+          box.appendChild(overlay);
+        }
+      }
+    });
+
+    // ─ Sync To-Do list: add assigned, remove de-assigned lesson todos ─
+    const labelMap = {};
+    LESSON_META.forEach(m => { labelMap[m.id] = m.label; });
+    const allLessonLabels = LESSON_META.map(m => m.label);
+
+    const list = document.getElementById('todo-list');
+    // Remove de-assigned lesson todos
+    list.querySelectorAll('li').forEach(li => {
+      const text = li.querySelector('.task-text')?.textContent.trim();
+      if (allLessonLabels.includes(text) && !assigned.some(id => labelMap[id] === text)) {
+        li.remove();
+      }
+    });
+    // Add newly assigned lessons if not already in the list
+    assigned.forEach(id => {
+      const label = labelMap[id];
+      if (!label) return;
+      const already = Array.from(list.querySelectorAll('.task-text'))
+        .some(el => el.textContent.trim() === label);
+      if (!already) createTodoItem(label, false);
+    });
+    // Persist the synced state
+    saveTodos();
+  }
+
+  // Expose globally (for other scripts if needed)
+  window.loadTodosFromFirestore = loadTodos;
+  window.saveTodosToFirestore = saveTodos;
+
+  const leftBoxes = document.querySelectorAll(".left-container .glass-box");
+  const infoContent = document.getElementById("info-content");
+  let locked = false;
+
+  // Profile panel handled by assets/js/profile-panel.js
+
+</script>
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/bb-user-data.js"></script>
+<script src="assets/js/bb-sync.js"></script>
+<script src="assets/js/parental-control.js"></script>
+
+</html>

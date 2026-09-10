@@ -1,0 +1,27 @@
+{
+  "name": "brainberry",
+  "version": "1.0.0",
+  "description": "BrainBerry – A voice-driven, interactive learning platform for children with special learning needs",
+  "author": "BrainBerry Team",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "education",
+    "learning",
+    "kids",
+    "voice-recognition",
+    "interactive",
+    "special-needs"
+  ],
+  "scripts": {
+    "start": "npx -y serve@latest . -l 3000 --no-clipboard",
+    "docker:build": "docker build -t brainberry:latest .",
+    "docker:run": "docker run -d --name brainberry -p 8080:80 brainberry:latest",
+    "docker:stop": "docker stop brainberry && docker rm brainberry",
+    "docker:restart": "npm run docker:stop & npm run docker:build && npm run docker:run",
+    "docker:logs": "docker logs -f brainberry"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

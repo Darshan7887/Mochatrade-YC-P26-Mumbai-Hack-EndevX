@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+ <title>Colours BrainBerry</title>
+ <style>
+ body {
+ margin: 0;
+ font-family: "Fugaz One", sans-serif;
+ background: #f6f6f9;
+ }
+
+ /* Background video */
+ .bg-video {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ z-index: -1;
+ filter: blur(6px) brightness(0.6) saturate(0.8);
+ transform: scale(1.05);
+ }
+
+ /* Navbar */
+ .navbar {
+ background: rgba(75, 42, 173, 0.9);
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 8px 20px;
+ color: #fff;
+ position: relative;
+ z-index: 10;
+ }
+
+ /* Logo */
+ .navbar .logo {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .navbar .logo img {
+ width: 80px;
+ height: 55px;
+ border-radius: 6px;
+ }
+
+ .navbar .logo span {
+ font-size: 1.2rem;
+ font-weight: bold;
+ }
+
+ /* Menu */
+ .navbar .menu {
+ display: flex;
+ gap: 25px;
+ position: relative;
+ }
+
+ .navbar .menu a {
+ text-decoration: none;
+ color: #fff;
+ font-weight: 500;
+ font-size: 0.95rem;
+ padding: 5px 8px;
+ position: relative;
+ transition: all 0.3s ease;
+ }
+
+ .navbar .menu a:hover {
+ color: #ffcc00;
+ background: rgba(255, 255, 255, 0.15);
+ border-radius: 6px;
+ filter: none !important;
+ }
+
+ /* Blur other options */
+ .navbar .menu:hover a:not(:hover) {
+ filter: blur(2px) brightness(70%);
+ }
+
+ /* Right side */
+ .navbar .right {
+ display: flex;
+ align-items: center;
+ gap: 15px;
+ }
+
+ .reward {
+ display: flex;
+ align-items: center;
+ gap: 5px;
+ font-size: 0.9rem;
+ }
+
+ .reward img {
+ width: 20px;
+ height: 20px;
+ }
+
+ .profile img {
+ width: 70px;
+ height: 55px;
+ border-radius: 50%;
+ border: 0px solid #fff;
+ }
+
+ /* Video preview */
+ .video-preview {
+ position: absolute;
+ top: 40px;
+ left: 0;
+ width: 200px;
+ height: 120px;
+ border-radius: 8px;
+ overflow: hidden;
+ box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ background: #000;
+ z-index: 20;
+ }
+
+ .video-preview video {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ }
+
+ .navbar .menu a:hover .video-preview {
+ opacity: 1;
+ }
+
+ /* Lesson container */
+ .lesson-box {
+ margin: 20px auto;
+ width: 90%;
+ min-height: 300px;
+ background: rgba(255, 255, 255, 0.4);
+ border-radius: 16px;
+ padding: 25px 20px;
+ text-align: center;
+ color: #fff;
+ box-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+ backdrop-filter: blur(6px);
+ -webkit-backdrop-filter: blur(6px);
+ }
+
+ .lesson-header {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 4px;
+ margin-bottom: 20px;
+ }
+
+ .lesson-header h2 {
+ margin: 0;
+ font-size: 2.5rem;
+ text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+ color: #fff;
+ }
+ 
+ .progress-wrapper {
+ width: 80%;
+ max-width: 400px;
+ background: rgba(0,0,0,0.3);
+ border-radius: 20px;
+ height: 24px;
+ position: relative;
+ overflow: hidden;
+ margin: 10px auto;
+ border: 2px solid rgba(255,255,255,0.5);
+ box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+ }
+ .progress-fill {
+ height: 100%;
+ background: linear-gradient(90deg, #ffcc00, #ff6b6b);
+ width: 0%;
+ border-radius: 20px;
+ transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+ box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
+ }
+ .progress-text {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ color: #fff;
+ font-size: 0.9rem;
+ font-weight: bold;
+ text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+ pointer-events: none;
+ font-family: "Fugaz One", sans-serif;
+ }
+
+ .pulsing-instruction {
+ font-size: 1.1rem;
+ color: #ffcc00;
+ text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+ animation: pulse-text 2s infinite ease-in-out;
+ background: rgba(0,0,0,0.2);
+ padding: 6px 16px;
+ border-radius: 20px;
+ }
+
+ @keyframes pulse-text {
+ 0%, 100% { transform: scale(1); opacity: 0.8; }
+ 50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 10px #ffcc00; }
+ }
+
+ /* Theater Layout */
+ .theater-layout {
+ display: grid;
+ grid-template-columns: 140px 1fr 140px;
+ gap: 20px;
+ width: 100%;
+ align-items: start;
+ justify-items: center;
+ }
+
+ .wing-panel {
+ display: flex;
+ flex-direction: column;
+ gap: 15px;
+ width: 100%;
+ align-items: center;
+ background: rgba(0,0,0,0.15);
+ padding: 20px 0px;
+ border-radius: 20px;
+ border: 1px solid rgba(255,255,255,0.2);
+ box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
+ }
+
+ .center-stage {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ width: 100%;
+ min-height: 480px;
+ background: radial-gradient(circle at center top, rgba(255,255,255,0.12) 0%, transparent 70%);
+ border-radius: 30px;
+ position: relative;
+ }
+
+ .pedestal-slot {
+ width: 200px;
+ height: 260px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ position: relative;
+ margin-top: 20px;
+ }
+
+ .pedestal-shadow {
+ position: absolute;
+ bottom: 10px;
+ width: 160px;
+ height: 35px;
+ background: rgba(255,255,255,0.3);
+ border-radius: 50%;
+ filter: blur(8px);
+ box-shadow: 0 0 20px rgba(255,255,255,0.8);
+ z-index: 0;
+ }
+
+ /* Each colour card */
+ .colour-card {
+ width: 120px;
+ border-radius: 20px;
+ overflow: hidden;
+ background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+ backdrop-filter: blur(4px);
+ -webkit-backdrop-filter: blur(4px);
+ box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 6px 20px rgba(0, 0, 0, 0.25);
+ cursor: pointer;
+ transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+ border: 1px solid rgba(255, 255, 255, 0.6);
+ margin: 0 auto;
+ }
+
+ .wing-panel .colour-card {
+ transform: scale(0.85); /* shrink cards in wings */
+ margin: -8px 0; /* Tighten the gap since they are scaled */
+ }
+
+ .wing-panel .colour-card:hover {
+ transform: scale(0.95);
+ box-shadow: 0 12px 40px rgba(255, 255, 255, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+ border-color: rgba(255,255,255,0.8);
+ z-index: 10;
+ }
+
+ .center-stage .colour-card {
+ transform: scale(1.4);
+ z-index: 20;
+ pointer-events: none; /* card on stage cant be clicked again */
+ box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.9);
+ border: 2px solid #ffcc00;
+ }
+
+ /* View Transition Name Mapping */
+ #card-red { view-transition-name: card-red; }
+ #card-blue { view-transition-name: card-blue; }
+ #card-green { view-transition-name: card-green; }
+ #card-yellow { view-transition-name: card-yellow; }
+ #card-orange { view-transition-name: card-orange; }
+ #card-pink { view-transition-name: card-pink; }
+ #card-purple { view-transition-name: card-purple; }
+ #card-black { view-transition-name: card-black; }
+ #card-white { view-transition-name: card-white; }
+ #card-brown { view-transition-name: card-brown; }
+
+ ::view-transition-group(*) {
+   animation-duration: 0.8s;
+   animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+ }
+ 
+ .colour-card:active {
+ transform: scale(0.96);
+ box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+ }
+
+ /* Colour swatch block */
+ .colour-swatch {
+ width: 100%;
+ height: 95px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ position: relative;
+ background-image: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%);
+ box-shadow: inset 0 -4px 10px rgba(0,0,0,0.15), inset 0 4px 10px rgba(255,255,255,0.2);
+ }
+ 
+ .card-emoji {
+ font-size: 3.2rem;
+ filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+ transition: transform 0.3s ease;
+ }
+
+ .colour-card:hover .card-emoji {
+ transform: scale(1.15) rotate(5deg);
+ }
+
+ /* Colour name label */
+ .colour-label {
+ padding: 12px 4px;
+ font-size: 1.1rem;
+ font-family: "Fugaz One", sans-serif;
+ color: #fff;
+ text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+ }
+
+ /* Magic Rainbow Button */
+ .magic-btn {
+ margin: 10px auto;
+ padding: 10px 24px;
+ font-size: 1.1rem;
+ font-family: "Fugaz One", sans-serif;
+ background: rgba(75, 42, 173, 0.4);
+ color: #fff;
+ border: 2px solid rgba(255,255,255,0.3);
+ border-radius: 50px;
+ cursor: pointer;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+ text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+ transition: transform 0.3s ease, background 0.3s ease;
+ }
+
+ .magic-btn:hover {
+ background: rgba(75, 42, 173, 0.8);
+ border-color: rgba(255,255,255,0.6);
+ transform: translateY(-2px);
+ }
+
+ /* Restart Button */
+ #restart-btn {
+ display: none;
+ margin: 10px auto;
+ padding: 10px 24px;
+ font-size: 1.1rem;
+ font-family: "Fugaz One", sans-serif;
+ background: linear-gradient(135deg, #00b894, #00cec9);
+ color: #fff;
+ border: 2px solid rgba(255,255,255,0.8);
+ border-radius: 50px;
+ cursor: pointer;
+ box-shadow: 0 6px 15px rgba(0, 184, 148, 0.4);
+ transition: transform 0.3s ease;
+ animation: pulse-text 2s infinite ease-in-out;
+ }
+ #restart-btn:hover {
+ transform: scale(1.08);
+ }
+
+ /* Back link */
+ .back-link {
+ display: inline-block;
+ margin-top: 30px;
+ color: #ffcc00;
+ text-decoration: none;
+ font-size: 0.95rem;
+ transition: color 0.3s ease;
+ }
+
+ .back-link:hover {
+ color: #fff;
+ }
+
+ /* Voice-flow additions (no layout change) */
+ .voice-panel {
+ margin-top: 28px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 12px;
+ }
+
+ .voice-panel button {
+ margin: 6px;
+ padding: 14px 32px;
+ font-size: 1.2rem;
+ border: none;
+ border-radius: 50px;
+ cursor: pointer;
+ font-family: "Fugaz One", sans-serif;
+ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ }
+
+ #mic-btn {
+ background: linear-gradient(135deg, #FF416C, #FF4B2B);
+ color: white;
+ box-shadow: 0 6px 15px rgba(255, 65, 108, 0.4);
+ border: 2px solid rgba(255,255,255,0.6);
+ }
+
+ #mic-btn:hover:not(:disabled) {
+ transform: scale(1.08);
+ box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
+ }
+
+ #mic-btn:disabled {
+ background: rgba(0,0,0,0.3);
+ box-shadow: none;
+ border-color: transparent;
+ opacity: 0.6;
+ cursor: not-allowed;
+ }
+ 
+ #next-btn {
+ background: rgba(75, 42, 173, 0.4);
+ color: white;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+ border: 2px solid rgba(255,255,255,0.3);
+ padding: 10px 24px;
+ font-size: 1.1rem;
+ }
+
+ #next-btn:hover:not(:disabled) {
+ background: rgba(75, 42, 173, 0.8);
+ border-color: rgba(255,255,255,0.6);
+ transform: translateY(-2px);
+ }
+ 
+ #next-btn:disabled {
+ opacity: 0.45;
+ cursor: not-allowed;
+ }
+
+ #feedback-msg {
+ font-size: 1.1rem;
+ min-height: 1.4em;
+ color: #fff;
+ text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+ }
+
+ /* Card selected highlight */
+ .colour-card.active-card {
+ /* The active-card CSS styling is now inherently handled by the .center-stage selector logic above */
+ }
+
+ /* Shake keyframe */
+ @keyframes bb-shake {
+
+ 0%,
+ 100% {
+ transform: translateX(0);
+ }
+
+ 20% {
+ transform: translateX(-6px);
+ }
+
+ 40% {
+ transform: translateX(6px);
+ }
+
+ 60% {
+ transform: translateX(-4px);
+ }
+
+ 80% {
+ transform: translateX(4px);
+ }
+ }
+
+ .bb-shake {
+ animation: bb-shake 0.35s ease;
+ }
+
+ /* Error overlay */
+ #error-overlay {
+ pointer-events: none;
+ position: fixed;
+ inset: 0;
+ z-index: 9000;
+ background: rgba(220, 30, 30, 0);
+ transition: background 0.15s ease;
+ }
+
+ #error-overlay.flash {
+ background: rgba(220, 30, 30, 0.38);
+ }
+
+ /* Confetti canvas */
+ #confetti-canvas {
+ pointer-events: none;
+ position: fixed;
+ inset: 0;
+ z-index: 9500;
+ width: 100%;
+ height: 100%;
+ }
+</style>
+</head>
+
+<body>
+
+ <!-- Background video -->
+ <video autoplay muted loop playsinline class="bg-video">
+ <source src="assets/videos/Colour_Background.mp4" type="video/mp4" />
+ </video>
+ <!-- Pixel Rain Background -->
+ <canvas id="pixelRain" style="position:fixed; top:0; left:0; z-index:-1; opacity:0.3; background: transparent;"></canvas>
+
+ <!-- Navbar -->
+ <div class="navbar">
+ <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+ <div class="logo">
+ <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+ <span>BrainBerry</span>
+</div>
+ </a>
+
+ <div class="menu">
+ <a href="front.html">
+ Home
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix.mp4" type="video/mp4">
+</video>
+</div>
+</a>
+ <a href="challen.html">
+ Challenges
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix12.mp4" type="video/mp4">
+</video>
+</div>
+</a>
+ <a href="chal.html">
+ Games
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix3.mp4" type="video/mp4">
+</video>
+</div>
+</a>
+ <a href="Less.html">
+ Lessons
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix5.mov" type="video/mp4">
+</video>
+</div>
+</a>
+ <a href="rewards.html">
+ Rewards
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/reward.mp4" type="video/mp4">
+</video>
+</div>
+</a>
+ <a href="help.html">
+ Help
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/help.mp4" type="video/mp4">
+</video>
+</div>
+</a>
+</div>
+
+ <div class="right">
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+ <span>0</span>
+</div>
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+ <span>0</span>
+</div>
+ <div class="profile">
+ <img src="assets/images/dp-cactus-20.png" alt="User">
+</div>
+</div>
+</div>
+
+ <!-- Lesson content -->
+ <div class="lesson-box">
+ <div class="lesson-header">
+ <h2>🌈 Let's Explore Colours!</h2>
+ <div class="progress-wrapper">
+ <div class="progress-fill" id="progress-fill"></div>
+ <span id="progress-text" class="progress-text">0/10</span>
+ </div>
+ <div class="pulsing-instruction">✨ Choose a colour to begin ✨</div>
+ </div>
+
+ <div class="theater-layout">
+ 
+ <!-- LEFT WING -->
+ <div class="wing-panel left-wing">
+ <div class="colour-card" id="card-red" title="Click to hear">
+ <div class="colour-swatch" style="background:#e63946;"><div class="card-emoji">🍎</div></div>
+ <div class="colour-label">Red</div>
+ </div>
+ <div class="colour-card" id="card-blue" title="Click to hear">
+ <div class="colour-swatch" style="background:#457b9d;"><div class="card-emoji">💧</div></div>
+ <div class="colour-label">Blue</div>
+ </div>
+ <div class="colour-card" id="card-green" title="Click to hear">
+ <div class="colour-swatch" style="background:#2d6a4f;"><div class="card-emoji">🐢</div></div>
+ <div class="colour-label">Green</div>
+ </div>
+ <div class="colour-card" id="card-yellow" title="Click to hear">
+ <div class="colour-swatch" style="background:#f4c430;"><div class="card-emoji">☀️</div></div>
+ <div class="colour-label">Yellow</div>
+ </div>
+ <div class="colour-card" id="card-orange" title="Click to hear">
+ <div class="colour-swatch" style="background:#f77f00;"><div class="card-emoji">🍊</div></div>
+ <div class="colour-label">Orange</div>
+ </div>
+ </div>
+
+ <!-- CENTER STAGE -->
+ <div class="center-stage">
+ <div class="pedestal-slot">
+ <div class="pedestal-shadow"></div>
+ <!-- Active card flies here -->
+ </div>
+ 
+ <div class="stage-controls" style="margin-top: 30px;">
+ <div id="feedback-msg" style="font-size: 1.1rem; color: #ffcc00; min-height: 24px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); margin-bottom: 20px;">✨ Click a colour to stage it</div>
+ <div style="display: flex; gap: 15px; justify-content: center; align-items: center;">
+ <button id="mic-btn" disabled style="background: linear-gradient(135deg, #ff6b6b, #ff4757); padding: 12px 28px; font-size: 1.2rem; border-radius: 50px; color: white; cursor: pointer; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 15px rgba(255,107,107,0.5); font-family: 'Fugaz One'; transition: transform 0.2s;">🎤 Speak Now</button>
+ <button id="next-btn" disabled style="background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); padding: 12px 24px; font-size: 1.1rem; border-radius: 50px; color: white; cursor: pointer; border: 1px solid rgba(255,255,255,0.4); font-family: 'Fugaz One'; transition: transform 0.2s;">Next ⏭️</button>
+ </div>
+ 
+ <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 25px; gap: 15px;">
+ <button id="restart-btn" onclick="restartLesson()" style="display: none;">🔄 Restart Lesson</button>
+ <button id="magic-rainbow-btn" class="magic-btn" style="padding: 10px 20px; font-size: 1rem; border-radius: 30px; background: linear-gradient(90deg, #ff6b6b, #ffcc00, #4ecdc4, #6c5ce7); border: 2px solid white; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4); color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.8); animation: pulse-text 2s infinite ease-in-out; cursor: pointer;">✨ Magic Rainbow</button>
+ <a href="color-shape.html" class="back-link" style="font-family: 'Fugaz One', sans-serif; margin-top: 5px;">⬅ Back to Hub</a>
+ </div>
+ </div>
+ </div>
+
+ <!-- RIGHT WING -->
+ <div class="wing-panel right-wing">
+ <div class="colour-card" id="card-pink" title="Click to hear">
+ <div class="colour-swatch" style="background:#f08080;"><div class="card-emoji">🌸</div></div>
+ <div class="colour-label">Pink</div>
+ </div>
+ <div class="colour-card" id="card-purple" title="Click to hear">
+ <div class="colour-swatch" style="background:#7b2d8b;"><div class="card-emoji">🍇</div></div>
+ <div class="colour-label">Purple</div>
+ </div>
+ <div class="colour-card" id="card-black" title="Click to hear">
+ <div class="colour-swatch" style="background:#1a1a2e; border-bottom: 1px solid rgba(255,255,255,0.2);"><div class="card-emoji">🐈‍⬛</div></div>
+ <div class="colour-label">Black</div>
+ </div>
+ <div class="colour-card" id="card-white" title="Click to hear">
+ <div class="colour-swatch" style="background:#f0f0f0;"><div class="card-emoji">☁️</div></div>
+ <div class="colour-label" style="color:#333;">White</div>
+ </div>
+ <div class="colour-card" id="card-brown" title="Click to hear">
+ <div class="colour-swatch" style="background:#795548;"><div class="card-emoji">🐻</div></div>
+ <div class="colour-label">Brown</div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Fullscreen overlays -->
+ <div id="error-overlay"></div>
+ <canvas id="confetti-canvas"></canvas>
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/parental-control.js"></script>
+</body>
+<script>
+
+ // Phonetic aliases (child-friendly sound-alike map) 
+ // Each key is the canonical word; values are accepted sound-alikes.
+ const PHONETIC_MAP = {
+ red: ["red", "redd", "rehd", "rad", "reed", "rud"],
+ blue: ["blue", "bloo", "blew", "bluu", "bue"],
+ green: ["green", "grean", "gren", "grin", "griin"],
+ yellow: ["yellow", "yelo", "yallow", "yello", "yella", "yalow"],
+ orange: ["orange", "oranje", "orang", "ornge", "arange", "orinj"],
+ pink: ["pink", "pnik", "penk", "peenk", "ping"],
+ purple: ["purple", "perpul", "purpel", "purpel", "parple", "purpul"],
+ black: ["black", "blak", "bleck", "blac", "blaak"],
+ white: ["white", "wite", "whiet", "wight", "wite", "ywite"],
+ brown: ["brown", "bron", "braun", "bown", "broun", "brawn"]
+ };
+
+ // State 
+ let currentTarget = null; // canonical word to match
+ let micReady = false; // true only after audio finishes
+ let answeredOk = false; // true once card is correctly spoken
+ let isListening = false; // guard: prevents duplicate recognition sessions
+ let retryTimer = null; // silence auto-retry handle
+
+ const micBtn = document.getElementById("mic-btn");
+ const nextBtn = document.getElementById("next-btn");
+ const feedbackMsg = document.getElementById("feedback-msg");
+ const errorOvl = document.getElementById("error-overlay");
+
+ // Speech Synthesis 
+ // Custom Voice Audio System (REPLACES robotic voice)
+ let currentAudio = null;
+ let audioSessionId = 0;
+
+ function playAudio(name, onDone) {
+     audioSessionId++;
+     const session = audioSessionId;
+
+     if (currentAudio) {
+         currentAudio.pause();
+         currentAudio.onended = null;
+     }
+
+     const audioMap = {
+         "Red": "assets/audio/red.mp3",
+         "Blue": "assets/audio/blue.mp3",
+         "Green": "assets/audio/green.mp3",
+         "Yellow": "assets/audio/yellow.mp3",
+         "Orange": "assets/audio/orange.mp3",
+         "Pink": "assets/audio/pink.mp3",
+         "Purple": "assets/audio/purple.mp3",
+         "Black": "assets/audio/black.mp3",
+         "White": "assets/audio/white.mp3",
+         "Brown": "assets/audio/brown.mp3"
+     };
+
+     const file = audioMap[name];
+
+     if (!file) {
+         console.warn("Audio not found for:", name);
+         if (session === audioSessionId && onDone) onDone();
+         return;
+     }
+
+     const audio = new Audio(file);
+     currentAudio = audio;
+
+     audio.play().then(() => {
+         audio.onended = () => {
+             if (session === audioSessionId && onDone) onDone();
+         };
+     }).catch((err) => {
+         console.warn("Audio play failed", err);
+         if (session === audioSessionId && onDone) onDone();
+     });
+ }
+
+ // Recognition session management 
+ function stopRecognition() {
+ if (recognition && isListening) {
+ try { recognition.stop(); } catch (_) { }
+ }
+ isListening = false;
+ clearTimeout(retryTimer);
+ }
+
+ function startRecognition() {
+ if (!recognition || isListening || answeredOk) return;
+ isListening = true;
+ micBtn.disabled = true;
+ feedbackMsg.textContent = "Listening...";
+ try {
+ recognition.start();
+ } catch (err) {
+ // Already started abort and retry in 400ms
+ isListening = false;
+ retryTimer = setTimeout(startRecognition, 400);
+ }
+ }
+
+ // Flight Animation Logic
+ function flyCardToStage(cardElement) {
+     if (!document.startViewTransition) {
+         executeFlight(cardElement);
+     } else {
+         document.startViewTransition(() => executeFlight(cardElement));
+     }
+ }
+ 
+ function executeFlight(card) {
+     const stageSlot = document.querySelector(".pedestal-slot");
+     const currentStaged = stageSlot.querySelector(".colour-card");
+     
+     // Return currently staged card to its specific wing
+     if (currentStaged && currentStaged !== card) {
+         const originalParent = currentStaged.originalParent;
+         if (originalParent) {
+             originalParent.appendChild(currentStaged);
+         }
+     }
+     
+     // Stash original parent so we can return it later if it doesn't have one
+     if (!card.originalParent) {
+         card.originalParent = card.parentElement;
+     }
+     
+     // Move new card to center
+     stageSlot.appendChild(card);
+ }
+
+ // Card click 
+ document.querySelectorAll(".colour-card").forEach(card =>{
+     card.addEventListener("click", () =>{
+         // Prevent clicking the card if it's already in the center stage
+         if (card.parentElement.classList.contains("pedestal-slot")) return;
+
+         stopRecognition();
+         
+         const name = card.querySelector(".colour-label").textContent.trim();
+         
+         // Trigger flight animation to physically move it to Center Stage
+         flyCardToStage(card);
+         
+         // Reset state
+         currentTarget = name;
+         micReady = false;
+         answeredOk = false;
+         micBtn.disabled = true;
+         nextBtn.disabled = true;
+         feedbackMsg.textContent = " Listen carefully...";
+         
+         playAudio(name, () => {
+             micReady = true;
+             micBtn.disabled = false;
+             feedbackMsg.textContent = " Now say: " + name;
+         });
+     });
+ });
+
+ // Speech Recognition setup 
+ const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+ let recognition = null;
+
+ if (SR) {
+ recognition = new SR();
+ recognition.lang = "en-US";
+ recognition.interimResults = false;
+ recognition.maxAlternatives = 5; // more candidates = better child-speech handling
+ recognition.continuous = false;
+
+ recognition.onresult = (e) =>{
+ isListening = false;
+ clearTimeout(retryTimer);
+
+ // Collect ALL alternatives across all results maximise match surface
+ const candidates = [];
+ for (let i = 0; i < e.results.length; i++) {
+ for (let j = 0; j < e.results[i].length; j++) {
+ candidates.push(e.results[i][j].transcript.toLowerCase().trim());
+ }
+ }
+ validate(candidates);
+ };
+
+ recognition.onerror = (e) =>{
+ isListening = false;
+ clearTimeout(retryTimer);
+
+ if (e.error === "no-speech") {
+ // Child was silent prompt gently and auto-retry once
+ feedbackMsg.textContent = " Nothing heard! Try again...";
+ if (!answeredOk && micReady) {
+ retryTimer = setTimeout(startRecognition, 1200);
+ }
+ } else if (e.error === "aborted") {
+ // Intentionally stopped do nothing
+ } else {
+ feedbackMsg.textContent = " Mic problem tap Speak to retry";
+ if (!answeredOk && micReady) micBtn.disabled = false;
+ }
+ };
+
+ recognition.onend = () =>{
+ isListening = false;
+ // Re-enable mic button if round is still open
+ if (!answeredOk && micReady) {
+ micBtn.disabled = false;
+ }
+ };
+ }
+
+ // Mic button click 
+ micBtn.addEventListener("click", () =>{
+ // RULE: must listen before speaking
+ if (!micReady) {
+ feedbackMsg.textContent = "Please listen before speaking!";
+ shakeMicBtn();
+ return;
+ }
+ if (!recognition) {
+ feedbackMsg.textContent = " Speech recognition not supported in this browser.";
+ return;
+ }
+ startRecognition();
+ });
+
+ function shakeMicBtn() {
+ micBtn.classList.remove("bb-shake");
+ void micBtn.offsetWidth; // force reflow to restart animation
+ micBtn.classList.add("bb-shake");
+ micBtn.addEventListener("animationend", () =>micBtn.classList.remove("bb-shake"), { once: true });
+ }
+
+ // Validation (child-friendly, multi-layer) 
+ function validate(candidates) {
+ const key = currentTarget.toLowerCase();
+ const aliases = PHONETIC_MAP[key] || [key];
+
+ // Layer 1: phonetic alias match (any candidate against any alias)
+ const phoneticOk = candidates.some(c =>
+ aliases.some(a =>c === a || c.includes(a) || a.includes(c))
+ );
+
+ // Layer 2: fuzzy Levenshtein threshold scales with word length
+ // short words (4 chars): allow 1 edit
+ // medium words (56 chars): allow 2 edits
+ // long words (7+ chars): allow 3 edits
+ const maxEdits = key.length <= 4 ? 1 : key.length <= 6 ? 2 : 3;
+ const fuzzyOk = candidates.some(c =>{
+ const words = c.split(/\s+/);
+ return words.some(w =>levenshtein(w, key) <= maxEdits);
+ });
+
+ const ok = phoneticOk || fuzzyOk;
+
+ if (ok) {
+ answeredOk = true;
+ micReady = false;
+ stopRecognition();
+ micBtn.disabled = true;
+ nextBtn.disabled = false;
+ feedbackMsg.textContent = " Amazing! You said: " + currentTarget + " ";
+ launchConfetti();
+
+ // Gamification: Star tracking
+ let learned = JSON.parse(localStorage.getItem("learnedColors") || "[]");
+ if (!learned.includes(currentTarget)) {
+ learned.push(currentTarget);
+ localStorage.setItem("learnedColors", JSON.stringify(learned));
+ const activeLabel = document.querySelector(".pedestal-slot .colour-card .colour-label");
+ if(activeLabel && !activeLabel.innerHTML.includes("⭐")) {
+ activeLabel.innerHTML += " ⭐";
+ }
+ updateProgressUI();
+ }
+
+ // Voice Flow Auto-advance after celebrating
+ setTimeout(() => {
+ nextBtn.click();
+ }, 3000);
+ } else {
+ // Show what was heard helps child self-correct
+ const heard = candidates[0] || "";
+ feedbackMsg.textContent = heard
+ ? ` Try again! I heard "${heard}" say "${currentTarget}"`
+ : ` Try again! Say "${currentTarget}" clearly`;
+ flashError();
+ // Re-enable mic after short pause
+ setTimeout(() =>{
+ if (!answeredOk && micReady) micBtn.disabled = false;
+ }, 900);
+ }
+ }
+
+ // Levenshtein distance 
+ function levenshtein(a, b) {
+ if (!a) return b.length;
+ if (!b) return a.length;
+ const dp = Array.from({ length: a.length + 1 }, (_, i) =>
+ Array.from({ length: b.length + 1 }, (_, j) =>i === 0 ? j : j === 0 ? i : 0)
+ );
+ for (let i = 1; i <= a.length; i++)
+ for (let j = 1; j <= b.length; j++)
+ dp[i][j] = a[i - 1] === b[j - 1]
+ ? dp[i - 1][j - 1]
+ : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+ return dp[a.length][b.length];
+ }
+
+ // Next button 
+ nextBtn.addEventListener("click", () =>{
+ stopRecognition();
+ const stagedCard = document.querySelector(".pedestal-slot .colour-card");
+ if (stagedCard) {
+ const orderedIds = ["card-red", "card-blue", "card-green", "card-yellow", "card-orange", "card-pink", "card-purple", "card-black", "card-white", "card-brown"];
+ const activeIdx = orderedIds.indexOf(stagedCard.id);
+ const nextIdx = (activeIdx + 1) % orderedIds.length;
+ document.getElementById(orderedIds[nextIdx]).click();
+ } else {
+ document.getElementById("card-red").click();
+ }
+ });
+
+ // Error glow overlay 
+ function flashError() {
+ errorOvl.classList.add("flash");
+ setTimeout(() =>errorOvl.classList.remove("flash"), 750);
+ }
+
+ // Confetti 
+ function launchConfetti() {
+ const canvas = document.getElementById("confetti-canvas");
+ const ctx = canvas.getContext("2d");
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight;
+
+ const PALETTE = [
+ "#ffcc00", "#ff6b6b", "#4ecdc4", "#45b7d1",
+ "#96ceb4", "#ffeaa7", "#fd79a8", "#a29bfe", "#6c5ce7", "#00b894"
+ ];
+ const particles = Array.from({ length: 180 }, () =>({
+ x: Math.random() * canvas.width,
+ y: Math.random() * -canvas.height * 0.6, // burst from above
+ w: 5 + Math.random() * 10,
+ h: 3 + Math.random() * 6,
+ color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+ angle: Math.random() * Math.PI * 2,
+ spin: (Math.random() - 0.5) * 0.2,
+ vx: (Math.random() - 0.5) * 5,
+ vy: 2 + Math.random() * 4,
+ alpha: 1
+ }));
+
+ let frame = 0;
+ const TOTAL = 120;
+
+ function draw() {
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ particles.forEach(p =>{
+ p.x += p.vx;
+ p.y += p.vy;
+ p.angle += p.spin;
+ p.vy += 0.08; // gentle gravity
+ p.vx *= 0.995; // slight air drag
+ if (frame >TOTAL * 0.55) p.alpha = Math.max(0, p.alpha - 0.022);
+
+ ctx.save();
+ ctx.globalAlpha = p.alpha;
+ ctx.translate(p.x, p.y);
+ ctx.rotate(p.angle);
+ ctx.fillStyle = p.color;
+ ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+ ctx.restore();
+ });
+ frame++;
+ if (frame < TOTAL) requestAnimationFrame(draw);
+ else ctx.clearRect(0, 0, canvas.width, canvas.height);
+ }
+ draw();
+ }
+
+ function launchMassiveConfetti() {
+ launchConfetti();
+ setTimeout(launchConfetti, 400);
+ setTimeout(launchConfetti, 800);
+ setTimeout(launchConfetti, 1200);
+ setTimeout(launchConfetti, 1600);
+ setTimeout(launchConfetti, 2000);
+ }
+
+ function updateProgressUI() {
+ let learned = JSON.parse(localStorage.getItem("learnedColors") || "[]");
+ const fill = document.getElementById("progress-fill");
+ const textSpan = document.getElementById("progress-text");
+ const restartBtn = document.getElementById("restart-btn");
+ const instruction = document.querySelector(".pulsing-instruction");
+
+ if(fill) {
+ const percentage = Math.min((learned.length / 10) * 100, 100);
+ fill.style.width = percentage + "%";
+ if (textSpan) textSpan.innerHTML = `${learned.length}/10`;
+ 
+ if(learned.length >= 10 && restartBtn) {
+ restartBtn.style.display = "block";
+ if(instruction) instruction.innerHTML = "🎉 Lesson Complete! Amazing Job! 🎉";
+ if(!window.hasCelebrated) {
+ launchMassiveConfetti();
+ window.hasCelebrated = true;
+ }
+ } else if (restartBtn) {
+ restartBtn.style.display = "none";
+ if(instruction) instruction.innerHTML = "✨ Choose a colour to begin ✨";
+ window.hasCelebrated = false;
+ }
+ }
+ }
+
+ function restartLesson() {
+ localStorage.removeItem("learnedColors");
+ document.querySelectorAll(".colour-card").forEach(card => {
+ let label = card.querySelector(".colour-label");
+ label.innerHTML = label.textContent.replace("⭐", "").trim();
+ });
+ updateProgressUI();
+ launchConfetti();
+ }
+
+ // Boot 
+ document.addEventListener("DOMContentLoaded", () =>{
+ updateProgressUI();
+
+ // Gamification UI init
+ let learned = JSON.parse(localStorage.getItem("learnedColors") || "[]");
+ document.querySelectorAll(".colour-card").forEach(card => {
+ let label = card.querySelector(".colour-label");
+ if(learned.includes(label.textContent.replace("⭐", "").trim())) {
+ label.innerHTML += " ⭐";
+ }
+ });
+
+ // Pixel Rain Animation
+ function startPixelRain() {
+ const canvas = document.getElementById('pixelRain');
+ if(!canvas) return;
+ const ctx = canvas.getContext('2d');
+ function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+ window.addEventListener('resize', resize);
+ resize();
+ const rainColors = ['#ff4d4d', '#ffcc00', '#4cff4c', '#4c4cff', '#cc4cff', '#ffffff'];
+ const drops = Array.from({length: 80}, () => ({
+ x: Math.random() * canvas.width,
+ y: Math.random() * canvas.height,
+ size: Math.random() > 0.5 ? 8 : 12,
+ speed: 1 + Math.random() * 2,
+ color: rainColors[Math.floor(Math.random() * rainColors.length)]
+ }));
+ function draw() {
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ drops.forEach(drop => {
+ ctx.fillStyle = drop.color;
+ ctx.fillRect(drop.x, drop.y, drop.size, drop.size);
+ drop.y += drop.speed;
+ if (drop.y > canvas.height) { drop.y = -drop.size; drop.x = Math.random() * canvas.width; }
+ });
+ requestAnimationFrame(draw);
+ }
+ draw();
+ }
+ startPixelRain();
+
+ // Attach magic rainbow click
+ document.getElementById("magic-rainbow-btn")?.addEventListener("click", () => {
+ const cards = Array.from(document.querySelectorAll(".colour-card"));
+ const randomCard = cards[Math.floor(Math.random() * cards.length)];
+ randomCard.click();
+ });
+
+ // Preload voice list browsers load it async
+ if ("speechSynthesis" in window) {
+ speechSynthesis.getVoices();
+ speechSynthesis.addEventListener("voiceschanged", () =>speechSynthesis.getVoices());
+ }
+ });
+</script>
+
+</html>

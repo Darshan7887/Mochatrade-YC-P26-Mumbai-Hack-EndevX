@@ -1,0 +1,481 @@
+/* ═══════════════════════════════════════════════════════════
+   tetris.css — NEO-ARCADE GLASS UI (BrainBerry Style)
+   🎮 "Arcade in the Sky" — Premium Game Experience
+   Prefix: tt-   (Tetris-specific only)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+#tetris-page * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Page body ── */
+#tetris-page {
+  font-family: "Fugaz One", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #050510;
+  overflow-x: hidden;
+}
+
+/* ── Background video + dark overlay ── */
+.tt-bg-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: blur(3px) brightness(0.45);
+}
+
+/* Dark gradient overlay for game focus */
+.tt-dark-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 20, 0.55) 0%,
+    rgba(5, 5, 20, 0.8) 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Main layout ── */
+.tt-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLASS CARD — Main wrapper
+   ═══════════════════════════════════════════════════════════ */
+.tt-card {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 12px 60px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(123, 47, 255, 0.08);
+  padding: 32px 36px;
+  color: #fff;
+  animation: tt-card-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tt-card-enter {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GAME BOARD — The HERO element
+   ═══════════════════════════════════════════════════════════ */
+.tt-board-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+
+.tt-board-label {
+  font-size: 1.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #00f7ff;
+  text-shadow:
+    0 0 20px rgba(0, 247, 255, 0.6),
+    0 0 40px rgba(0, 247, 255, 0.3),
+    0 2px 10px rgba(0, 0, 0, 0.8);
+  animation: tt-neon-pulse 3s ease-in-out infinite;
+}
+
+@keyframes tt-neon-pulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(0,247,255,0.6), 0 0 40px rgba(0,247,255,0.3); }
+  50%      { text-shadow: 0 0 30px rgba(0,247,255,0.9), 0 0 60px rgba(0,247,255,0.5), 0 0 80px rgba(0,247,255,0.2); }
+}
+
+/* ── Canvas (arcade screen) ── */
+#tt-canvas {
+  display: block;
+  border-radius: 12px;
+  border: 3px solid rgba(0, 247, 255, 0.35);
+  box-shadow:
+    0 0 50px rgba(0, 247, 255, 0.25),
+    0 0 100px rgba(123, 47, 255, 0.15),
+    inset 0 0 30px rgba(0, 0, 0, 0.7);
+  background: #05050f;
+  image-rendering: pixelated;
+  transition: box-shadow 0.3s ease;
+}
+
+#tt-canvas:hover {
+  box-shadow:
+    0 0 60px rgba(0, 247, 255, 0.35),
+    0 0 120px rgba(123, 47, 255, 0.2),
+    inset 0 0 30px rgba(0, 0, 0, 0.7);
+}
+
+/* ── Retro scanlines ── */
+.tt-scanlines {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  pointer-events: none;
+  border-radius: 12px;
+  z-index: 5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR — Floating glass modules
+   ═══════════════════════════════════════════════════════════ */
+.tt-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 170px;
+}
+
+/* ── Side panel (glass module) ── */
+.tt-side-panel {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tt-side-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.04),
+    transparent
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.tt-side-panel:hover {
+  border-color: rgba(0, 247, 255, 0.25);
+  box-shadow: 0 0 25px rgba(0, 247, 255, 0.1);
+}
+
+.tt-side-panel:hover::before {
+  left: 150%;
+}
+
+/* ── Panel headings ── */
+.tt-side-panel h3 {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 247, 255, 0.7);
+  margin-bottom: 10px;
+  font-family: sans-serif;
+  font-weight: 700;
+}
+
+/* ── Score / Lines / Level values ── */
+.tt-side-panel .tt-value {
+  font-size: 2.2rem;
+  color: #00f7ff;
+  text-shadow:
+    0 0 15px rgba(0, 247, 255, 0.6),
+    0 0 30px rgba(0, 247, 255, 0.2);
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+/* Pop animation class added by JS on score change */
+.tt-value.tt-pop {
+  animation: tt-score-pop 0.35s ease;
+}
+
+@keyframes tt-score-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); color: #ffcc00; text-shadow: 0 0 30px rgba(255,204,0,0.8); }
+  100% { transform: scale(1); }
+}
+
+/* ── Next piece canvas ── */
+#tt-next-canvas {
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+  background: #05050f;
+  border: 2px solid rgba(0, 247, 255, 0.15);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Level progress bar ── */
+.tt-level-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  margin-top: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.tt-level-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #6a00ff, #00f7ff, #ffcc00);
+  background-size: 200% 100%;
+  animation: tt-bar-shimmer 2s linear infinite;
+  transition: width 0.4s ease;
+}
+
+@keyframes tt-bar-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: 0% 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS — Neo-Arcade Style
+   ═══════════════════════════════════════════════════════════ */
+.tt-btn {
+  width: 100%;
+  padding: 13px 0;
+  border: none;
+  border-radius: 30px;
+  font-family: "Fugaz One", sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tt-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.tt-btn:active::after {
+  width: 300px; height: 300px;
+}
+
+.tt-btn:hover {
+  transform: scale(1.05) translateY(-3px);
+}
+
+/* Start button */
+.tt-btn-start {
+  background: linear-gradient(135deg, #6a00ff, #00f7ff);
+  color: #fff;
+  box-shadow:
+    0 4px 20px rgba(0, 247, 255, 0.4),
+    0 0 40px rgba(106, 0, 255, 0.2);
+}
+
+.tt-btn-start:hover {
+  box-shadow:
+    0 8px 35px rgba(0, 247, 255, 0.6),
+    0 0 60px rgba(106, 0, 255, 0.3);
+}
+
+/* Restart button */
+.tt-btn-restart {
+  background: linear-gradient(135deg, #ff6b35, #ff2d78);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255, 45, 120, 0.35);
+}
+
+.tt-btn-restart:hover {
+  box-shadow: 0 8px 35px rgba(255, 45, 120, 0.5);
+}
+
+/* Back button */
+.tt-btn-back {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.tt-btn-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(0, 247, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONTROLS LEGEND
+   ═══════════════════════════════════════════════════════════ */
+.tt-controls {
+  font-family: sans-serif;
+  font-size: 0.72rem;
+  line-height: 2;
+  opacity: 0.65;
+  text-align: left;
+}
+
+.tt-controls kbd {
+  display: inline-block;
+  background: rgba(0, 247, 255, 0.08);
+  border: 1px solid rgba(0, 247, 255, 0.25);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #00f7ff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+
+.tt-controls kbd:hover {
+  background: rgba(0, 247, 255, 0.15);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OVERLAY (Game Over / Paused / Splash)
+   ═══════════════════════════════════════════════════════════ */
+.tt-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 0, 20, 0.85);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+  text-align: center;
+  padding: 20px;
+}
+
+.tt-overlay.tt-show {
+  display: flex;
+  animation: tt-overlay-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tt-overlay-enter {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.tt-overlay h2 {
+  font-size: 2.4rem;
+  color: #00f7ff;
+  text-shadow:
+    0 0 30px rgba(0, 247, 255, 0.7),
+    0 0 60px rgba(0, 247, 255, 0.3);
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+  animation: tt-neon-pulse 2s ease-in-out infinite;
+}
+
+.tt-overlay p {
+  font-family: sans-serif;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.tt-overlay-score {
+  font-size: 1.6rem !important;
+  color: #ffcc00 !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+  margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LINE-CLEAR FLASH ANIMATION
+   ═══════════════════════════════════════════════════════════ */
+@keyframes tt-flash {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.15; }
+}
+
+.tt-flash-anim {
+  animation: tt-flash 0.12s linear 4;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LEVEL-UP GLOW BURST
+   ═══════════════════════════════════════════════════════════ */
+@keyframes tt-levelup-glow {
+  0%   { box-shadow: 0 0 50px rgba(0,247,255,0.25), inset 0 0 30px rgba(0,0,0,0.7); }
+  50%  { box-shadow: 0 0 100px rgba(255,204,0,0.6), 0 0 150px rgba(0,247,255,0.4), inset 0 0 30px rgba(0,0,0,0.5); }
+  100% { box-shadow: 0 0 50px rgba(0,247,255,0.25), inset 0 0 30px rgba(0,0,0,0.7); }
+}
+
+.tt-levelup #tt-canvas {
+  animation: tt-levelup-glow 0.8s ease 2;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .tt-card {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px;
+    gap: 18px;
+  }
+
+  .tt-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: unset;
+    width: 100%;
+  }
+
+  .tt-side-panel {
+    flex: 1;
+    min-width: 90px;
+  }
+
+  .tt-btn {
+    width: auto;
+    padding: 12px 24px;
+  }
+
+  .tt-board-label {
+    font-size: 1.3rem;
+  }
+}
+
+/* Ambient particles handled by .tt-dark-overlay */

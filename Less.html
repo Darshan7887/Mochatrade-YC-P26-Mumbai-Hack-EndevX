@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+ <title>Navbar with Video Previews</title>
+ <style>
+ body {
+ margin: 0;
+ font-family: "Fugaz one", sans-serif;
+ background: #f6f6f9;
+ }
+
+ /* Navbar */
+ .navbar {
+ background: rgba(75, 42, 173, 0.9);
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 8px 20px;
+ color: #fff;
+ position: relative;
+ z-index: 10;
+ box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+ border-bottom: 1px solid rgba(255,255,255,0.05);
+ }
+
+ /* Logo */
+ .navbar .logo {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+ .navbar .logo img {
+ width: 80px;
+ height: 55px;
+ border-radius: 6px;
+ }
+ .navbar .logo span {
+ font-size: 1.2rem;
+ font-weight: bold;
+ }
+
+ /* Menu */
+ .navbar .menu {
+ display: flex;
+ gap: 25px;
+ position: relative;
+ }
+ .navbar .menu a {
+ text-decoration: none;
+ color: #fff;
+ font-weight: 500;
+ font-size: 0.95rem;
+ padding: 5px 8px;
+ position: relative;
+ transition: all 0.3s ease;
+ }
+
+ .navbar .menu a:hover {
+ color: #ffcc00;
+ background: rgba(255, 255, 255, 0.15);
+ border-radius: 6px;
+ filter: none !important;
+ }
+
+ /* Blur other options */
+ .navbar .menu:hover a:not(:hover) {
+ filter: blur(2px) brightness(70%);
+ }
+
+ /* Right side */
+ .navbar .right {
+ display: flex;
+ align-items: center;
+ gap: 15px;
+ }
+ .reward {
+ display: flex;
+ align-items: center;
+ gap: 5px;
+ font-size: 0.9rem;
+ }
+ .reward img {
+ width: 20px;
+ height: 20px;
+ }
+ .profile img {
+ width: 70px;
+ height: 55px;
+ border-radius: 50%;
+ border: 0px solid #fff;
+ }
+ 
+ /* Profile Sidebar */
+ .profile-sidebar {
+ position: fixed;
+ top: 0;
+ right: -320px;
+ width: 300px;
+ height: 100%;
+ background: rgba(255, 255, 255, 0.15);
+ backdrop-filter: blur(10px);
+ -webkit-backdrop-filter: blur(10px);
+ border-left: 1px solid rgba(255, 255, 255, 0.3);
+ box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+ padding: 20px;
+ transition: right 0.3s ease;
+ z-index: 200;
+ color: #fff;
+ }
+ .profile-sidebar.active {
+ right: 0;
+ }
+ .profile-sidebar h2 {
+ margin-top: 0;
+ font-family: "Fugaz One", sans-serif;
+ }
+ .profile-sidebar p {
+ margin: 10px 0;
+ font-size: 1rem;
+ }
+ .profile-sidebar .close-btn {
+ position: absolute;
+ top: 10px;
+ left: 10px;
+ font-size: 20px;
+ cursor: pointer;
+ }
+
+ /* Content */
+ .content {
+ padding: 40px;
+ position: relative;
+ z-index: 1;
+ color: #fff;
+ text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+ transition: filter 0.3s ease;
+ }
+ .menu:hover ~ .content {
+ filter: blur(5px);
+ }
+
+ /* Video preview */
+ .video-preview {
+ position: absolute;
+ top: 40px;
+ left: 0;
+ width: 200px;
+ height: 120px;
+ border-radius: 8px;
+ overflow: hidden;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ background: #000;
+ z-index: 20;
+ }
+ .video-preview video {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ }
+ .navbar .menu a:hover .video-preview {
+ opacity: 1;
+ }
+
+ /* Lessons Container */
+ .lessons-section {
+ position: relative;
+ z-index: 5;
+ margin-top: 65px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 15px;
+ }
+
+ .lessons-header {
+ text-align: center;
+ color: #fff;
+ text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+ }
+ .lessons-header h1 {
+ font-size: 2.2rem;
+ margin: 0 0 5px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 10px;
+ }
+ .lessons-header p {
+ font-size: 1rem;
+ color: rgba(255, 255, 255, 0.85);
+ margin: 0;
+ font-family: sans-serif;
+ }
+
+ .lessons-grid {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 15px;
+ padding: 10px;
+ max-width: 1100px;
+ }
+
+ /* Card Base */
+ .lesson-card {
+ background: rgba(255, 255, 255, 0.15); /* light frosted glass */
+ backdrop-filter: blur(12px);
+ -webkit-backdrop-filter: blur(12px);
+ width: 215px;
+ border-radius: 18px;
+ padding: 20px 15px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ text-align: center;
+ position: relative;
+ top: 0;
+ transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease, background 0.4s ease;
+ border: 1px solid rgba(255, 255, 255, 0.3);
+ color: #fff;
+ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+ cursor: pointer;
+ }
+
+ .lesson-card:hover {
+ transform: translateY(-12px) scale(1.03);
+ background: rgba(255, 255, 255, 0.22);
+ box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+ }
+
+ /* Icons */
+ .lesson-icon {
+ font-size: 3.5rem;
+ margin-bottom: 15px;
+ line-height: 1;
+ filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
+ transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+ }
+ .lesson-card:hover .lesson-icon {
+    transform: scale(1.15) rotate(5deg);
+ }
+
+ /* Titles */
+ .lesson-title {
+ font-size: 1.2rem;
+ margin-bottom: 8px;
+ font-family: "Fugaz One", sans-serif;
+ text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+ }
+
+ /* Descriptions */
+ .lesson-desc {
+ font-size: 0.85rem;
+ color: rgba(255, 255, 255, 0.9);
+ font-family: sans-serif;
+ margin-bottom: 15px;
+ line-height: 1.3;
+ min-height: 35px;
+ text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+ }
+
+ /* Badge */
+ .lesson-badge {
+ background: rgba(255, 255, 255, 0.15);
+ backdrop-filter: blur(5px);
+ border: 1px solid rgba(255, 255, 255, 0.4);
+ border-radius: 50px;
+ padding: 4px 12px;
+ font-size: 0.75rem;
+ color: #fff;
+ font-family: sans-serif;
+ margin-bottom: 15px;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+ text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+ }
+
+ /* Button */
+ .lesson-btn {
+ width: 100%;
+ padding: 12px 0;
+ background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+ backdrop-filter: blur(8px);
+ border: 1px solid rgba(255, 255, 255, 0.6);
+ border-radius: 12px;
+ font-family: "Fugaz One", sans-serif;
+ font-size: 1.1rem;
+ color: #fff;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+ box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+ text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+ position: relative;
+ overflow: hidden;
+ }
+ .lesson-btn::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    transform: skewX(-20deg);
+    transition: 0.5s;
+ }
+ .lesson-card:hover .lesson-btn {
+    background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+    border-color: rgba(255, 255, 255, 0.9);
+ }
+ .lesson-btn:hover::before {
+    left: 150%;
+ }
+ .lesson-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    color: #ffcc00;
+ }
+
+ /* Theme 1: Orange/Yellow (Magic of Words) */
+ .theme-orange:hover { border-color: rgba(245, 158, 11, 0.8); box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4); }
+ .theme-orange .lesson-title { color: #fcd34d; }
+ .theme-orange .lesson-btn:hover { border-color: #fcd34d; }
+
+ /* Theme 2: Blue (Numbers) */
+ .theme-blue:hover { border-color: rgba(56, 189, 248, 0.8); box-shadow: 0 8px 32px rgba(56, 189, 248, 0.4); }
+ .theme-blue .lesson-title { color: #7dd3fc; }
+ .theme-blue .lesson-btn:hover { border-color: #7dd3fc; }
+
+ /* Theme 3: Purple (Golden Words) */
+ .theme-purple:hover { border-color: rgba(192, 132, 252, 0.8); box-shadow: 0 8px 32px rgba(192, 132, 252, 0.4); }
+ .theme-purple .lesson-title { color: #d8b4fe; }
+ .theme-purple .lesson-btn:hover { border-color: #d8b4fe; }
+
+ /* Theme 4: Green (Civic Sense) */
+ .theme-green:hover { border-color: rgba(74, 222, 128, 0.8); box-shadow: 0 8px 32px rgba(74, 222, 128, 0.4); }
+ .theme-green .lesson-title { color: #86efac; }
+ .theme-green .lesson-btn:hover { border-color: #86efac; }
+
+ /* Theme 5: Pink (Colour & Shapes) */
+ .theme-pink:hover { border-color: rgba(244, 114, 182, 0.8); box-shadow: 0 8px 32px rgba(244, 114, 182, 0.4); }
+ .theme-pink .lesson-title { color: #f9a8d4; }
+ .theme-pink .lesson-btn:hover { border-color: #f9a8d4; }
+
+ /* Theme 6: Teal (Story Time) */
+ .theme-teal:hover { border-color: rgba(20, 184, 166, 0.8); box-shadow: 0 8px 32px rgba(20, 184, 166, 0.4); }
+ .theme-teal .lesson-title { color: #5eead4; }
+ .theme-teal .lesson-btn:hover { border-color: #5eead4; }
+
+ /* Theme 7: Amber (Animals) */
+ .theme-amber:hover { border-color: rgba(251, 191, 36, 0.8); box-shadow: 0 8px 32px rgba(251, 191, 36, 0.4); }
+ .theme-amber .lesson-title { color: #fde68a; }
+ .theme-amber .lesson-btn:hover { border-color: #fde68a; }
+
+ /* Theme 8: Rose (Hindi) */
+ .theme-rose:hover { border-color: rgba(251, 113, 133, 0.8); box-shadow: 0 8px 32px rgba(251, 113, 133, 0.4); }
+ .theme-rose .lesson-title { color: #fda4af; }
+ .theme-rose .lesson-btn:hover { border-color: #fda4af; }
+ </style>
+ 
+</head>
+<body>
+
+ <!-- Background video & Parallax Wrapper -->
+ <div id="parallax-bg" style="position: fixed; top: -5%; left: -5%; width: 110%; height: 110%; z-index: -1;">
+     <video autoplay muted loop playsinline style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; filter: brightness(0.8) saturate(0.8);">
+         <source src="assets/videos/dream.mp4" type="video/mp4" />
+     </video>
+     <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(20, 10, 40, 0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);"></div>
+ </div>
+
+ <!-- Navbar -->
+ <div class="navbar">
+ <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+ <div class="logo">
+ <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+ <span>BrainBerry</span>
+ </div>
+ </a>
+
+ <div class="menu">
+ <a href="front.html">
+ Home
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="challen.html">
+ Challenges
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix12.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="chal.html">
+ Games
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix3.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="Less.html">
+ Lessons
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/pix5.mov" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="rewards.html">
+ Rewards
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/reward.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ <a href="help.html">
+ Help
+ <div class="video-preview">
+ <video autoplay muted loop playsinline>
+ <source src="assets/videos/help.mp4" type="video/mp4">
+ </video>
+ </div>
+ </a>
+ </div>
+
+ <div class="right">
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+ <span>0</span>
+ </div>
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+ <span>0</span>
+ </div>
+ <div class="profile">
+ <img src="assets/images/dp-cactus-20.png" alt="User">
+ </div>
+ </div>
+ </div>
+
+ <!-- Profile panel injected by assets/js/profile-panel.js -->
+
+ </div>
+ </div>
+
+ <!-- New Horizontal Lessons Grid Box -->
+ <div class="lessons-section">
+ <div class="lessons-header">
+ <h1>📚 Choose Your Lesson!</h1>
+ <p>Explore magical worlds, learn new things, and earn badges! 🏅</p>
+ </div>
+
+ <div class="lessons-grid">
+ 
+ <!-- Card 1 -->
+ <div class="lesson-card theme-orange">
+ <div class="lesson-icon">🔠</div>
+ <div class="lesson-title">Magic Of Words</div>
+ <div class="lesson-desc">Learn spelling and words in a magical setting!</div>
+ <div class="lesson-badge">🎖️ Vocab Master</div>
+ <button class="lesson-btn" onclick="location.href='alp.html'">▶ Play Now</button>
+ </div>
+
+ <!-- Card 2 -->
+ <div class="lesson-card theme-blue">
+ <div class="lesson-icon">🔢</div>
+ <div class="lesson-title">Numbers</div>
+ <div class="lesson-desc">Count, add, and explore the universe of math!</div>
+ <div class="lesson-badge">🎖️ Number Ninja</div>
+ <button class="lesson-btn" onclick="location.href='NunInd.html'">▶ Play Now</button>
+ </div>
+
+ <!-- Card 3 -->
+ <div class="lesson-card theme-purple">
+ <div class="lesson-icon">🌟</div>
+ <div class="lesson-title">Golden Words</div>
+ <div class="lesson-desc">Learn manners and beautiful sentences to use daily!</div>
+ <div class="lesson-badge">🎖️ Star Communicator</div>
+ <button class="lesson-btn" onclick="location.href='gsa.html'">▶ Play Now</button>
+ </div>
+
+ <!-- Card 4 -->
+ <div class="lesson-card theme-green">
+ <div class="lesson-icon">🏫</div>
+ <div class="lesson-title">Civic Sense</div>
+ <div class="lesson-desc">Learn about rules, caring for others, and society.</div>
+ <div class="lesson-badge">🎖️ Good Citizen</div>
+ <button class="lesson-btn" onclick="location.href='civicsense.html'">▶ Play Now</button>
+ </div>
+
+ <!-- Card 5 -->
+ <div class="lesson-card theme-pink">
+ <div class="lesson-icon">🎨</div>
+ <div class="lesson-title">Colour & Shapes</div>
+ <div class="lesson-desc">Draw, identify, and play with colorful geometries!</div>
+ <div class="lesson-badge">🎖️ Art Explorer</div>
+ <button class="lesson-btn" onclick="location.href='color-shape.html'">▶ Play Now</button>
+ </div>
+
+ <!-- Card 6 -->
+ <div class="lesson-card theme-teal">
+ <div class="lesson-icon">📖</div>
+ <div class="lesson-title">Story Time</div>
+ <div class="lesson-desc">Listen to magical tales and follow along with adventures!</div>
+ <div class="lesson-badge">🎖️ Story Teller</div>
+ <button class="lesson-btn" onclick="location.href='story.html'">▶ Read Now</button>
+ </div>
+
+ <!-- Card 7: Animals -->
+ <div class="lesson-card theme-amber">
+ <div class="lesson-icon">🐾</div>
+ <div class="lesson-title">Animals</div>
+ <div class="lesson-desc">Meet animals, learn their sounds, and say their names!</div>
+ <div class="lesson-badge">🎖️ Animal Explorer</div>
+ <button class="lesson-btn" onclick="location.href='animals.html'">▶ Play Now</button>
+ </div>
+
+ <!-- Card 8: Hindi -->
+ <div class="lesson-card theme-rose">
+ <div class="lesson-icon">🇮🇳</div>
+ <div class="lesson-title">हिंदी</div>
+ <div class="lesson-desc">अ से अनार — Learn Hindi letters with voice!</div>
+ <div class="lesson-badge">🎖️ Hindi Star</div>
+ <button class="lesson-btn" onclick="location.href='hindi.html'">▶ Play Now</button>
+ </div>
+
+ </div>
+ </div>
+
+</body>
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/bb-user-data.js"></script>
+<script src="assets/js/parental-control.js"></script>
+<script>
+    // Parallax background effect
+    document.addEventListener("mousemove", (e) => {
+        const bg = document.getElementById("parallax-bg");
+        const x = (window.innerWidth / 2 - e.clientX) / 40;
+        const y = (window.innerHeight / 2 - e.clientY) / 40;
+        bg.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    // Parental Control: Lesson Lock
+    document.addEventListener("DOMContentLoaded", function() {
+        const raw = window.BB_UserData ? window.BB_UserData.getItem('bb_assigned_lessons') : localStorage.getItem('bb_assigned_lessons');
+        if (!raw) return;
+
+        let assigned;
+        try { assigned = JSON.parse(raw); } catch(e) { return; }
+
+        // Map titles to lesson IDs
+        const lessonMap = {
+            'Magic Of Words': 'alp',
+            'Numbers': 'NunInd',
+            'Golden Words': 'gsa',
+            'Civic Sense': 'civicsense',
+            'Colour & Shapes': 'color-shape',
+            'Animals': 'animals',
+            'हिंदी': 'hindi'
+        };
+
+        document.querySelectorAll('.lesson-card').forEach(card => {
+            const title = card.querySelector('.lesson-title').innerText.trim();
+            const id = lessonMap[title];
+            if (!id) return; // e.g. Story Time doesn't have parental lock yet
+
+            const isAssigned = assigned.includes(id);
+
+            if (!isAssigned) {
+                // Lock this card visually
+                card.style.opacity = '0.5';
+                card.style.filter = 'grayscale(100%)';
+                card.style.pointerEvents = 'none';
+
+                const btn = card.querySelector('.lesson-btn');
+                if (btn) {
+                    btn.innerHTML = '🔒 Locked';
+                    btn.style.background = 'rgba(0,0,0,0.5)';
+                    btn.style.borderColor = 'rgba(255,255,255,0.2)';
+                }
+            }
+        });
+    });
+</script>
+</html>

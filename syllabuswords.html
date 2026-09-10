@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+ <title>Syllables Learning AZ | BrainBerry</title>
+ <style>
+ body {
+ margin: 0;
+ font-family: "Fugaz One", sans-serif;
+ background: #f6f6f9;
+ }
+
+ .bg-video {
+ position: fixed; top: 0; left: 0;
+ width: 100%; height: 100%;
+ object-fit: cover; z-index: -1;
+ }
+
+ /* Navbar */
+ .navbar {
+ background: rgba(75, 42, 173, 0.9);
+ backdrop-filter: blur(10px);
+ display: flex; align-items: center;
+ justify-content: space-between;
+ padding: 8px 20px; color: #fff;
+ position: relative; z-index: 100;
+ }
+ .navbar .logo { display: flex; align-items: center; gap: 8px; }
+ .navbar .logo img { width: 80px; height: 55px; border-radius: 6px; }
+ .navbar .logo span { font-size: 1.2rem; font-weight: bold; }
+ .navbar .menu { display: flex; gap: 25px; position: relative; }
+ .navbar .menu a {
+ text-decoration: none; color: #fff; font-weight: 500;
+ font-size: 0.95rem; padding: 5px 8px; position: relative;
+ transition: all 0.3s ease;
+ }
+ .navbar .menu a:hover {
+ color: #ffcc00; background: rgba(255,255,255,0.15);
+ border-radius: 6px; filter: none !important;
+ }
+ .navbar .menu:hover a:not(:hover) { filter: blur(2px) brightness(70%); }
+ .navbar .right { display: flex; align-items: center; gap: 15px; }
+ .reward { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+ .reward img { width: 20px; height: 20px; }
+ .profile img { width: 70px; height: 55px; border-radius: 50%; border: 0px solid #fff; }
+
+ .video-preview {
+ position: absolute; top: 40px; left: 0;
+ width: 200px; height: 120px; border-radius: 8px;
+ overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+ opacity: 0; pointer-events: none;
+ transition: opacity 0.3s ease; background: #000; z-index: 20;
+ }
+ .video-preview video { width: 100%; height: 100%; object-fit: cover; }
+ .navbar .menu a:hover .video-preview { opacity: 1; }
+
+ /* ─── MAIN WRAPPER ─── */
+ .phonics-wrapper {
+ margin: 18px auto;
+ max-width: calc(100% - 80px);
+ min-height: 520px;
+ background: rgba(255,255,255,0.12);
+ backdrop-filter: blur(10px);
+ -webkit-backdrop-filter: blur(10px);
+ border-radius: 18px;
+ border: 1px solid rgba(255,255,255,0.3);
+ box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+ padding: 24px 28px;
+ position: relative;
+ z-index: 5;
+ }
+
+ .section-title {
+ font-size: 1.5rem; font-weight: 800;
+ color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+ margin-bottom: 18px; letter-spacing: 1px;
+ display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+ }
+ .back-link {
+ font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.7);
+ cursor: pointer; text-decoration: underline; transition: color 0.2s;
+ }
+ .back-link:hover { color: #ffcc00; }
+
+ .step { display: none; }
+ .step.active { display: block; }
+
+ /* ─── AZ Grid fills wrapper evenly, NO GAPS ─── */
+ .alpha-grid {
+ display: grid;
+ /* 13 cols × 2 rows = 26 letters exactly, fills entire container */
+ grid-template-columns: repeat(13, 1fr);
+ gap: 10px;
+ width: 100%;
+ }
+ @media (max-width: 760px) {
+ .alpha-grid { grid-template-columns: repeat(9, 1fr); }
+ }
+ @media (max-width: 480px) {
+ .alpha-grid { grid-template-columns: repeat(6, 1fr); }
+ }
+
+ .alpha-tile {
+ aspect-ratio: 1;
+ background: rgba(255,255,255,0.30);
+ border: 1px solid rgba(255,255,255,0.45);
+ border-radius: 10px;
+ display: flex; align-items: center; justify-content: center;
+ font-size: 1.5rem; font-weight: 800; color: #1a1a2e;
+ cursor: pointer; transition: all 0.22s ease;
+ box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+ user-select: none;
+ }
+ .alpha-tile:hover {
+ background: rgba(255,200,0,0.45);
+ box-shadow: 0 0 14px rgba(255,200,0,0.7);
+ transform: scale(1.12);
+ color: #3a006f;
+ }
+ .alpha-tile.done {
+ background: rgba(55,163,74,0.45);
+ color: #fff;
+ border-color: rgba(55,163,74,0.7);
+ }
+
+ /* Detail panel */
+ .sound-panel {
+ display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap;
+ }
+ .letter-card {
+ flex: 0 1 280px;
+ background: rgba(255,255,255,0.38);
+ border-radius: 14px; padding: 22px 18px;
+ display: flex; flex-direction: column;
+ align-items: center; gap: 12px;
+ box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+ text-align: center; min-width: 200px;
+ }
+ .big-letter {
+ font-size: 80px; font-weight: 800;
+ line-height: 1; color: #2b2b2b;
+ text-shadow: 0 4px 12px rgba(0,0,0,0.12);
+ }
+ .word-emoji { font-size: 3rem; }
+
+ /* Syllable display the core learning element */
+ .syllable-display {
+ display: flex; align-items: center; gap: 4px;
+ flex-wrap: wrap; justify-content: center;
+ margin-top: 4px;
+ }
+ .syl-chunk {
+ font-size: 1.6rem; font-weight: 800;
+ padding: 6px 10px; border-radius: 8px;
+ background: rgba(91,108,249,0.18);
+ color: #2b2b2b;
+ transition: background 0.25s, transform 0.25s, color 0.25s;
+ line-height: 1.2;
+ }
+ .syl-sep {
+ font-size: 1.3rem; font-weight: 900;
+ color: #e8445a; padding: 0 2px;
+ }
+ /* Lit = highlighted chunk when audio plays that syllable */
+ .syl-chunk.lit {
+ background: #ffc107;
+ color: #3a1800;
+ transform: scale(1.18);
+ }
+
+ .word-full {
+ font-size: 1rem; font-weight: 700;
+ color: #444; font-family: sans-serif;
+ }
+
+ .sound-controls {
+ flex: 1; display: flex; flex-direction: column;
+ gap: 14px; min-width: 220px;
+ }
+ .score-bar {
+ font-size: 1rem; font-weight: 700;
+ color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+ }
+ .progress-row { display: flex; gap: 6px; flex-wrap: wrap; }
+ .prog-dot {
+ width: 16px; height: 16px; border-radius: 50%;
+ background: rgba(255,255,255,0.3);
+ border: 2px solid rgba(255,255,255,0.5);
+ transition: background 0.3s;
+ }
+ .prog-dot.done { background: #37a34a; border-color: #37a34a; }
+ .prog-dot.current { background: #ffc107; border-color: #ffc107; }
+
+ /* Buttons */
+ .ph-btn {
+ padding: 12px 18px;
+ font-size: 1rem; font-family: "Fugaz One", sans-serif;
+ border-radius: 10px; border: none; cursor: pointer;
+ transition: all 0.22s ease;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+ font-weight: 700; display: inline-flex;
+ align-items: center; gap: 8px;
+ }
+ .ph-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+ .ph-btn:active { transform: translateY(0); }
+ .ph-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; filter: none !important; }
+ .btn-sound { background: #5b6cf9; color: #fff; }
+ .btn-speak { background: #e8445a; color: #fff; }
+ .btn-next { background: #37a34a; color: #fff; }
+ .btn-back { background: rgba(255,255,255,0.35); color: #222; border: 1px solid rgba(255,255,255,0.5); }
+ .btn-grid { background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+
+ .feedback-box {
+ min-height: 42px; font-size: 1.05rem; font-weight: 700;
+ padding: 10px 14px; border-radius: 10px;
+ background: rgba(255,255,255,0.25);
+ color: #111; text-align: center;
+ transition: background 0.3s;
+ }
+ .feedback-box.correct { background: rgba(55,163,74,0.4); color: #0a3d0a; }
+ .feedback-box.wrong { background: rgba(232,68,90,0.3); color: #5a0012; }
+
+ .hint-text {
+ font-size: 0.8rem; color: rgba(255,255,255,0.72);
+ font-family: sans-serif; font-weight: 500;
+ }
+
+ .module-nav {
+ display: flex; align-items: center; gap: 12px;
+ margin-bottom: 16px; flex-wrap: wrap;
+ }
+ .step-indicator {
+ font-size: 0.82rem; font-family: sans-serif;
+ color: rgba(255,255,255,0.8);
+ }
+ .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+ /* Listening pulse */
+ @keyframes pulse-ring {
+ 0% { box-shadow: 0 0 0 0 rgba(232,68,90,0.7); }
+ 70% { box-shadow: 0 0 0 14px rgba(232,68,90,0); }
+ 100% { box-shadow: 0 0 0 0 rgba(232,68,90,0); }
+ }
+ .btn-speak.listening { animation: pulse-ring 1s infinite; }
+
+ /* Shake earthquake effect on Hear button */
+ @keyframes shake {
+ 0%,100% { transform: translateX(0); }
+ 10% { transform: translateX(-7px) rotate(-2deg); }
+ 20% { transform: translateX(7px) rotate(2deg); }
+ 30% { transform: translateX(-6px) rotate(-1deg); }
+ 40% { transform: translateX(6px) rotate(1deg); }
+ 50% { transform: translateX(-4px); }
+ 60% { transform: translateX(4px); }
+ 70% { transform: translateX(-3px); }
+ 80% { transform: translateX(3px); }
+ 90% { transform: translateX(-1px); }
+ }
+ .shake { animation: shake 0.35s ease both; }
+
+ /* Confetti */
+ #confetti-overlay {
+ position: fixed; inset: 0; pointer-events: none;
+ z-index: 9999; overflow: hidden; display: none;
+ }
+ #confetti-overlay.show { display: block; }
+ .confetti-piece {
+ position: absolute; width: 10px; height: 14px;
+ opacity: 0.95; border-radius: 2px; transform-origin: center;
+ animation: confetti-fall 1400ms linear forwards;
+ }
+ @keyframes confetti-fall {
+ 0% { transform: translateY(-5vh) rotate(0deg) scale(1); opacity: 1; }
+ 100% { transform: translateY(105vh) rotate(720deg) scale(0.8); opacity: 0; }
+ }
+
+ /* Error glow */
+ #error-overlay {
+ position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+ background: rgba(220,30,30,0.0);
+ transition: background 0.18s ease;
+ }
+ #error-overlay.flash { background: rgba(220,30,30,0.38); }
+
+ /* Next-button lock badge */
+ .lock-hint {
+ font-size: 0.74rem; color: rgba(255,255,255,0.6);
+ font-family: sans-serif; font-weight: 500;
+ margin-top: -6px;
+ }
+ </style>
+</head>
+<body>
+
+<video autoplay muted loop playsinline class="bg-video">
+ <source src="assets/videos/r12.mov" type="video/mp4"/>
+</video>
+
+<div id="confetti-overlay"></div>
+<div id="error-overlay"></div>
+
+<!-- Navbar -->
+<div class="navbar">
+ <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+ <div class="logo">
+ <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+ <span>BrainBerry</span>
+ </div>
+ </a>
+ <div class="menu">
+ <a href="front.html">Home
+ <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix.mp4" type="video/mp4"></video></div>
+ </a>
+ <a href="challen.html">Challenges
+ <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix12.mp4" type="video/mp4"></video></div>
+ </a>
+ <a href="chal.html">Games
+ <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix3.mp4" type="video/mp4"></video></div>
+ </a>
+ <a href="Less.html">Lessons
+ <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix5.mov" type="video/mp4"></video></div>
+ </a>
+ <a href="rewards.html">Rewards
+ <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/reward.mp4" type="video/mp4"></video></div>
+ </a>
+ <a href="help.html">Help
+ <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/help.mp4" type="video/mp4"></video></div>
+ </a>
+ </div>
+ <div class="right">
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem"><span>0</span>
+ </div>
+ <div class="reward">
+ <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin"><span>0</span>
+ </div>
+ <div class="profile">
+ <img src="assets/images/dp-cactus-20.png" alt="User" id="profileToggle">
+ </div>
+ </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+ MAIN WRAPPER
+═══════════════════════════════════════ -->
+<div class="phonics-wrapper">
+
+ <!-- STEP 1: AZ Grid -->
+ <div id="step-grid" class="step active">
+ <div class="section-title">
+ 📖 Syllables Learning AZ
+ <span class="back-link" onclick="location.href='alp.html'">← Back</span>
+ </div>
+ <div class="alpha-grid" id="alphaGrid"></div>
+ </div>
+
+ <!-- STEP 2: Syllable Detail + Speak -->
+ <div id="step-word" class="step">
+ <div class="module-nav">
+ <button class="ph-btn btn-grid" onclick="goToGrid()">🔤 Grid</button>
+ <span class="step-indicator" id="stepIndicator">Letter 1 of 26</span>
+ </div>
+ <div class="sound-panel">
+ <div class="letter-card">
+ <div class="big-letter" id="bigLetter">A</div>
+ <div class="word-emoji" id="wordEmoji">🍎</div>
+ <!-- Syllable chunks shown here e.g. Ap ple -->
+ <div class="syllable-display" id="syllableDisplay"></div>
+ <div class="word-full" id="wordFull">Apple</div>
+ </div>
+ <div class="sound-controls">
+ <div class="score-bar" id="scoreBar">Score: 0 / 26</div>
+ <div class="progress-row" id="progressRow"></div>
+
+ <!-- 1. Hear Word + Syllables must press first -->
+ <div class="btn-row">
+ <button class="ph-btn btn-sound" id="hearBtn">🔊 Hear Word &amp; Syllables</button>
+ </div>
+
+ <div class="feedback-box" id="feedbackBox">Press 🔊 Hear Word &amp; Syllables to listen first!</div>
+
+ <!-- 2. Speak (locked until audio plays) -->
+ <div class="btn-row">
+ <button class="ph-btn btn-speak" id="speakBtn" disabled>🎤 Say the Syllables</button>
+ </div>
+
+ <div class="hint-text" id="speakHint">Listen carefully, then repeat the syllables!</div>
+
+ <div class="btn-row">
+ <button class="ph-btn btn-back" id="prevBtn">← Prev</button>
+ <!-- Next LOCKED until answered correctly -->
+ <button class="ph-btn btn-next" id="nextBtn" disabled>Next →</button>
+ </div>
+ <div class="lock-hint" id="lockHint">🔒 Get the syllables right to unlock Next</div>
+ </div>
+ </div>
+ </div>
+
+</div><!-- /phonics-wrapper -->
+
+<script>
+/* ══════════════════════════════════════════════════════
+ SYLLABLE DATA syllable-breaking (Ap-ple style)
+ NOT "A for Apple" children learn to break words.
+ syllables[] = phonetic chunks e.g. ['Ap','ple']
+ alts[] = what a child might say (accepted answers)
+══════════════════════════════════════════════════════ */
+const WORDS = [
+ { letter:'A', word:'Apple', emoji:'🍎', syllables:['Ap','ple'], alts:['apple','ap','ap ple','apal','apul','apl'] },
+ { letter:'B', word:'Banana', emoji:'🍌', syllables:['Ba','na','na'], alts:['banana','ba na na','bana','bananna','ba nana','bah nah nah'] },
+ { letter:'C', word:'Camel', emoji:'🐫', syllables:['Cam','el'], alts:['camel','cam el','cammel','kamel','cam ul','kamul'] },
+ { letter:'D', word:'Dolphin', emoji:'🐬', syllables:['Dol','phin'], alts:['dolphin','dol fin','dolfin','dolpin','dol phin','dolfn'] },
+ { letter:'E', word:'Elephant', emoji:'🐘', syllables:['El','e','phant'], alts:['elephant','el e phant','el phant','elephnt','elefant','el uh fant'] },
+ { letter:'F', word:'Finger', emoji:'☝️', syllables:['Fin','ger'], alts:['finger','fin ger','finga','fingur','fing ur'] },
+ { letter:'G', word:'Garden', emoji:'🌻', syllables:['Gar','den'], alts:['garden','gar den','garten','gardn','gar dun'] },
+ { letter:'H', word:'Hammer', emoji:'🔨', syllables:['Ham','mer'], alts:['hammer','ham mer','hamer','hammur','ham ur'] },
+ { letter:'I', word:'Igloo', emoji:'🧊', syllables:['Ig','loo'], alts:['igloo','ig loo','iglu','iggloo','ig lu'] },
+ { letter:'J', word:'Jacket', emoji:'🧥', syllables:['Jack','et'], alts:['jacket','jack et','jaket','jakkit','jak it'] },
+ { letter:'K', word:'Kitchen', emoji:'🍳', syllables:['Kitch','en'], alts:['kitchen','kitch en','kitchin','kichin','kitch un'] },
+ { letter:'L', word:'Lemon', emoji:'🍋', syllables:['Lem','on'], alts:['lemon','lem on','lemmon','lemin','lem un'] },
+ { letter:'M', word:'Mango', emoji:'🥭', syllables:['Man','go'], alts:['mango','man go','mangoo','man goh','mang go'] },
+ { letter:'N', word:'Number', emoji:'🔢', syllables:['Num','ber'], alts:['number','num ber','numbur','nummber','num bur'] },
+ { letter:'O', word:'Ocean', emoji:'🌊', syllables:['O','cean'], alts:['ocean','o cean','oshun','oshin','o shun','oh shun'] },
+ { letter:'P', word:'Penguin', emoji:'🐧', syllables:['Pen','guin'], alts:['penguin','pen gwin','pengwin','pen guin','pen gin'] },
+ { letter:'Q', word:'Question', emoji:'❓', syllables:['Ques','tion'], alts:['question','ques tion','kwestion','kestion','kwes chun'] },
+ { letter:'R', word:'Rabbit', emoji:'🐰', syllables:['Rab','bit'], alts:['rabbit','rab bit','rabit','rabbet','rab ut'] },
+ { letter:'S', word:'Sunset', emoji:'🌅', syllables:['Sun','set'], alts:['sunset','sun set','sunest','sunsit','sun sit'] },
+ { letter:'T', word:'Tiger', emoji:'🐯', syllables:['Ti','ger'], alts:['tiger','ti ger','tigur','tyger','ty gur'] },
+ { letter:'U', word:'Umbrella', emoji:'☂️', syllables:['Um','brel','la'], alts:['umbrella','um brel la','umbrelta','umbrelah','um brel uh'] },
+ { letter:'V', word:'Volcano', emoji:'🌋', syllables:['Vol','ca','no'], alts:['volcano','vol ca no','volkano','vol kay no','vol kah no'] },
+ { letter:'W', word:'Window', emoji:'🪟', syllables:['Win','dow'], alts:['window','win dow','windoe','windoh','win doh'] },
+ { letter:'X', word:'Xylophone',emoji:'🎵', syllables:['Xy','lo','phone'], alts:['xylophone','xy lo phone','zilaphone','zylo fone','zylophone','zi lo fone'] },
+ { letter:'Y', word:'Yellow', emoji:'💛', syllables:['Yel','low'], alts:['yellow','yel low','yelo','yelloe','yel oh'] },
+ { letter:'Z', word:'Zebra', emoji:'🦓', syllables:['Ze','bra'], alts:['zebra','ze bra','zeebra','zebrah','zee bra'] },
+];
+
+/* ── State ── */
+let currentIdx = 0;
+let score = 0;
+let done = new Array(26).fill(false);
+let audioPlayed = false;
+let answeredRight = false; // Next button lock must answer correctly
+let recognitionActive = false;
+
+/* ── Navigation ── */
+function goToStep(id) {
+ document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+}
+function goToGrid() {
+ stopRecognition();
+ buildGrid();
+ goToStep('step-grid');
+}
+
+/* ── Build AZ grid ── */
+function buildGrid() {
+ const grid = document.getElementById('alphaGrid');
+ grid.innerHTML = '';
+ WORDS.forEach((item, i) => {
+ const tile = document.createElement('div');
+ tile.className = 'alpha-tile' + (done[i] ? ' done' : '');
+ tile.textContent = item.letter;
+ tile.id = `tile-${item.letter}`;
+ tile.title = item.syllables.join('-');
+ tile.addEventListener('click', () => openLetter(i));
+ grid.appendChild(tile);
+ });
+}
+
+/* ── Open a letter ── */
+function openLetter(idx) {
+ stopRecognition();
+ currentIdx = idx;
+ audioPlayed = false;
+ answeredRight = false;
+
+ const item = WORDS[idx];
+ document.getElementById('bigLetter').textContent = item.letter;
+ document.getElementById('wordEmoji').textContent = item.emoji;
+ document.getElementById('wordFull').textContent = item.word;
+ document.getElementById('stepIndicator').textContent = `Letter ${idx+1} of 26`;
+
+ buildSyllableChunks(item.syllables);
+ setFeedback('Press 🔊 Hear Word & Syllables to listen first!', '');
+
+ const speakBtn = document.getElementById('speakBtn');
+ speakBtn.disabled = true;
+ speakBtn.classList.remove('listening');
+ speakBtn.textContent = '🎤 Say the Syllables';
+
+ // Lock Next until correct answer
+ document.getElementById('nextBtn').disabled = true;
+ document.getElementById('lockHint').style.display = '';
+ document.getElementById('speakHint').textContent = 'Listen carefully, then repeat the syllables!';
+
+ buildProgressDots(idx);
+ updateScore();
+ goToStep('step-word');
+}
+
+/* ── Build syllable chunk display ── */
+function buildSyllableChunks(syllables) {
+ const el = document.getElementById('syllableDisplay');
+ el.innerHTML = '';
+ syllables.forEach((syl, i) => {
+ const span = document.createElement('span');
+ span.className = 'syl-chunk';
+ span.textContent = syl;
+ span.id = `syl-${i}`;
+ el.appendChild(span);
+
+ if (i < syllables.length - 1) {
+ const sep = document.createElement('span');
+ sep.className = 'syl-sep';
+ sep.textContent = '';
+ el.appendChild(sep);
+ }
+ });
+}
+
+/* ── Animate syllable chunks one by one (light up each chunk) ── */
+function animateSyllables(syllables, onDone) {
+ syllables.forEach((_, i) => {
+ const el = document.getElementById(`syl-${i}`);
+ if (el) {
+ setTimeout(() => el.classList.add('lit'), i * 520);
+ setTimeout(() => el.classList.remove('lit'), i * 520 + 460);
+ }
+ });
+ if (onDone) setTimeout(onDone, syllables.length * 520 + 200);
+}
+
+/* ── Feedback ── */
+function setFeedback(msg, cls) {
+ const fb = document.getElementById('feedbackBox');
+ fb.textContent = msg;
+ fb.className = 'feedback-box ' + cls;
+}
+
+/* ── HEAR button: play full word then syllables slowly ── */
+document.getElementById('hearBtn').addEventListener('click', () => {
+ const item = WORDS[currentIdx];
+ setFeedback(`🔊 Playing: "${item.word}"...`, '');
+
+ // Phase 1: speak the full word at normal pace
+ speakText(item.word, 0.82, () => {
+ // Phase 2: pause, then speak each syllable slowly with gaps
+ setFeedback(`🔊 Syllables: ${item.syllables.join(' ')}`, '');
+ animateSyllables(item.syllables);
+
+ // Speak syllables with pauses between them ("Ap ... ple")
+ const sylWithPauses = item.syllables.join('... ');
+ speakText(sylWithPauses, 0.6, () => {
+ // Phase 3: unlock speak button
+ audioPlayed = true;
+ document.getElementById('speakBtn').disabled = false;
+ setFeedback(
+ `✨ Now say: "${item.syllables.join(' ')}" Press 🎤 Say the Syllables`,
+ ''
+ );
+ document.getElementById('speakHint').textContent =
+ `Say: "${item.syllables.join(' ')}" or just "${item.word}"`;
+ });
+ });
+});
+
+/* ── Stop recognition safely ── */
+function stopRecognition() {
+ if (recognition && recognitionActive) {
+ try { recognition.abort(); } catch(e) {}
+ recognitionActive = false;
+ }
+}
+
+/* ══════════════════════════════════════
+ IMPROVED SPEECH RECOGNITION ENGINE
+ - max alternatives for kid speech
+ - graceful silence + error handling
+ - no premature stopping
+══════════════════════════════════════ */
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+
+if (SpeechRec) {
+ recognition = new SpeechRec();
+ recognition.lang = 'en-US';
+ recognition.interimResults = false;
+ recognition.maxAlternatives = 10;
+ recognition.continuous = false;
+
+ recognition.onresult = (evt) => {
+ recognitionActive = false;
+ const speakBtn = document.getElementById('speakBtn');
+ speakBtn.classList.remove('listening');
+ speakBtn.textContent = '🎤 Say the Syllables';
+
+ const item = WORDS[currentIdx];
+
+ // Collect ALL alternatives from ALL results
+ const allTranscripts = [];
+ for (let r = 0; r < evt.results.length; r++) {
+ for (let a = 0; a < evt.results[r].length; a++) {
+ allTranscripts.push(evt.results[r][a].transcript.toLowerCase().trim());
+ }
+ }
+ const heard = allTranscripts.join(' ');
+ const heardClean = heard.replace(/[^a-z\s]/g, '').trim();
+
+ const correct = isSyllableMatch(heardClean, item, allTranscripts);
+
+ if (correct) {
+ answeredRight = true;
+ if (!done[currentIdx]) { score++; done[currentIdx] = true; }
+ updateScore();
+ buildProgressDots(currentIdx);
+ setFeedback(`✅ Excellent! You got it! 🎉`, 'correct');
+ showConfetti();
+ // Unlock Next button
+ document.getElementById('nextBtn').disabled = false;
+ document.getElementById('lockHint').style.display = 'none';
+ // Update grid tile
+ const tile = document.getElementById(`tile-${item.letter}`);
+ if (tile) tile.classList.add('done');
+ } else {
+ setFeedback(
+ `❌ You said "${allTranscripts[0] || '?'}". Try again say: "${item.syllables.join(' ')}"`,
+ 'wrong'
+ );
+ showErrorGlow();
+ }
+ };
+
+ recognition.onerror = (evt) => {
+ recognitionActive = false;
+ const speakBtn = document.getElementById('speakBtn');
+ speakBtn.classList.remove('listening');
+ speakBtn.textContent = '🎤 Say the Syllables';
+ if (evt.error === 'no-speech') {
+ setFeedback('🤫 No speech detected. Try again say the syllables loudly!', 'wrong');
+ } else if (evt.error === 'aborted') {
+ // Expected silently ignore
+ } else if (evt.error === 'not-allowed') {
+ setFeedback('⚠️ Microphone blocked. Allow mic access in browser settings.', 'wrong');
+ } else {
+ setFeedback('⚠️ Mic error: ' + evt.error + '. Try again!', 'wrong');
+ }
+ };
+
+ recognition.onend = () => {
+ recognitionActive = false;
+ const speakBtn = document.getElementById('speakBtn');
+ speakBtn.classList.remove('listening');
+ speakBtn.textContent = '🎤 Say the Syllables';
+ };
+}
+
+/* ── Syllable match tolerant for children's imperfect speech ── */
+function isSyllableMatch(heardClean, item, allTranscripts) {
+ if (!heardClean && (!allTranscripts || allTranscripts.length === 0)) return false;
+
+ const wordLow = item.word.toLowerCase();
+ const alts = item.alts.map(a => a.toLowerCase());
+ // Full syllable string e.g. "ap ple"
+ const sylJoin = item.syllables.join(' ').toLowerCase();
+ // Individual syllables lowercased
+ const syls = item.syllables.map(s => s.toLowerCase());
+
+ // Build a flat list of ALL texts to check
+ const texts = [
+ heardClean,
+ ...(allTranscripts || []).map(t => t.toLowerCase().replace(/[^a-z\s]/g,'').trim())
+ ].filter(Boolean);
+
+ for (const text of texts) {
+ // 1. Alt list match (most generous child phonetic approximations)
+ for (const alt of alts) {
+ if (text.includes(alt) || alt.includes(text)) return true;
+ }
+
+ // 2. Full word match
+ if (text.includes(wordLow) || wordLow.includes(text)) return true;
+
+ // 3. Syllable joined match ("ap ple")
+ if (text.includes(sylJoin) || sylJoin.includes(text)) return true;
+
+ // 4. Sequential syllable match child says syllables in order
+ const heardWords = text.split(/\s+/);
+ let sylIdx = 0;
+ for (const hw of heardWords) {
+ if (syls[sylIdx] && (
+ hw.includes(syls[sylIdx]) ||
+ syls[sylIdx].includes(hw) ||
+ levenshtein(hw, syls[sylIdx]) <= 1
+ )) {
+ sylIdx++;
+ }
+ }
+ if (sylIdx >= syls.length) return true;
+
+ // 5. Levenshtein ≤ 2 against the full word (catches "tiga" for "tiger")
+ if (levenshtein(text.slice(0, wordLow.length + 2), wordLow) <= 2) return true;
+
+ // 6. Check each individual syllable present anywhere in text
+ const matchedSyls = syls.filter(s => text.includes(s) || levenshtein(text, s) <= 1);
+ if (matchedSyls.length >= Math.ceil(syls.length * 0.7)) return true; // 70% syllables matched
+ }
+
+ return false;
+}
+
+/* Simple Levenshtein distance */
+function levenshtein(a, b) {
+ const m = a.length, n = b.length;
+ const dp = Array.from({length: m+1}, (_, i) =>
+ Array.from({length: n+1}, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+ );
+ for (let i = 1; i <= m; i++)
+ for (let j = 1; j <= n; j++)
+ dp[i][j] = a[i-1] === b[j-1]
+ ? dp[i-1][j-1]
+ : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+ return dp[m][n];
+}
+
+/* ── SPEAK Button ── */
+document.getElementById('speakBtn').addEventListener('click', () => {
+ if (!audioPlayed) {
+ // Shake Hear button (earthquake) + message
+ const hearBtn = document.getElementById('hearBtn');
+ hearBtn.classList.remove('shake');
+ void hearBtn.offsetWidth; // force reflow
+ hearBtn.classList.add('shake');
+ hearBtn.addEventListener('animationend', () => hearBtn.classList.remove('shake'), { once: true });
+ setFeedback('👉 Please listen before speaking!', 'wrong');
+ return;
+ }
+ if (!recognition) {
+ alert('Voice features require Chrome or Edge browser!');
+ return;
+ }
+ if (recognitionActive) return;
+
+ recognitionActive = true;
+ const speakBtn = document.getElementById('speakBtn');
+ speakBtn.classList.add('listening');
+ speakBtn.textContent = '🔴 Listening';
+ const item = WORDS[currentIdx];
+ setFeedback(`🎙️ Say: "${item.syllables.join(' ')}"...`, '');
+
+ try {
+ recognition.start();
+ } catch(e) {
+ recognitionActive = false;
+ speakBtn.classList.remove('listening');
+ speakBtn.textContent = '🎤 Say the Syllables';
+ // Retry after brief delay if InvalidStateError
+ if (e.name === 'InvalidStateError') {
+ setTimeout(() => {
+ try {
+ recognitionActive = true;
+ speakBtn.classList.add('listening');
+ speakBtn.textContent = '🔴 Listening';
+ recognition.start();
+ } catch(e2) {
+ recognitionActive = false;
+ speakBtn.classList.remove('listening');
+ speakBtn.textContent = '🎤 Say the Syllables';
+ }
+ }, 350);
+ }
+ }
+});
+
+/* ── Prev / Next ── */
+document.getElementById('prevBtn').addEventListener('click', () => {
+ openLetter((currentIdx - 1 + 26) % 26);
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+ if (!answeredRight) return; // safety guard button is disabled anyway
+ openLetter((currentIdx + 1) % 26);
+});
+
+/* ── Progress dots ── */
+function buildProgressDots(current) {
+ const row = document.getElementById('progressRow');
+ row.innerHTML = '';
+ WORDS.forEach((_, i) => {
+ const dot = document.createElement('div');
+ dot.className = 'prog-dot';
+ if (done[i]) dot.classList.add('done');
+ else if (i === current) dot.classList.add('current');
+ dot.title = WORDS[i].letter;
+ row.appendChild(dot);
+ });
+}
+function updateScore() {
+ document.getElementById('scoreBar').textContent = `Score: ${score} / 26`;
+}
+
+/* ════════════════════════════════
+ TEXT-TO-SPEECH
+ rate param added for control
+════════════════════════════════ */
+let _bestVoice = null;
+
+function pickBestVoice() {
+ const voices = window.speechSynthesis.getVoices();
+ if (!voices || voices.length === 0) return null;
+ const tiers = [
+ v => /google/i.test(v.name) && /en.US/i.test(v.lang),
+ v => /google/i.test(v.name) && /en/i.test(v.lang),
+ v => /microsoft/i.test(v.name) && /aria|jenny|guy|natasha/i.test(v.name),
+ v => /microsoft/i.test(v.name) && /en.US/i.test(v.lang),
+ v => /samantha|karen|moira|tessa/i.test(v.name),
+ v => /en.US/i.test(v.lang) && /female|woman/i.test(v.name),
+ v => /en.US/i.test(v.lang),
+ v => /en/i.test(v.lang),
+ ];
+ for (const tier of tiers) {
+ const match = voices.find(tier);
+ if (match) return match;
+ }
+ return voices[0];
+}
+
+/* speakText(text, rate, onEnd) rate optional (default 0.78) */
+function speakText(text, rate, onEnd) {
+ if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
+ // Handle 2-arg call: speakText(text, onEnd)
+ if (typeof rate === 'function') { onEnd = rate; rate = 0.78; }
+ if (!rate) rate = 0.78;
+ window.speechSynthesis.cancel();
+
+ const doSpeak = () => {
+ const u = new SpeechSynthesisUtterance(text);
+ u.lang = 'en-US';
+ u.rate = rate;
+ u.pitch = 1.05;
+ if (!_bestVoice) _bestVoice = pickBestVoice();
+ if (_bestVoice) u.voice = _bestVoice;
+ if (onEnd) u.onend = onEnd;
+ window.speechSynthesis.speak(u);
+ };
+
+ const voices = window.speechSynthesis.getVoices();
+ if (voices && voices.length > 0) {
+ doSpeak();
+ } else {
+ window.speechSynthesis.addEventListener('voiceschanged', function onVoices() {
+ window.speechSynthesis.removeEventListener('voiceschanged', onVoices);
+ _bestVoice = pickBestVoice();
+ doSpeak();
+ });
+ }
+}
+
+/* ════════════════════════════════
+ CONFETTI EFFECT full screen
+════════════════════════════════ */
+function showConfetti() {
+ const overlay = document.getElementById('confetti-overlay');
+ overlay.innerHTML = '';
+ overlay.classList.add('show');
+ const colors = ['#F44336','#FFC107','#4CAF50','#2196F3','#9C27B0','#FF5722','#00BCD4','#FFEB3B'];
+ for (let i = 0; i < 100; i++) {
+ const c = document.createElement('div');
+ c.className = 'confetti-piece';
+ c.style.background = colors[i % colors.length];
+ c.style.left = (Math.random() * 100) + '%';
+ c.style.top = '-20px';
+ c.style.width = (7 + Math.random() * 9) + 'px';
+ c.style.height = (11 + Math.random() * 11) + 'px';
+ c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+ c.style.animationDuration = (800 + Math.random() * 1200) + 'ms';
+ c.style.animationDelay = (Math.random() * 600) + 'ms';
+ overlay.appendChild(c);
+ }
+ setTimeout(() => {
+ overlay.classList.remove('show');
+ overlay.innerHTML = '';
+ }, 2600);
+}
+
+/* ════════════════════════════════
+ RED GLOW ERROR OVERLAY
+════════════════════════════════ */
+function showErrorGlow() {
+ const overlay = document.getElementById('error-overlay');
+ overlay.classList.add('flash');
+ setTimeout(() => overlay.classList.remove('flash'), 700);
+}
+
+
+/* ── Boot ── */
+buildGrid();
+</script>
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/bb-user-data.js"></script>
+<script src="assets/js/parental-control.js"></script>
+</body>
+</html>

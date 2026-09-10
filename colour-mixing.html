@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+<title>Colour Mixing – BrainBerry</title>
+<style>
+  /* ── Base (identical to color.html) ── */
+  body {
+    margin: 0;
+    font-family: "Fugaz One", sans-serif;
+    background: #f6f6f9;
+  }
+
+  .bg-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  /* ── Navbar (identical) ── */
+  .navbar {
+    background: rgba(75, 42, 173, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px;
+    color: #fff;
+    position: relative;
+    z-index: 10;
+  }
+  .navbar .logo { display: flex; align-items: center; gap: 8px; }
+  .navbar .logo img { width: 80px; height: 55px; border-radius: 6px; }
+  .navbar .logo span { font-size: 1.2rem; font-weight: bold; }
+  .navbar .menu { display: flex; gap: 25px; position: relative; }
+  .navbar .menu a {
+    text-decoration: none; color: #fff;
+    font-weight: 500; font-size: 0.95rem;
+    padding: 5px 8px; position: relative;
+    transition: all 0.3s ease;
+  }
+  .navbar .menu a:hover {
+    color: #ffcc00;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    filter: none !important;
+  }
+  .navbar .menu:hover a:not(:hover) { filter: blur(2px) brightness(70%); }
+  .navbar .right { display: flex; align-items: center; gap: 15px; }
+  .reward { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+  .reward img { width: 20px; height: 20px; }
+  .profile img { width: 70px; height: 55px; border-radius: 50%; border: 0px solid #fff; }
+
+  /* Video preview (identical) */
+  .video-preview {
+    position: absolute; top: 40px; left: 0;
+    width: 200px; height: 120px;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+    background: #000; z-index: 20;
+  }
+  .video-preview video { width: 100%; height: 100%; object-fit: cover; }
+  .navbar .menu a:hover .video-preview { opacity: 1; }
+
+
+  /* ── Lesson box (same as color.html) ── */
+  .lesson-box {
+    margin: 30px auto;
+    width: 85%;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 32px 40px 36px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .lesson-box h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+
+  /* ── Mixing area ── */
+  .mixing-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin: 24px 0 18px;
+    flex-wrap: wrap;
+  }
+
+  /* Colour box – reuses colour-card glassmorphism */
+  .mix-box {
+    width: 150px;
+    height: 150px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .mix-box .swatch {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    transition: background 0.6s ease;
+  }
+
+  .mix-box .mix-label {
+    position: relative;
+    z-index: 2;
+    padding: 10px 4px;
+    font-size: 1rem;
+    font-family: "Fugaz One", sans-serif;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    width: 100%;
+    text-align: center;
+    background: rgba(0,0,0,0.22);
+  }
+
+  /* Result box is slightly larger */
+  .mix-box.result-box {
+    width: 160px;
+    height: 160px;
+  }
+
+  .plus-sign {
+    font-size: 2.2rem;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    font-family: "Fugaz One", sans-serif;
+    flex-shrink: 0;
+  }
+
+  .arrow-down {
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    display: block;
+    margin: 4px auto;
+    animation: pulse-arrow 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-arrow {
+    0%, 100% { opacity: 0.5; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(4px); }
+  }
+
+  /* Result row centered below */
+  .result-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .result-row .result-label-title {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── Button row (same style as voice-panel buttons) ── */
+  .btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+
+  .bb-btn {
+    flex: 1;
+    min-width: 110px;
+    padding: 12px 18px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #4b2aad;
+    color: white;
+    transition: 0.3s;
+    font-family: "Fugaz One", sans-serif;
+    white-space: nowrap;
+  }
+  .bb-btn:hover:not(:disabled) {
+    background: #ffcc00;
+    color: #000;
+  }
+  .bb-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .bb-btn.speak-now {
+    background: #00897b;
+  }
+  .bb-btn.speak-now:hover:not(:disabled) {
+    background: #ffcc00;
+    color: #000;
+  }
+
+  /* Feedback message */
+  #feedback-msg {
+    font-size: 1rem;
+    min-height: 1.4em;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    margin-top: 14px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-block;
+    margin-top: 22px;
+    color: #ffcc00;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+  }
+  .back-link:hover { color: #fff; }
+
+  /* ── Animations ── */
+  /* Colour splat: left & right boxes slide inward */
+  @keyframes slide-left {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(60px); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes slide-right {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-60px); }
+    100% { transform: translateX(0); }
+  }
+  .animate-left  { animation: slide-left  0.65s ease-in-out; }
+  .animate-right { animation: slide-right 0.65s ease-in-out; }
+
+  /* Result pop */
+  @keyframes pop-in {
+    0%   { transform: scale(0.7); opacity: 0; }
+    70%  { transform: scale(1.12); opacity: 1; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  .pop-in { animation: pop-in 0.55s ease; }
+
+  /* Shake */
+  @keyframes bb-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .bb-shake { animation: bb-shake 0.35s ease; }
+
+  /* Error overlay */
+  #error-overlay {
+    pointer-events: none;
+    position: fixed; inset: 0;
+    z-index: 9000;
+    background: rgba(220,30,30,0);
+    transition: background 0.15s ease;
+  }
+  #error-overlay.flash { background: rgba(220,30,30,0.38); }
+
+  /* Confetti */
+  #confetti-canvas {
+    pointer-events: none;
+    position: fixed; inset: 0;
+    z-index: 9500;
+    width: 100%; height: 100%;
+  }
+
+  /* Progress dots */
+  .progress-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.4);
+    transition: background 0.4s ease;
+  }
+  .dot.done { background: #ffcc00; }
+  .dot.current { background: rgba(255,255,255,0.8); }
+</style>
+</head>
+<body>
+
+<!-- Background video -->
+<video autoplay muted loop playsinline class="bg-video">
+  <source src="assets/videos/sky-island-pixel-moewalls-com.mp4" type="video/mp4" />
+</video>
+
+<!-- Navbar (identical markup) -->
+<div class="navbar">
+  <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+    <div class="logo">
+      <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+      <span>BrainBerry</span>
+    </div>
+  </a>
+
+  <div class="menu">
+    <a href="front.html">Home
+      <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix.mp4" type="video/mp4"></video></div>
+    </a>
+    <a href="challen.html">Challenges
+      <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix12.mp4" type="video/mp4"></video></div>
+    </a>
+    <a href="chal.html">Games
+      <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix3.mp4" type="video/mp4"></video></div>
+    </a>
+    <a href="Less.html">Lessons
+      <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/pix5.mov" type="video/mp4"></video></div>
+    </a>
+    <a href="rewards.html">Rewards
+      <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/reward.mp4" type="video/mp4"></video></div>
+    </a>
+    <a href="help.html">Help
+      <div class="video-preview"><video autoplay muted loop playsinline><source src="assets/videos/help.mp4" type="video/mp4"></video></div>
+    </a>
+  </div>
+
+  <div class="right">
+    <div class="reward">
+      <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+      <span>0</span>
+    </div>
+    <div class="reward">
+      <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+      <span>0</span>
+    </div>
+    <div class="profile">
+      <img src="assets/images/dp-cactus-20.png" alt="User">
+    </div>
+  </div>
+</div>
+
+
+<!-- Lesson Box -->
+<div class="lesson-box">
+  <h2>🎨 Colour Mixing</h2>
+
+  <!-- Top mixing area: [Left] + [Right] -->
+  <div class="mixing-area">
+    <!-- Left colour -->
+    <div class="mix-box" id="box-left">
+      <div class="swatch" id="swatch-left"></div>
+      <div class="mix-label" id="label-left">?</div>
+    </div>
+
+    <div class="plus-sign">+</div>
+
+    <!-- Right colour -->
+    <div class="mix-box" id="box-right">
+      <div class="swatch" id="swatch-right"></div>
+      <div class="mix-label" id="label-right">?</div>
+    </div>
+  </div>
+
+  <!-- Arrow down to result -->
+  <span class="arrow-down">&#8595;</span>
+
+  <!-- Result box -->
+  <div class="result-row">
+    <div class="result-label-title">Result</div>
+    <div class="mix-box result-box" id="box-result">
+      <div class="swatch" id="swatch-result" style="background: rgba(255,255,255,0.1);"></div>
+      <div class="mix-label" id="label-result">Mix!</div>
+    </div>
+  </div>
+
+  <!-- Feedback message -->
+  <div id="feedback-msg">Click "Start Mixing" to begin!</div>
+
+  <!-- Progress dots -->
+  <div class="progress-dots" id="progress-dots"></div>
+
+  <!-- 3-button row -->
+  <div class="btn-row">
+    <button class="bb-btn" id="hear-btn">🔊 Hear</button>
+    <button class="bb-btn" id="start-btn">▶ Start Mixing</button>
+    <button class="bb-btn" id="next-btn" disabled>Next ›</button>
+  </div>
+
+  <a href="color-shape.html" class="back-link">← Back to Colour &amp; Shapes</a>
+</div>
+
+<!-- Fullscreen overlays -->
+<div id="error-overlay"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/bb-user-data.js"></script>
+<script src="assets/js/parental-control.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   COLOUR MIXING – BrainBerry
+   Full flow: animation → hear → speak → validate → next
+═══════════════════════════════════════════════════ */
+
+/* ── Data ── */
+const COLOUR_HEX = {
+  Red:    "#e63946",
+  Blue:   "#457b9d",
+  Green:  "#2d6a4f",
+  Yellow: "#f4c430",
+  Orange: "#f77f00",
+  Pink:   "#f08080",
+  Purple: "#7b2d8b",
+  Black:  "#1a1a2e",
+  White:  "#f0f0f0",
+  Brown:  "#795548",
+  Grey:   "#9e9e9e"
+};
+
+/* Every pair the child will learn */
+const MIXES = [
+  { a: "Red",    b: "White",  result: "Pink"   },
+  { a: "Red",    b: "Yellow", result: "Orange" },
+  { a: "Blue",   b: "Red",    result: "Purple" },
+  { a: "Blue",   b: "Yellow", result: "Green"  },
+  { a: "White",  b: "Black",  result: "Grey"   },
+  { a: "Yellow", b: "Blue",   result: "Green"  },
+  { a: "Red",    b: "Blue",   result: "Purple" }
+];
+
+/* Phonetic aliases for result colours (fuzzy matching) */
+const PHONETIC_MAP = {
+  pink:   ["pink","pnik","penk","peenk","ping"],
+  orange: ["orange","oranje","orang","ornge","arange","orinj"],
+  purple: ["purple","perpul","purpel","parple","purpul"],
+  green:  ["green","grean","gren","grin","griin"],
+  grey:   ["grey","gray","grae","grrey","greey"]
+};
+
+/* ── State ── */
+let pairIndex   = 0;
+let mixDone     = false;   // animation ran
+let hearDone    = false;   // audio played
+let isListening = false;
+let answeredOk  = false;
+let retryTimer  = null;
+let hearMode    = true;    // true = show "Hear", false = show "Speak Now"
+let currentAudio = null;
+
+/* ── DOM refs ── */
+const swatchL  = document.getElementById("swatch-left");
+const swatchR  = document.getElementById("swatch-right");
+const swatchRes= document.getElementById("swatch-result");
+const labelL   = document.getElementById("label-left");
+const labelR   = document.getElementById("label-right");
+const labelRes = document.getElementById("label-result");
+const boxL     = document.getElementById("box-left");
+const boxR     = document.getElementById("box-right");
+const boxRes   = document.getElementById("box-result");
+const feedMsg  = document.getElementById("feedback-msg");
+const hearBtn  = document.getElementById("hear-btn");
+const startBtn = document.getElementById("start-btn");
+const nextBtn  = document.getElementById("next-btn");
+const errorOvl = document.getElementById("error-overlay");
+const dotsEl   = document.getElementById("progress-dots");
+
+/* ── Init ── */
+function buildDots() {
+  dotsEl.innerHTML = "";
+  MIXES.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "dot" + (i === 0 ? " current" : "");
+    d.id = "dot-" + i;
+    dotsEl.appendChild(d);
+  });
+}
+
+function loadPair(idx) {
+  const pair = MIXES[idx];
+  /* colours */
+  swatchL.style.background = COLOUR_HEX[pair.a];
+  swatchR.style.background = COLOUR_HEX[pair.b];
+  swatchRes.style.background = "rgba(255,255,255,0.1)";
+  labelL.textContent  = pair.a;
+  labelR.textContent  = pair.b;
+  labelRes.textContent = "Mix!";
+
+  /* reset state */
+  mixDone    = false;
+  hearDone   = false;
+  answeredOk = false;
+  hearMode   = true;
+  stopRecognition();
+
+  hearBtn.textContent = "🔊 Hear";
+  hearBtn.classList.remove("speak-now");
+  hearBtn.disabled = true;   // enabled only AFTER mixing animation
+  startBtn.disabled = false;
+  nextBtn.disabled  = true;
+  feedMsg.textContent = 'Click "Start Mixing" to begin!';
+
+  /* dots */
+  document.querySelectorAll(".dot").forEach((d, i) => {
+    d.className = "dot" + (i < idx ? " done" : i === idx ? " current" : "");
+  });
+}
+
+/* ── Audio ── */
+function playColourAudio(name, onDone) {
+  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+  const audioMap = {
+    Red:"assets/audio/red.mp3", Blue:"assets/audio/blue.mp3", Green:"assets/audio/green.mp3",
+    Yellow:"assets/audio/yellow.mp3", Orange:"assets/audio/orange.mp3", Pink:"assets/audio/pink.mp3",
+    Purple:"assets/audio/purple.mp3", Black:"assets/audio/black.mp3", White:"assets/audio/white.mp3",
+    Brown:"assets/audio/brown.mp3"
+  };
+  const file = audioMap[name];
+  if (!file) { onDone && onDone(); return; }
+  currentAudio = new Audio(file);
+  currentAudio.onended = () => onDone && onDone();
+  currentAudio.play().catch(() => { onDone && onDone(); });
+}
+
+/* Speak the full sentence using Web Speech API */
+function speakSentence(text, onDone) {
+  if (!("speechSynthesis" in window)) { onDone && onDone(); return; }
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = "en-US";
+  utt.rate = 0.88;
+  utt.pitch = 1.15;
+  utt.onend = () => onDone && onDone();
+  speechSynthesis.speak(utt);
+}
+
+/* ── Start Mixing button ── */
+startBtn.addEventListener("click", () => {
+  if (mixDone) return;
+  startBtn.disabled = true;
+  feedMsg.textContent = "✨ Mixing…";
+
+  /* Animate boxes sliding inward */
+  boxL.classList.remove("animate-left");
+  boxR.classList.remove("animate-right");
+  void boxL.offsetWidth; // reflow
+  boxL.classList.add("animate-left");
+  boxR.classList.add("animate-right");
+
+  /* After animation (650ms), reveal result */
+  setTimeout(() => {
+    const pair = MIXES[pairIndex];
+    const resultCol = COLOUR_HEX[pair.result];
+
+    /* gradient blend effect on result box */
+    swatchRes.style.transition = "none";
+    swatchRes.style.background = `linear-gradient(135deg, ${COLOUR_HEX[pair.a]}, ${COLOUR_HEX[pair.b]})`;
+
+    setTimeout(() => {
+      swatchRes.style.transition = "background 0.55s ease";
+      swatchRes.style.background = resultCol;
+      labelRes.textContent = pair.result;
+      boxRes.classList.remove("pop-in");
+      void boxRes.offsetWidth;
+      boxRes.classList.add("pop-in");
+
+      mixDone = true;
+      hearBtn.disabled = false;
+      feedMsg.textContent = `🎉 ${pair.a} + ${pair.b} = ${pair.result}! Now tap "Hear"`;
+    }, 120);
+
+    /* Clean up animation classes after they finish */
+    boxL.addEventListener("animationend", () => boxL.classList.remove("animate-left"),  { once: true });
+    boxR.addEventListener("animationend", () => boxR.classList.remove("animate-right"), { once: true });
+  }, 700);
+});
+
+/* ── Hear / Speak Now button ── */
+hearBtn.addEventListener("click", () => {
+  if (!mixDone) {
+    feedMsg.textContent = "Please start mixing first!";
+    shakeEl(hearBtn);
+    return;
+  }
+
+  if (hearMode) {
+    /* === HEAR mode: speak the sentence === */
+    hearBtn.disabled = true;
+    startBtn.disabled = true;
+    const pair = MIXES[pairIndex];
+    const sentence = `${pair.a} plus ${pair.b} makes ${pair.result}`;
+    feedMsg.textContent = `🔊 "${sentence}"`;
+
+    speakSentence(sentence, () => {
+      hearDone = true;
+      hearMode = false;
+      hearBtn.textContent = "🎤 Speak Now";
+      hearBtn.classList.add("speak-now");
+      hearBtn.disabled = false;
+      feedMsg.textContent = `👆 Say the result colour: "${pair.result}"`;
+    });
+
+  } else {
+    /* === SPEAK mode: trigger mic === */
+    if (!hearDone) {
+      feedMsg.textContent = "Please listen first!";
+      shakeEl(hearBtn);
+      return;
+    }
+    if (!recognition) {
+      feedMsg.textContent = "Speech recognition not supported in this browser.";
+      return;
+    }
+    startRecognition();
+  }
+});
+
+/* ── Next button ── */
+nextBtn.addEventListener("click", () => {
+  stopRecognition();
+  /* Mark dot as done */
+  const dot = document.getElementById("dot-" + pairIndex);
+  if (dot) dot.className = "dot done";
+
+  pairIndex = (pairIndex + 1) % MIXES.length;
+  loadPair(pairIndex);
+});
+
+/* ── Speech Recognition ── */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+
+if (SR) {
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 5;
+  recognition.continuous = false;
+
+  recognition.onresult = (e) => {
+    isListening = false;
+    clearTimeout(retryTimer);
+    const candidates = [];
+    for (let i = 0; i < e.results.length; i++)
+      for (let j = 0; j < e.results[i].length; j++)
+        candidates.push(e.results[i][j].transcript.toLowerCase().trim());
+    validate(candidates);
+  };
+
+  recognition.onerror = (e) => {
+    isListening = false;
+    clearTimeout(retryTimer);
+    if (e.error === "no-speech") {
+      feedMsg.textContent = "🤫 Nothing heard! Try again…";
+      if (!answeredOk && hearDone) retryTimer = setTimeout(startRecognition, 1200);
+    } else if (e.error === "aborted") {
+      /* intentional */
+    } else {
+      feedMsg.textContent = "🎙️ Mic problem – tap Speak Now to retry";
+      if (!answeredOk && hearDone) hearBtn.disabled = false;
+    }
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    if (!answeredOk && hearDone && hearMode === false) hearBtn.disabled = false;
+  };
+}
+
+function startRecognition() {
+  if (!recognition || isListening || answeredOk) return;
+  isListening = true;
+  hearBtn.disabled = true;
+  feedMsg.textContent = "🎙️ Listening…";
+  try { recognition.start(); }
+  catch (_) { isListening = false; retryTimer = setTimeout(startRecognition, 400); }
+}
+
+function stopRecognition() {
+  if (recognition && isListening) { try { recognition.stop(); } catch (_) {} }
+  isListening = false;
+  clearTimeout(retryTimer);
+}
+
+/* ── Validation (multi-layer, child-friendly) ── */
+function validate(candidates) {
+  const target = MIXES[pairIndex].result.toLowerCase();
+  const aliases = PHONETIC_MAP[target] || [target];
+
+  /* Layer 1: phonetic alias */
+  const phoneticOk = candidates.some(c =>
+    aliases.some(a => c === a || c.includes(a) || a.includes(c))
+  );
+
+  /* Layer 2: Levenshtein fuzzy */
+  const maxEdits = target.length <= 4 ? 1 : target.length <= 6 ? 2 : 3;
+  const fuzzyOk = candidates.some(c =>
+    c.split(/\s+/).some(w => levenshtein(w, target) <= maxEdits)
+  );
+
+  if (phoneticOk || fuzzyOk) {
+    answeredOk = true;
+    stopRecognition();
+    hearBtn.disabled = true;
+    nextBtn.disabled = false;
+    feedMsg.textContent = `🌟 Amazing! "${MIXES[pairIndex].result}" is correct!`;
+    launchConfetti();
+  } else {
+    const heard = candidates[0] || "";
+    feedMsg.textContent = heard
+      ? `❌ I heard "${heard}" – say "${MIXES[pairIndex].result}"`
+      : `❌ Say "${MIXES[pairIndex].result}" clearly!`;
+    flashError();
+    setTimeout(() => {
+      if (!answeredOk && hearDone) hearBtn.disabled = false;
+    }, 900);
+  }
+}
+
+/* ── Levenshtein ── */
+function levenshtein(a, b) {
+  if (!a) return b.length;
+  if (!b) return a.length;
+  const dp = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+  );
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[a.length][b.length];
+}
+
+/* ── Helpers ── */
+function shakeEl(el) {
+  el.classList.remove("bb-shake");
+  void el.offsetWidth;
+  el.classList.add("bb-shake");
+  el.addEventListener("animationend", () => el.classList.remove("bb-shake"), { once: true });
+}
+
+function flashError() {
+  errorOvl.classList.add("flash");
+  setTimeout(() => errorOvl.classList.remove("flash"), 750);
+}
+
+/* ── Confetti (same algorithm as color.html) ── */
+function launchConfetti() {
+  const canvas = document.getElementById("confetti-canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const PALETTE = ["#ffcc00","#ff6b6b","#4ecdc4","#45b7d1","#96ceb4","#ffeaa7","#fd79a8","#a29bfe","#6c5ce7","#00b894"];
+  const particles = Array.from({ length: 180 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height * 0.6,
+    w: 5 + Math.random() * 10,
+    h: 3 + Math.random() * 6,
+    color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+    angle: Math.random() * Math.PI * 2,
+    spin:  (Math.random() - 0.5) * 0.2,
+    vx:   (Math.random() - 0.5) * 5,
+    vy:   2 + Math.random() * 4,
+    alpha: 1
+  }));
+  let frame = 0; const TOTAL = 120;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      p.angle += p.spin; p.vy += 0.08; p.vx *= 0.995;
+      if (frame > TOTAL * 0.55) p.alpha = Math.max(0, p.alpha - 0.022);
+      ctx.save(); ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y); ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < TOTAL) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+}
+
+
+/* ── Boot ── */
+document.addEventListener("DOMContentLoaded", () => {
+  buildDots();
+  loadPair(0);
+  if ("speechSynthesis" in window) {
+    speechSynthesis.getVoices();
+    speechSynthesis.addEventListener("voiceschanged", () => speechSynthesis.getVoices());
+  }
+});
+</script>
+</body>
+</html>

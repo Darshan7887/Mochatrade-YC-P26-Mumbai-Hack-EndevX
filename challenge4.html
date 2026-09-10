@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet">
+  <title>Challenge 4: Tap the Correct Sound – BrainBerry</title>
+
+  <style>
+    /* ── Base ───────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Fugaz One", sans-serif;
+      background: #f6f6f9;
+      min-height: 100vh;
+    }
+
+    /* ── Background video ───────────────────────────────────────────── */
+    .bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    #colorGlowOverlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: rgba(20, 10, 30, 0.65); /* Darker overlay requested */
+      backdrop-filter: blur(6px);
+    }
+
+    /* ── Navbar ─────────────────────────────────────────────────────── */
+    .navbar {
+      background: rgba(75, 42, 173, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+      color: #fff;
+      position: relative;
+      z-index: 10;
+    }
+    .navbar .logo { display: flex; align-items: center; gap: 8px; }
+    .navbar .logo img { width: 80px; height: 55px; border-radius: 6px; }
+    .navbar .logo span { font-size: 1.2rem; font-weight: bold; }
+    .navbar .menu { display: flex; gap: 25px; }
+    .navbar .menu a {
+      text-decoration: none; color: #fff; font-weight: 500;
+      font-size: 0.95rem; padding: 5px 8px; transition: all 0.3s ease;
+    }
+    .navbar .menu a:hover {
+      color: #ffcc00;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+    }
+    .navbar .right { display: flex; align-items: center; gap: 15px; }
+    .reward { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
+    .reward img { width: 20px; height: 20px; }
+    .profile img { width: 70px; height: 55px; border-radius: 50%; }
+
+    /* ── Page wrapper ───────────────────────────────────────────────── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: calc(100vh - 71px);
+    }
+
+    /* ── Purple hero banner ─────────────────────────────────────────── */
+    .purple-box {
+      background: rgba(128, 0, 128, 0.7);
+      border-radius: 14px;
+      padding: 20px 30px;
+      color: #fff;
+      margin-bottom: 28px;
+      width: 100%;
+      max-width: 700px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .purple-box h2, .purple-box p { position: relative; z-index: 2; }
+    .floating-shapes span {
+      position: absolute; font-size: 1.5rem;
+      animation: float 6s infinite ease-in-out; opacity: 0.8;
+    }
+    .floating-shapes span:nth-child(1) { top: 10%; left: 5%;  animation-delay: 0s; }
+    .floating-shapes span:nth-child(2) { top: 40%; left: 75%; animation-delay: 1s; }
+    .floating-shapes span:nth-child(3) { top: 70%; left: 20%; animation-delay: 2s; }
+    .floating-shapes span:nth-child(4) { top: 20%; left: 85%; animation-delay: 3s; }
+    @keyframes float {
+      0%   { transform: translateY(0); opacity: 1; }
+      50%  { transform: translateY(-18px); opacity: 0.7; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ── HUD: Score + Lives ─────────────────────────────────────────── */
+    .hud {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .hud-pill {
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50px;
+      padding: 10px 24px;
+      color: #fff;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .hud-pill.bump { animation: bump 0.35s ease; }
+    @keyframes bump {
+      0%  { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100%{ transform: scale(1); }
+    }
+
+    /* ── Main game card ─────────────────────────────────────────────── */
+    .game-card {
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 16px;
+      padding: 40px 30px;
+      color: #fff;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      text-align: center;
+    }
+
+    .question-label {
+      font-size: 1.3rem;
+      color: #c9b9ff;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .question-text {
+      font-size: 1.8rem;
+      margin: 0 0 35px;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    /* ── Play Sound button ──────────────────────────────────────────── */
+    .btn-play {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      background: linear-gradient(135deg, #6a5acd, #00c9ff);
+      border: none;
+      border-radius: 50px;
+      padding: 20px 48px;
+      font-family: "Fugaz One", sans-serif;
+      font-size: 1.4rem;
+      color: #fff;
+      cursor: pointer;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 25px rgba(0,201,255,0.55);
+      transition: transform 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .btn-play:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,201,255,0.75); }
+    .btn-play:active { transform: scale(0.97); }
+    .btn-play.playing { animation: pulse-ring 0.8s ease infinite; }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0   rgba(0,201,255,0.7); }
+      70%  { box-shadow: 0 0 0 14px rgba(0,201,255,0);  }
+      100% { box-shadow: 0 0 0 0   rgba(0,201,255,0);   }
+    }
+    .btn-play.earthquake {
+      animation: earthquake 0.5s;
+      background: linear-gradient(135deg, #ef4444, #dc2626); /* turn red during shaking */
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.7);
+    }
+    @keyframes earthquake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+
+    /* ── Option buttons ─────────────────────────────────────────────── */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .btn-option {
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 14px;
+      padding: 24px 10px;
+      font-family: "Fugaz One", sans-serif;
+      font-size: 2.2rem;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, border-color 0.2s;
+      user-select: none;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .btn-option:hover:not(:disabled) {
+      background: rgba(255,255,255,0.25);
+      border-color: #ffcc00;
+      transform: scale(1.06);
+    }
+    .btn-option:disabled { cursor: not-allowed; opacity: 0.65; }
+    .btn-option.correct {
+      background: rgba(0, 210, 110, 0.45);
+      border-color: #00d26a;
+      animation: pop 0.4s ease;
+    }
+    .btn-option.wrong {
+      background: rgba(220, 38, 38, 0.45);
+      border-color: #ef4444;
+      animation: shake 0.4s ease;
+    }
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.18); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%       { transform: translateX(-8px); }
+      75%       { transform: translateX( 8px); }
+    }
+
+    /* ── Feedback banner ────────────────────────────────────────────── */
+    .feedback {
+      font-size: 1.5rem;
+      font-weight: bold;
+      min-height: 2.2rem;
+      margin-bottom: 20px;
+      text-align: center;
+      transition: opacity 0.3s;
+    }
+    .feedback.correct { color: #00f593; }
+    .feedback.wrong   { color: #ff6b6b; }
+    .feedback.hidden  { opacity: 0; }
+
+    /* ── Next button ────────────────────────────────────────────────── */
+    .btn-next {
+      display: none;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      border: none;
+      border-radius: 50px;
+      padding: 16px 44px;
+      font-family: "Fugaz One", sans-serif;
+      font-size: 1.1rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(245,158,11,0.5);
+      transition: transform 0.15s;
+      margin: 0 auto;
+    }
+    .btn-next:hover { transform: scale(1.07); }
+    .btn-next.show  { display: block; }
+
+    /* ── Game over card ─────────────────────────────────────────────── */
+    .game-over {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      background: rgba(0,0,0,0.75);
+      border-radius: 16px;
+      padding: 40px 30px;
+      color: #fff;
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+    }
+    .game-over.show { display: flex; }
+    .game-over h2 { font-size: 2rem; margin: 0; }
+    .game-over p  { font-size: 1.2rem; color: #c9b9ff; }
+    .btn-restart {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border: none; border-radius: 50px;
+      padding: 16px 44px;
+      font-family: "Fugaz One", sans-serif;
+      font-size: 1.1rem; color: #fff; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(124,58,237,0.5);
+      transition: transform 0.15s;
+    }
+    .btn-restart:hover { transform: scale(1.07); }
+
+    /* ── Confetti canvas ────────────────────────────────────────────── */
+    #confettiCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Red wrong-answer full-screen glow ──────────────────────────── */
+    #redGlowOverlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      background: transparent;
+      box-shadow: inset 0 0 0px 0px rgba(220, 38, 38, 0);
+      border-radius: 0;
+      transition: none;
+    }
+    #redGlowOverlay.flash {
+      animation: redFlash 0.9s ease forwards;
+    }
+    @keyframes redFlash {
+      0%   { background: rgba(220,38,38,0.0);  box-shadow: inset 0 0  0px   0px  rgba(220,38,38,0.0); }
+      15%  { background: rgba(220,38,38,0.35); box-shadow: inset 0 0 120px  60px rgba(220,38,38,0.7); }
+      40%  { background: rgba(220,38,38,0.25); box-shadow: inset 0 0 160px  80px rgba(220,38,38,0.6); }
+      70%  { background: rgba(220,38,38,0.12); box-shadow: inset 0 0  80px  40px rgba(220,38,38,0.35); }
+      100% { background: rgba(220,38,38,0.0);  box-shadow: inset 0 0   0px   0px rgba(220,38,38,0.0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti canvas (correct answer celebration) -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Red glow overlay (wrong answer punishment) -->
+  <div id="redGlowOverlay"></div>
+
+  <!-- Background video -->
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="assets/videos/challen.mp4" type="video/mp4" />
+  </video>
+  
+  <div id="colorGlowOverlay"></div>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <a href="front.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px;" title="Go Home">
+      <div class="logo">
+        <img src="assets/images/Screenshot 2025-09-14 134929.png" alt="Logo">
+        <span>BrainBerry</span>
+      </div>
+    </a>
+    <div class="menu">
+      <a href="front.html">Home</a>
+      <a href="challen.html">Challenges</a>
+      <a href="chal.html">Games</a>
+      <a href="Less.html">Lessons</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="help.html">Help</a>
+    </div>
+    <div class="right">
+      <div class="reward">
+        <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Gem">
+        <span>0</span>
+      </div>
+      <div class="reward">
+        <img src="https://cdn-icons-png.flaticon.com/512/138/138281.png" alt="Coin">
+        <span>0</span>
+      </div>
+      <div class="profile">
+        <img src="assets/images/dp-cactus-20.png" alt="User">
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="page-wrapper">
+
+    <!-- Purple header banner -->
+    <div class="purple-box">
+      <div class="floating-shapes">
+        <span>🔊</span><span>⭐</span><span>🎵</span><span>🎈</span>
+      </div>
+      <h2>🔊 Challenge 4: Tap the Correct Sound</h2>
+      <p>Listen carefully and tap the letter that matches the sound!</p>
+    </div>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-pill" id="scoreDisplay">⭐ Score: <span id="scoreVal">0</span></div>
+      <div class="hud-pill" id="comboDisplay" style="color:#fb923c; display:none;">🔥 Streak x<span id="comboVal">0</span></div>
+      <div class="hud-pill" id="livesDisplay">❤️ Lives: <span id="livesVal">3</span></div>
+    </div>
+
+    <!-- Game card -->
+    <div class="game-card" id="gameCard">
+      <div class="question-label">🎧 Listen carefully!</div>
+      <div class="question-text" id="questionText">Which letter makes this sound?</div>
+
+      <button class="btn-play" id="btnPlay" onclick="playSound()">
+        🔊 PLAY SOUND
+      </button>
+
+      <div class="options-grid" id="optionsGrid">
+        <!-- Options injected by JS -->
+      </div>
+
+      <div class="feedback hidden" id="feedback"></div>
+
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">
+        Next ➡️
+      </button>
+    </div>
+
+    <!-- Game Over panel -->
+    <div class="game-over" id="gameOver">
+      <div style="font-size:4rem">🎉</div>
+      <h2>Game Over!</h2>
+      <p>You scored <strong id="finalScore" style="color:#facc15">0</strong> out of <strong id="totalQ">0</strong></p>
+      <div style="display:flex; gap:15px; margin-top:20px;">
+        <button class="btn-restart" onclick="restartGame()">🔄 Play Again</button>
+        <button class="btn-restart" style="background:linear-gradient(135deg,#059669,#10b981)" onclick="location.href='challen.html'">🏠 Mission Control</button>
+      </div>
+    </div>
+
+  </div><!-- end page-wrapper -->
+
+  <script>
+    /* ── DATA: Each question has a correct letter + 3 distractors. ── */
+    const questions = [
+      { letter: 'A', sound: 'aah',  options: ['A','B','C','D'] },
+      { letter: 'B', sound: 'buh',  options: ['A','B','D','E'] },
+      { letter: 'C', sound: 'kuh',  options: ['C','G','K','Q'] },
+      { letter: 'D', sound: 'duh',  options: ['B','D','P','Q'] },
+      { letter: 'E', sound: 'eh',   options: ['A','E','I','O'] },
+      { letter: 'F', sound: 'fuh',  options: ['F','P','V','W'] },
+      { letter: 'G', sound: 'guh',  options: ['C','G','J','K'] },
+      { letter: 'H', sound: 'huh',  options: ['H','K','M','N'] },
+      { letter: 'I', sound: 'ih',   options: ['A','E','I','U'] },
+      { letter: 'J', sound: 'juh',  options: ['G','J','Y','Z'] },
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let combo = 0;
+    let lives = 3;
+    let answered = false;
+    let soundPlayed = false;
+    let questionsAnswered = 0;
+
+    /* Shuffle helper */
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    /* ── Load current question ── */
+    function loadQuestion() {
+      if (currentIndex >= questions.length) { showGameOver(); return; }
+
+      answered = false;
+      soundPlayed = false;
+      const q = questions[currentIndex];
+
+      /* Clear feedback */
+      const fb = document.getElementById('feedback');
+      fb.textContent = '';
+      fb.className = 'feedback hidden';
+
+      /* Hide next button */
+      const btnNext = document.getElementById('btnNext');
+      btnNext.classList.remove('show');
+
+      /* Reset play button */
+      const btnPlay = document.getElementById('btnPlay');
+      btnPlay.classList.remove('playing');
+      btnPlay.disabled = false;
+      btnPlay.innerHTML = '🔊 PLAY SOUND';
+
+      /* Build option buttons */
+      const grid = document.getElementById('optionsGrid');
+      grid.innerHTML = '';
+      const opts = shuffle(q.options);
+      opts.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-option';
+        btn.innerHTML = `${letter} <span style="font-size:1rem; opacity:0.6;">🔊</span>`;
+        btn.id = 'opt-' + letter;
+        btn.onclick = () => checkAnswer(letter, btn);
+        grid.appendChild(btn);
+      });
+
+      // Auto-play trigger!
+      setTimeout(() => {
+          playSound();
+      }, 500);
+    }
+
+    /* ── Play phonetic sound using Web Speech API ── */
+    function playSound() {
+      const q = questions[currentIndex];
+      const btnPlay = document.getElementById('btnPlay');
+
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+
+      soundPlayed = true;
+      btnPlay.classList.add('playing');
+      btnPlay.disabled = true;
+      btnPlay.innerHTML = '🔁 Replay';
+
+      const utter = new SpeechSynthesisUtterance(q.sound);
+      utter.rate  = 0.75;   // slow & clear for kids
+      utter.pitch = 1.1;    // slightly high & friendly
+      utter.volume = 1;
+
+      // Pick a clear English voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v =>
+        v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Karen'))
+      ) || voices.find(v => v.lang.startsWith('en'));
+      if (preferred) utter.voice = preferred;
+
+      utter.onend = () => {
+        btnPlay.classList.remove('playing');
+        btnPlay.disabled = false;
+      };
+      utter.onerror = () => {
+        btnPlay.classList.remove('playing');
+        btnPlay.disabled = false;
+      };
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    /* Pre-load voices so they are available on first click */
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = () => { speechSynthesis.getVoices(); };
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════════════
+       PREMIUM CONFETTI ENGINE (Physics-Based)
+       ════════════════════════════════════════════════════════════════════════════════ */
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const ctx = confettiCanvas.getContext('2d');
+    confettiCanvas.width  = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      confettiCanvas.width  = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    });
+
+    const COLORS = ['#FFD700', '#3B82F6', '#EC4899', '#22C55E', '#A855F7']; // Yellow, blue, pink, green, purple
+    const SHAPES = ['rectangle', 'strip', 'circle'];
+    let particles = [];
+    let confettiRAF = null;
+
+    function spawnPremiumConfetti(count = 220) {
+      const centerX = confettiCanvas.width / 2;
+      const centerY = 80; // Burst from top-center
+      
+      for (let i = 0; i < count; i++) {
+        // Wide upward arc (1.1 PI to 1.9 PI)
+        const burstAngle = (Math.PI * 1.1) + (Math.random() * Math.PI * 0.8);
+        const velocity = 15 + Math.random() * 26; // High initial explosion
+        
+        particles.push({
+          x: centerX,
+          y: centerY,
+          vx: Math.cos(burstAngle) * velocity,
+          vy: Math.sin(burstAngle) * velocity,
+          size: 6 + Math.random() * 7,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.5,
+          gravity: 0.35 + Math.random() * 0.3, // Gravity pulling down
+          friction: 0.89 + Math.random() * 0.06, // Ease-out drag
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSpeed: (Math.random() - 0.5) * 0.2,
+          driftAmount: 1 + Math.random() * 2.5,
+          opacity: 1,
+          life: 90 + Math.random() * 60 // 1.5 to 2.5 seconds at 60fps
+        });
+      }
+    }
+
+    function drawPremiumConfetti() {
+      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      let active = false;
+      
+      particles.forEach(p => {
+        p.life--;
+        if (p.life <= 0) return;
+        active = true;
+        
+        // Fade out smoothly at the end (last 30 frames)
+        if (p.life < 30) {
+          p.opacity = p.life / 30;
+        }
+        
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        
+        // Premium soft shadow for depth
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 3;
+        
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        
+        ctx.fillStyle = p.color;
+        
+        // Mixed shapes
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size * 0.65, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.shape === 'strip') {
+          ctx.fillRect(-p.size / 4, -p.size, p.size / 2, p.size * 2);
+        } else {
+          // Rectangle
+          ctx.fillRect(-p.size / 2, -p.size * 0.7, p.size, p.size * 1.4);
+        }
+        ctx.restore();
+        
+        // Physics update
+        p.vx *= p.friction;
+        p.vy *= p.friction;
+        p.vy += p.gravity;
+        
+        p.x += p.vx + Math.cos(p.wobble) * p.driftAmount;
+        p.y += p.vy;
+        
+        p.rotation += p.rotationSpeed;
+        p.wobble += p.wobbleSpeed;
+      });
+      
+      if (active) {
+        confettiRAF = requestAnimationFrame(drawPremiumConfetti);
+      } else {
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        particles = [];
+      }
+    }
+
+    function triggerConfetti() {
+      if (confettiRAF) cancelAnimationFrame(confettiRAF);
+      particles = [];
+      spawnPremiumConfetti(220);
+      drawPremiumConfetti();
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════════════
+       RED GLOW  (wrong answer)
+       ════════════════════════════════════════════════════════════════════════════════ */
+    const redOverlay = document.getElementById('redGlowOverlay');
+    function triggerRedGlow() {
+      redOverlay.classList.remove('flash');
+      void redOverlay.offsetWidth; // force reflow so animation restarts
+      redOverlay.classList.add('flash');
+      redOverlay.addEventListener('animationend', () => {
+        redOverlay.classList.remove('flash');
+      }, { once: true });
+    }
+
+    /* ── Check the tapped answer ── */
+    function checkAnswer(tapped, btn) {
+      if (answered) return;
+      
+      if (!soundPlayed) {
+        const fb = document.getElementById('feedback');
+        fb.textContent = '🔊 First hear the sound!';
+        fb.className = 'feedback wrong';
+        
+        const btnPlay = document.getElementById('btnPlay');
+        btnPlay.classList.remove('earthquake');
+        void btnPlay.offsetWidth; // trigger reflow
+        btnPlay.classList.add('earthquake');
+        
+        setTimeout(() => {
+          btnPlay.classList.remove('earthquake');
+        }, 500);
+        return;
+      }
+
+      answered = true;
+      questionsAnswered++;
+      let progress = Math.round((questionsAnswered / questions.length) * 100);
+      localStorage.setItem("mission3_progress", progress.toString());
+
+      /* Disable all buttons */
+      document.querySelectorAll('.btn-option').forEach(b => b.disabled = true);
+
+      const correct = questions[currentIndex].letter;
+      const fb = document.getElementById('feedback');
+      const btnNext = document.getElementById('btnNext');
+      const scoreEl = document.getElementById('scoreVal');
+      const livesEl = document.getElementById('livesVal');
+      const scoreHud = document.getElementById('scoreDisplay');
+      const livesHud = document.getElementById('livesDisplay');
+
+      if (tapped === correct) {
+        /* ✅ Correct */
+        btn.classList.add('correct');
+        fb.innerHTML = '✨ Correct! <strong>+10 XP</strong>';
+        fb.className = 'feedback correct';
+        combo++;
+        let bonus = combo > 1 ? combo * 2 : 0;
+        score += (10 + bonus);
+
+        // UI Updates
+        scoreEl.textContent = score;
+        scoreHud.classList.remove('bump');
+        void scoreHud.offsetWidth;
+        scoreHud.classList.add('bump');
+
+        if(combo > 1) {
+            const cDisplay = document.getElementById('comboDisplay');
+            cDisplay.style.display = 'flex';
+            document.getElementById('comboVal').textContent = combo;
+            cDisplay.classList.remove('bump');
+            void cDisplay.offsetWidth;
+            cDisplay.classList.add('bump');
+        }
+
+        /* 🎉 Confetti! */
+        triggerConfetti();
+        // Play success sound
+        const clk = new Audio('assets/audio/click.mp3'); clk.play().catch(e=>{});
+        
+      } else {
+        /* ❌ Wrong */
+        btn.classList.add('wrong');
+        combo = 0; // reset streak
+        document.getElementById('comboDisplay').style.display = 'none';
+
+        /* highlight correct */
+        const correctBtn = document.getElementById('opt-' + correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+        fb.textContent = '❌ Try Again! The correct sound was ' + correct;
+        fb.className = 'feedback wrong';
+        lives--;
+        livesEl.textContent = lives;
+        livesHud.classList.remove('bump');
+        void livesHud.offsetWidth;
+        livesHud.classList.add('bump');
+        
+        /* 🔴 Red glow flash! */
+        triggerRedGlow();
+        const err = new Audio('assets/audio/error.mp3'); err.play().catch(e=>{});
+      }
+
+      /* Show Next button */
+      btnNext.classList.add('show');
+
+      /* Auto-advance or game-over if no lives left */
+      if (lives <= 0) {
+        setTimeout(showGameOver, 1500);
+      }
+    }
+
+    /* ── Next question ── */
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= questions.length || lives <= 0) {
+        showGameOver();
+      } else {
+        loadQuestion();
+      }
+    }
+
+    /* ── Game over screen ── */
+    function showGameOver() {
+      document.getElementById('gameCard').style.display = 'none';
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('totalQ').textContent = questionsAnswered;
+      const panel = document.getElementById('gameOver');
+      panel.classList.add('show');
+    }
+
+    /* ── Restart ── */
+    function restartGame() {
+      currentIndex = 0;
+      score = 0;
+      combo = 0;
+      lives = 3;
+      answered = false;
+      questionsAnswered = 0;
+      document.getElementById('scoreVal').textContent = 0;
+      document.getElementById('comboDisplay').style.display = 'none';
+      document.getElementById('livesVal').textContent = 3;
+      document.getElementById('gameOver').classList.remove('show');
+      document.getElementById('gameCard').style.display = '';
+      loadQuestion();
+    }
+
+    /* Boot */
+    loadQuestion();
+  </script>
+<script src="assets/js/profile-panel.js"></script>
+<script src="assets/js/parental-control.js"></script>
+</body>
+</html>
